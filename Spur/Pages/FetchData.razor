@@ -1,0 +1,48 @@
+﻿@page "/fetchdata"
+
+<PageTitle>Weather forecast</PageTitle>
+
+@using Spur.Model
+@using Spur.Data
+@using Spur.Services
+@inject IChallengeService ChallengeService
+
+<h1>Challenges</h1>
+
+<p>List all challenges</p>
+
+@if (challenges == null)
+{
+    <p><button @onclick="FetchChallenges">Fetch challenges</button></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Start</th>
+                <th>End</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var challenge in challenges)
+            {
+                <tr>
+                    <td>@challenge.Id</td>
+                    <td>@challenge.Start.DateTime.ToShortDateString()</td>
+                    <td>@challenge.End.DateTime.ToShortDateString()</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private IEnumerable<Challenge>? challenges;
+
+    public async Task FetchChallenges()
+    {
+        challenges = await ChallengeService.GetChallengesAsync();
+    }
+}

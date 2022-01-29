@@ -1,0 +1,37 @@
+﻿@page "/login"
+@layout LoginLayout
+
+@using Microsoft.AspNetCore.Authentication
+@attribute [AllowAnonymous]
+
+<PageTitle>Login</PageTitle>
+
+<h1>Login</h1>
+
+<button class="btn btn-primary" @onclick="DoLogin">Login with Strava</button>
+
+@inject NavigationManager Navigation
+@code {
+    [CascadingParameter]
+    private Task<AuthenticationState> AuthenticationStateTask { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authenticationState = await AuthenticationStateTask;
+        var returnUrl = Navigation.ToBaseRelativePath(Navigation.Uri);
+
+        if ((authenticationState?.User?.Identity is null || !authenticationState.User.Identity.IsAuthenticated)
+            && !returnUrl.StartsWith("login"))
+        {
+            if (string.IsNullOrWhiteSpace(returnUrl))
+                Navigation.NavigateTo("login", true);
+            else
+                Navigation.NavigateTo($"login?returnUrl={returnUrl}", true);
+        }
+    }
+
+    private void DoLogin()
+    {
+
+    }
+}
