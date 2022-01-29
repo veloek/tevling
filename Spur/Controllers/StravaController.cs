@@ -3,13 +3,11 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Security.Claims;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using Spur.Model;
 using Spur.Strava;
 
 namespace Spur.Controllers;
@@ -35,8 +33,8 @@ public class StravaController : ControllerBase
     }
 
     [HttpGet]
-    [Route("authorization")]
-    public async Task EndAuthorization([FromQuery] string code)
+    [Route("authorize")]
+    public async Task<ActionResult> Authorize([FromQuery] string code)
     {
         var httpClient = new HttpClient();
 
@@ -44,7 +42,7 @@ public class StravaController : ControllerBase
             {
                 new KeyValuePair<string, string?>("client_id", _stravaConfig.ClientId),
                 new KeyValuePair<string, string?>("client_secret", _stravaConfig.ClientSecret),
-                new KeyValuePair<string, string?>("grant_type", _stravaConfig.GrantType),
+                new KeyValuePair<string, string?>("grant_type", "authorization_code"),
                 new KeyValuePair<string, string?>("code", code),
             });
 
@@ -60,13 +58,15 @@ public class StravaController : ControllerBase
             throw new Exception("Error deserializing token response");
 
         await LoginAsync(tokenResponse);
+
+        return LocalRedirect("/");
     }
 
-    private Task LoginAsync(TokenResponse tokenResponse)
+    private async Task LoginAsync(TokenResponse tokenResponse)
     {
         var claims = new List<Claim>
         {
-            new Claim(ClaimTypes.Name, tokenResponse.Athlete.Firstname + tokenResponse.Athlete.Lastname),
+            new Claim(ClaimTypes.Name, $"{tokenResponse.Athlete.Firstname} {tokenResponse.Athlete.Lastname}"),
         };
 
         var claimsIdentity = new ClaimsIdentity(
@@ -80,9 +80,11 @@ public class StravaController : ControllerBase
             RedirectUri = "/",
         };
 
-        return HttpContext.SignInAsync(
+        await HttpContext.SignInAsync(
             CookieAuthenticationDefaults.AuthenticationScheme,
             new ClaimsPrincipal(claimsIdentity),
             authProperties);
+
+        _logger.LogInformation($"User {tokenResponse.Athlete.Id} logged in at {DateTime.Now}.");
     }
 }

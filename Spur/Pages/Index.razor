@@ -1,9 +1,27 @@
 ﻿@page "/"
 
+@using Microsoft.AspNetCore.Identity
+@using System.Security.Claims;
+
+@inject AuthenticationStateProvider Auth
+
 <PageTitle>Home</PageTitle>
 
-<h1>Hello, world!</h1>
+<h1>Hello, @fullName!</h1>
 
 Welcome to your new app.
 
 <SurveyPrompt Title="How is Blazor working for you?" />
+
+@code {
+    [CascadingParameter]
+    private Task<AuthenticationState> AuthenticationStateTask { get; set; }
+
+    private string fullName = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authenticationState = await AuthenticationStateTask;
+        fullName = authenticationState.User.FindFirst(ClaimTypes.Name).Value;
+    }
+}

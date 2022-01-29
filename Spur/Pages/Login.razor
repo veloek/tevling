@@ -6,11 +6,24 @@
 
 <PageTitle>Login</PageTitle>
 
-<h1>Login</h1>
-
-<button class="btn btn-primary" @onclick="DoLogin">Login with Strava</button>
+<section class="spur-login">
+    <h1 class="login-title">Spur</h1>
+    <p class="login-subtitle">Accept the challenge</p>
+    <div class="spur-logo"><img src="cogwheel.png" width="256" /></div>
+    <form action="@StravaConfig.AuthorizeUri" method="get">
+        <div class="login-button-container">Login with <button class="button strava-login" type="submit">Strava</button>
+        </div>
+        <input type="hidden" name="client_id" value="@StravaConfig.ClientId" />
+        <input type="hidden" name="redirect_uri" value="@StravaConfig.RedirectUri" />
+        <input type="hidden" name="response_type" value="@StravaConfig.ResponseType" />
+        <input type="hidden" name="approval_prompt" value="@StravaConfig.ApprovalPrompt" />
+        <input type="hidden" name="scope" value="@StravaConfig.Scope" />
+    </form>
+    <p class="copyright">Copyright © 2022 - Vegard Løkken</p>
+</section>
 
 @inject NavigationManager Navigation
+@inject StravaConfig StravaConfig
 @code {
     [CascadingParameter]
     private Task<AuthenticationState> AuthenticationStateTask { get; set; }
@@ -21,7 +34,7 @@
         var returnUrl = Navigation.ToBaseRelativePath(Navigation.Uri);
 
         if ((authenticationState?.User?.Identity is null || !authenticationState.User.Identity.IsAuthenticated)
-            && !returnUrl.StartsWith("login"))
+        && !returnUrl.StartsWith("login"))
         {
             if (string.IsNullOrWhiteSpace(returnUrl))
                 Navigation.NavigateTo("login", true);
