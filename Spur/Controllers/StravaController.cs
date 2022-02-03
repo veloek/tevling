@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Spur.Data;
 using Spur.Strava;
 
 namespace Spur.Controllers;
@@ -18,23 +19,28 @@ public class StravaController : ControllerBase
 {
     private readonly ILogger<StravaController> _logger;
     private readonly StravaConfig _stravaConfig;
+    private readonly IAthleteRepository _athleteRepository;
 
-    public StravaController(ILogger<StravaController> logger, StravaConfig stravaConfig)
+    public StravaController(
+        ILogger<StravaController> logger,
+        StravaConfig stravaConfig,
+        IAthleteRepository athleteRepository)
     {
         _logger = logger;
         _stravaConfig = stravaConfig;
+        _athleteRepository = athleteRepository;
     }
 
     [HttpPost]
     [Route("activity")]
     public async Task OnActivity([FromBody] WebhookEvent activity)
     {
-
+        // TODO: Store activity in DB
     }
 
     [HttpGet]
     [Route("authorize")]
-    public async Task<ActionResult> Authorize([FromQuery] string code)
+    public async Task<ActionResult> Authorize([FromQuery] string code, CancellationToken ct)
     {
         var httpClient = new HttpClient();
 
@@ -59,14 +65,28 @@ public class StravaController : ControllerBase
 
         await LoginAsync(tokenResponse);
 
+        if (tokenResponse.Athlete != null)
+        {
+            if (!await _athleteRepository.AthleteExistsAsync(tokenResponse.Athlete.Id, ct))
+            {
+                await _athleteRepository.CreateAthleteAsync(
+                    stravaId: tokenResponse.Athlete.Id,
+                    name: $"{tokenResponse.Athlete.Firstname} {tokenResponse.Athlete.Lastname}",
+                    imgUrl: tokenResponse.Athlete.Profile,
+                    ct);
+            }
+        }
+
         return LocalRedirect("/");
     }
 
     private async Task LoginAsync(TokenResponse tokenResponse)
     {
+        var fullName = $"{tokenResponse.Athlete?.Firstname} {tokenResponse.Athlete?.Lastname}";
         var claims = new List<Claim>
         {
-            new Claim(ClaimTypes.Name, $"{tokenResponse.Athlete.Firstname} {tokenResponse.Athlete.Lastname}"),
+            new Claim(ClaimTypes.Name, fullName),
+            new Claim(ClaimTypes.UserData, JsonSerializer.Serialize(tokenResponse)),
         };
 
         var claimsIdentity = new ClaimsIdentity(
@@ -85,6 +105,6 @@ public class StravaController : ControllerBase
             new ClaimsPrincipal(claimsIdentity),
             authProperties);
 
-        _logger.LogInformation($"User {tokenResponse.Athlete.Id} logged in at {DateTime.Now}.");
+        _logger.LogInformation($"User {tokenResponse.Athlete?.Id} logged in at {DateTime.Now}.");
     }
 }

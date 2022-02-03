@@ -1,6 +1,3 @@
-using System;
-using System.IO;
-using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Spur.Model;
 
@@ -9,10 +6,13 @@ namespace Spur.Data;
 public class DataContext : DbContext, IDataContext
 {
     public DbSet<Activity> Activities { get; set; }
+    IQueryable<Activity> IDataContext.Activities => Activities;
     public DbSet<Athlete> Athletes { get; set; }
+    IQueryable<Athlete> IDataContext.Athletes => Athletes;
 
     public string DbPath { get; }
 
+#pragma warning disable CS8618
     public DataContext()
     {
         // var folder = Environment.SpecialFolder.LocalApplicationData;
@@ -20,6 +20,7 @@ public class DataContext : DbContext, IDataContext
         var path = Environment.CurrentDirectory;
         DbPath = Path.Join(path, "spur.db");
     }
+#pragma warning restore CS8618
 
     // The following configures EF to create a Sqlite database file in the
     // special "local" folder for your platform.
@@ -41,5 +42,12 @@ public class DataContext : DbContext, IDataContext
     {
         //Database.EnsureCreated();
         return Database.MigrateAsync();
+    }
+
+    public async Task<Athlete> AddAthleteAsync(Athlete athlete, CancellationToken ct = default)
+    {
+        var entry = await Athletes.AddAsync(athlete, ct);
+        await SaveChangesAsync(ct);
+        return entry.Entity;
     }
 }
