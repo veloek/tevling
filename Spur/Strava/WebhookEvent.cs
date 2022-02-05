@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
 namespace Spur.Strava;
@@ -22,7 +21,7 @@ public class WebhookEvent
     // is always "true" (activity visibility set to Only You) or "false" (activity visibility
     // set to Followers Only or Everyone). For app deauthorization events, there is always an
     // "authorized" : "false" key-value pair.
-    public Dictionary<string, string>? Updates {get;set;}
+    public Dictionary<string, string>? Updates { get; set; }
 
     [JsonPropertyName("owner_id")]
     // The athlete's ID.

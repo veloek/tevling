@@ -1,8 +1,8 @@
 ﻿@page "/login"
 @layout LoginLayout
+@attribute [AllowAnonymous]
 
 @using Microsoft.AspNetCore.Authentication
-@attribute [AllowAnonymous]
 
 <PageTitle>Login</PageTitle>
 
@@ -25,8 +25,10 @@
 @inject NavigationManager Navigation
 @inject StravaConfig StravaConfig
 @code {
+    #pragma warning disable CS8618
     [CascadingParameter]
     private Task<AuthenticationState> AuthenticationStateTask { get; set; }
+    #pragma warning restore CS8618
 
     protected override async Task OnInitializedAsync()
     {
@@ -41,10 +43,5 @@
             else
                 Navigation.NavigateTo($"login?returnUrl={returnUrl}", true);
         }
-    }
-
-    private void DoLogin()
-    {
-
     }
 }

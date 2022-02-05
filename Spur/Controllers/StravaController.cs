@@ -1,13 +1,8 @@
-using System;
-using System.Collections.Generic;
-using System.Net.Http;
 using System.Security.Claims;
 using System.Text.Json;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using Spur.Data;
 using Spur.Strava;
 
@@ -20,22 +15,53 @@ public class StravaController : ControllerBase
     private readonly ILogger<StravaController> _logger;
     private readonly StravaConfig _stravaConfig;
     private readonly IAthleteRepository _athleteRepository;
+    private readonly IActivityRepository _activityRepository;
 
     public StravaController(
         ILogger<StravaController> logger,
         StravaConfig stravaConfig,
-        IAthleteRepository athleteRepository)
+        IAthleteRepository athleteRepository,
+        IActivityRepository activityRepository)
     {
         _logger = logger;
         _stravaConfig = stravaConfig;
         _athleteRepository = athleteRepository;
+        _activityRepository = activityRepository;
     }
 
     [HttpPost]
     [Route("activity")]
-    public async Task OnActivity([FromBody] WebhookEvent activity)
+    public async Task OnActivity([FromBody] WebhookEvent activity, CancellationToken ct)
     {
-        // TODO: Store activity in DB
+        if (activity.SubscriptionId != _stravaConfig.SubscriptionId)
+            throw new Exception("Invalid subscription ID");
+
+        switch (activity.ObjectType)
+        {
+            case "activity":
+                await CreateActivity(activity.OwnerId, activity.ObjectId, ct);
+                break;
+            case "athlete":
+                // TODO
+                break;
+            default:
+                throw new Exception("Unknown object type");
+        }
+    }
+
+    private async Task CreateActivity(long stravaAthleteId, long stravaActivityId,
+        CancellationToken ct)
+    {
+        var athlete = await _athleteRepository.GetAthleteByStravaIdAsync(stravaAthleteId, ct);
+        if (athlete == null)
+        {
+            _logger.LogWarning($"Received activity for unknown athlete {stravaAthleteId}");
+            return;
+        }
+
+        await _activityRepository.AddActivityAsync(athlete.Id, stravaActivityId, ct);
+
+        // TODO: Fetch activity details
     }
 
     [HttpGet]
@@ -46,18 +72,18 @@ public class StravaController : ControllerBase
 
         var content = new FormUrlEncodedContent(new[]
             {
-                new KeyValuePair<string, string?>("client_id", _stravaConfig.ClientId),
+                new KeyValuePair<string, string?>("client_id", _stravaConfig.ClientId.ToString()),
                 new KeyValuePair<string, string?>("client_secret", _stravaConfig.ClientSecret),
                 new KeyValuePair<string, string?>("grant_type", "authorization_code"),
                 new KeyValuePair<string, string?>("code", code),
             });
 
-        var response = await httpClient.PostAsync(_stravaConfig.TokenUri, content);
+        var response = await httpClient.PostAsync(_stravaConfig.TokenUri, content, ct);
 
         // TODO: Handle error properly
         response.EnsureSuccessStatusCode();
 
-        var responseBody = await response.Content.ReadAsStringAsync();
+        var responseBody = await response.Content.ReadAsStringAsync(ct);
         var tokenResponse = JsonSerializer.Deserialize<TokenResponse>(responseBody);
 
         if (tokenResponse is null)

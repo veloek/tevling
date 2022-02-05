@@ -9,6 +9,8 @@ public class DataContext : DbContext, IDataContext
     IQueryable<Activity> IDataContext.Activities => Activities;
     public DbSet<Athlete> Athletes { get; set; }
     IQueryable<Athlete> IDataContext.Athletes => Athletes;
+    public DbSet<Challenge> Challenges { get; set; }
+    IQueryable<Challenge> IDataContext.Challenges => Challenges;
 
     public string DbPath { get; }
 
@@ -33,20 +35,30 @@ public class DataContext : DbContext, IDataContext
             .HasOne(a => a.Athlete)
             .WithMany(a => a.Activities);
 
+        modelBuilder.Entity<Activity>()
+            .HasOne(a => a.Details);
+
         modelBuilder.Entity<Athlete>()
             .HasMany(a => a.Challenges)
             .WithMany(c => c.Athletes);
     }
 
-    public Task Init()
+    public Task InitAsync()
     {
-        //Database.EnsureCreated();
+        //Database.EnsureCreatedAsync();
         return Database.MigrateAsync();
     }
 
     public async Task<Athlete> AddAthleteAsync(Athlete athlete, CancellationToken ct = default)
     {
         var entry = await Athletes.AddAsync(athlete, ct);
+        await SaveChangesAsync(ct);
+        return entry.Entity;
+    }
+
+    public async Task<Activity> AddActivityAsync(Activity activity, CancellationToken ct = default)
+    {
+        var entry = await Activities.AddAsync(activity, ct);
         await SaveChangesAsync(ct);
         return entry.Entity;
     }

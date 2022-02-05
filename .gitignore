@@ -1,2 +1,9 @@
+# Build artifacts
 bin/
 obj/
+
+# Database
+spur.db*
+
+# Editor / IDE
+.vscode/

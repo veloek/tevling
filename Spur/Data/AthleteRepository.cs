@@ -30,7 +30,17 @@ public class AthleteRepository : IAthleteRepository
             StravaId = stravaId,
             Name = name,
             ImgUrl = imgUrl,
+            Created = DateTimeOffset.Now,
         }, ct);
+
+        return athlete;
+    }
+
+    public async Task<Athlete?> GetAthleteByStravaIdAsync(long stravaId,
+        CancellationToken ct = default)
+    {
+        var athlete = await _dataContext.Athletes
+            .FirstOrDefaultAsync(a => a.StravaId == stravaId, ct);
 
         return athlete;
     }

@@ -1,7 +1,3 @@
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
 using Spur.Data;
 using Spur.Model;
 
@@ -10,16 +6,19 @@ namespace Spur.Services;
 public class ChallengeService : IChallengeService
 {
     private readonly ILogger<ChallengeService> _logger;
-    private readonly IDataContext _dataContext;
+    private readonly IChallengeRepository _challengeRepository;
 
-    public ChallengeService(ILogger<ChallengeService> logger, IDataContext dataContext)
+    public ChallengeService(
+        ILogger<ChallengeService> logger,
+        IChallengeRepository challengeRepository)
     {
         _logger = logger;
-        _dataContext = dataContext;
+        _challengeRepository = challengeRepository;
     }
 
-    public Task<IReadOnlyList<Challenge>> GetChallengesAsync(CancellationToken ct = default)
+    public async Task<IReadOnlyList<Challenge>> GetChallengesAsync(CancellationToken ct = default)
     {
-        throw new System.NotImplementedException();
+        var challenges = await _challengeRepository.GetAllChallenges().ToListAsync(ct);
+        return challenges;
     }
 }

@@ -9,19 +9,21 @@
 
 <h1>Hello, @fullName!</h1>
 
-Welcome to your new app.
+Welcome to your new app :-)
 
 <SurveyPrompt Title="How is Blazor working for you?" />
 
 @code {
+    #pragma warning disable CS8618
     [CascadingParameter]
     private Task<AuthenticationState> AuthenticationStateTask { get; set; }
+    #pragma warning restore CS8618
 
     private string fullName = string.Empty;
 
     protected override async Task OnInitializedAsync()
     {
         var authenticationState = await AuthenticationStateTask;
-        fullName = authenticationState.User.FindFirst(ClaimTypes.Name).Value;
+        fullName = authenticationState.User.FindFirst(ClaimTypes.Name)?.Value ?? string.Empty;
     }
 }
