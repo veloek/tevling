@@ -28,6 +28,7 @@ public class Program
             .AddScoped<IActivityRepository, ActivityRepository>()
             .AddScoped<IChallengeRepository, ChallengeRepository>();
 
+        builder.Services.AddScoped<IActivityService, ActivityService>();
         builder.Services.AddScoped<IChallengeService, ChallengeService>();
 
         var app = builder.Build();

@@ -62,4 +62,18 @@ public class DataContext : DbContext, IDataContext
         await SaveChangesAsync(ct);
         return entry.Entity;
     }
+
+    public async Task<Activity> UpdateActivityAsync(Activity activity, CancellationToken ct = default)
+    {
+        var entry = Activities.Update(activity);
+        await SaveChangesAsync(ct);
+        return entry.Entity;
+    }
+
+    public async Task<Activity> RemoveActivityAsync(Activity activity, CancellationToken ct = default)
+    {
+        var entry = Activities.Remove(activity);
+        await SaveChangesAsync(ct);
+        return entry.Entity;
+    }
 }

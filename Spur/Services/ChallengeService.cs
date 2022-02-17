@@ -21,4 +21,9 @@ public class ChallengeService : IChallengeService
         var challenges = await _challengeRepository.GetAllChallenges().ToListAsync(ct);
         return challenges;
     }
+
+    public Task<Challenge> CreateChallengeAsync(CancellationToken ct = default)
+    {
+        throw new NotImplementedException();
+    }
 }

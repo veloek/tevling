@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using Spur.Model;
 
 namespace Spur.Data;
@@ -15,6 +16,15 @@ public class ActivityRepository : IActivityRepository
         _dataContext = dataContext;
     }
 
+    public async Task<Activity?> GetActivityAsync(int athleteId, long stravaId,
+        CancellationToken ct = default)
+    {
+        var activity = await _dataContext.Activities
+            .FirstOrDefaultAsync(a => a.AthleteId == athleteId && a.StravaId == stravaId, ct);
+
+        return activity;
+    }
+
     public async Task<Activity> AddActivityAsync(int athleteId, long stravaId,
         CancellationToken ct = default)
     {
@@ -25,5 +35,17 @@ public class ActivityRepository : IActivityRepository
         }, ct);
 
         return activity;
+    }
+
+    public Task<Activity> UpdateActivityAsync(Activity activity,
+        CancellationToken ct = default)
+    {
+        return _dataContext.UpdateActivityAsync(activity, ct);
+    }
+
+    public Task<Activity> RemoveActivityAsync(Activity activity,
+        CancellationToken ct = default)
+    {
+        return _dataContext.RemoveActivityAsync(activity, ct);
     }
 }

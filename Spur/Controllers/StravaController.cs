@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
 using Spur.Data;
+using Spur.Services;
 using Spur.Strava;
 
 namespace Spur.Controllers;
@@ -16,37 +17,41 @@ public class StravaController : ControllerBase
     private readonly StravaConfig _stravaConfig;
     private readonly IAthleteRepository _athleteRepository;
     private readonly IActivityRepository _activityRepository;
+    private readonly IActivityService _activityService;
 
     public StravaController(
         ILogger<StravaController> logger,
         StravaConfig stravaConfig,
         IAthleteRepository athleteRepository,
-        IActivityRepository activityRepository)
+        IActivityRepository activityRepository,
+        IActivityService activityService)
     {
         _logger = logger;
         _stravaConfig = stravaConfig;
         _athleteRepository = athleteRepository;
         _activityRepository = activityRepository;
+        _activityService = activityService;
     }
 
     [HttpPost]
     [Route("activity")]
-    public async Task OnActivity([FromBody] WebhookEvent activity, CancellationToken ct)
+    public Task OnActivity([FromBody] WebhookEvent activity, CancellationToken ct)
     {
         if (activity.SubscriptionId != _stravaConfig.SubscriptionId)
             throw new Exception("Invalid subscription ID");
 
-        switch (activity.ObjectType)
+        var task = (activity.ObjectType, activity.AspectType) switch
         {
-            case "activity":
-                await CreateActivity(activity.OwnerId, activity.ObjectId, ct);
-                break;
-            case "athlete":
-                // TODO
-                break;
-            default:
-                throw new Exception("Unknown object type");
-        }
+            ("activity", "create") => CreateActivity(activity.OwnerId, activity.ObjectId, ct),
+            ("activity", "update") => UpdateActivity(activity.OwnerId, activity.ObjectId, ct),
+            ("activity", "delete") => DeleteActivity(activity.OwnerId, activity.ObjectId, ct),
+            // ("athlete", "create") => CreateAthlete(activity.OwnerId, activity.ObjectId, ct),
+            // ("athlete", "update") => UpdateAthlete(activity.OwnerId, activity.ObjectId, ct),
+            // ("athlete", "delete") => DeleteAthlete(activity.OwnerId, activity.ObjectId, ct),
+            _ => LogUnknownEvent(activity),
+        };
+
+        return task;
     }
 
     private async Task CreateActivity(long stravaAthleteId, long stravaActivityId,
@@ -55,13 +60,66 @@ public class StravaController : ControllerBase
         var athlete = await _athleteRepository.GetAthleteByStravaIdAsync(stravaAthleteId, ct);
         if (athlete == null)
         {
-            _logger.LogWarning($"Received activity for unknown athlete {stravaAthleteId}");
+            _logger.LogWarning($"Received activity for unknown athlete ID {stravaAthleteId}");
             return;
         }
 
-        await _activityRepository.AddActivityAsync(athlete.Id, stravaActivityId, ct);
+        _logger.LogInformation($"Adding activity ID {stravaActivityId} for athlete {athlete.Id}");
+        var activity = await _activityRepository.AddActivityAsync(athlete.Id, stravaActivityId, ct);
 
-        // TODO: Fetch activity details
+        _logger.LogInformation($"Fetching activity details for activity ID {stravaActivityId}");
+        var activityDetails = await _activityService.FetchActivityDetailsAsync(activity, CancellationToken.None);
+
+        activity.Details = activityDetails;
+        await _activityRepository.UpdateActivityAsync(activity, CancellationToken.None);
+    }
+
+    private async Task UpdateActivity(long stravaAthleteId, long stravaActivityId,
+        CancellationToken ct)
+    {
+        var athlete = await _athleteRepository.GetAthleteByStravaIdAsync(stravaAthleteId, ct);
+        if (athlete == null)
+        {
+            _logger.LogWarning($"Received activity update for unknown athlete ID {stravaAthleteId}");
+            return;
+        }
+
+        var activity = await _activityRepository.GetActivityAsync(athlete.Id, stravaActivityId, ct);
+        if (activity == null)
+        {
+            _logger.LogWarning($"Received activity update for unknown activity ID {stravaActivityId}");
+            return;
+        }
+
+        // TODO: Handle update
+    }
+
+    private async Task DeleteActivity(long stravaAthleteId, long stravaActivityId,
+        CancellationToken ct)
+    {
+        var athlete = await _athleteRepository.GetAthleteByStravaIdAsync(stravaAthleteId, ct);
+        if (athlete == null)
+        {
+            _logger.LogWarning($"Received activity update for unknown athlete ID {stravaAthleteId}");
+            return;
+        }
+
+        var activity = await _activityRepository.GetActivityAsync(athlete.Id, stravaActivityId, ct);
+        if (activity == null)
+        {
+            _logger.LogWarning($"Received activity update for unknown activity ID {stravaActivityId}");
+            return;
+        }
+
+        await _activityRepository.RemoveActivityAsync(activity, ct);
+    }
+
+    private Task LogUnknownEvent(WebhookEvent @event)
+    {
+        var json = JsonSerializer.Serialize(@event);
+        _logger.LogWarning($"Received unknown event: {json}");
+
+        return Task.CompletedTask;
     }
 
     [HttpGet]
