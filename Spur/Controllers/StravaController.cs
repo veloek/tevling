@@ -151,14 +151,14 @@ public class StravaController : ControllerBase
 
         if (tokenResponse.Athlete != null)
         {
-            if (!await _athleteRepository.AthleteExistsAsync(tokenResponse.Athlete.Id, ct))
-            {
-                await _athleteRepository.CreateAthleteAsync(
-                    stravaId: tokenResponse.Athlete.Id,
-                    name: $"{tokenResponse.Athlete.Firstname} {tokenResponse.Athlete.Lastname}",
-                    imgUrl: tokenResponse.Athlete.Profile,
-                    ct);
-            }
+            await _athleteRepository.UpsertAthleteAsync(
+                stravaId: tokenResponse.Athlete.Id,
+                name: $"{tokenResponse.Athlete.Firstname} {tokenResponse.Athlete.Lastname}",
+                imgUrl: tokenResponse.Athlete.Profile,
+                accessToken: tokenResponse.AccessToken ?? string.Empty,
+                refreshToken: tokenResponse.RefreshToken ?? string.Empty,
+                accessTokenExpiry: DateTimeOffset.FromUnixTimeSeconds(tokenResponse.ExpiresAt),
+                ct);
         }
 
         return LocalRedirect("/");

@@ -22,16 +22,28 @@ public class AthleteRepository : IAthleteRepository
         return exists;
     }
 
-    public async Task<Athlete> CreateAthleteAsync(long stravaId, string name, string? imgUrl,
+    public async Task<Athlete> UpsertAthleteAsync(long stravaId, string name, string? imgUrl,
+        string accessToken, string refreshToken, DateTimeOffset accessTokenExpiry,
         CancellationToken ct = default)
     {
-        var athlete = await _dataContext.AddAthleteAsync(new Athlete
+        var newAthlete = false;
+        var athlete = await GetAthleteByStravaIdAsync(stravaId, ct);
+
+        if (athlete == null)
         {
-            StravaId = stravaId,
-            Name = name,
-            ImgUrl = imgUrl,
-            Created = DateTimeOffset.Now,
-        }, ct);
+            newAthlete = true;
+            athlete = new Athlete { StravaId = stravaId, Created = DateTimeOffset.Now };
+        }
+
+        athlete.Name = name;
+        athlete.ImgUrl = imgUrl;
+        athlete.AccessToken = accessToken;
+        athlete.RefreshToken = refreshToken;
+        athlete.AccessTokenExpiry = accessTokenExpiry;
+
+        athlete = newAthlete
+            ? await _dataContext.AddAthleteAsync(athlete, ct)
+            : await _dataContext.UpdateAthleteAsync(athlete, ct);
 
         return athlete;
     }
@@ -41,6 +53,15 @@ public class AthleteRepository : IAthleteRepository
     {
         var athlete = await _dataContext.Athletes
             .FirstOrDefaultAsync(a => a.StravaId == stravaId, ct);
+
+        return athlete;
+    }
+
+    public async Task<Athlete?> GetAthleteByIdAsync(long athleteId,
+        CancellationToken ct = default)
+    {
+        var athlete = await _dataContext.Athletes
+            .FirstOrDefaultAsync(a => a.Id == athleteId, ct);
 
         return athlete;
     }

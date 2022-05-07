@@ -56,6 +56,20 @@ public class DataContext : DbContext, IDataContext
         return entry.Entity;
     }
 
+    public async Task<Athlete> UpdateAthleteAsync(Athlete athlete, CancellationToken ct = default)
+    {
+        var entry = Athletes.Update(athlete);
+        await SaveChangesAsync(ct);
+        return entry.Entity;
+    }
+
+    public async Task<Athlete> RemoveAthleteAsync(Athlete athlete, CancellationToken ct = default)
+    {
+        var entry = Athletes.Remove(athlete);
+        await SaveChangesAsync(ct);
+        return entry.Entity;
+    }
+
     public async Task<Activity> AddActivityAsync(Activity activity, CancellationToken ct = default)
     {
         var entry = await Activities.AddAsync(activity, ct);
