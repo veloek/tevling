@@ -20,7 +20,7 @@ public class DataContext : DbContext, IDataContext
         // var folder = Environment.SpecialFolder.LocalApplicationData;
         // var path = Environment.GetFolderPath(folder);
         var path = Environment.CurrentDirectory;
-        DbPath = Path.Join(path, "spur.db");
+        DbPath = Path.Join(path, "storage", "spur.db");
     }
 #pragma warning restore CS8618
 
