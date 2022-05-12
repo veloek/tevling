@@ -33,6 +33,8 @@ public class Program
         builder.Services.AddScoped<IAthleteService, AthleteService>();
         builder.Services.AddScoped<IChallengeService, ChallengeService>();
 
+        builder.Services.AddSingleton<IAuthenticationService, AuthenticationService>();
+
         builder.Services.AddHttpClient<IStravaClient, StravaClient>();
 
         var app = builder.Build();

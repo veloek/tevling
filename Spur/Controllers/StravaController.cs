@@ -1,7 +1,4 @@
-using System.Security.Claims;
 using System.Text.Json;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
 using Spur.Clients;
 using Spur.Data;
@@ -20,6 +17,7 @@ public class StravaController : ControllerBase
     private readonly IAthleteRepository _athleteRepository;
     private readonly IActivityRepository _activityRepository;
     private readonly IActivityService _activityService;
+    private readonly Services.IAuthenticationService _authenticationService;
 
     public StravaController(
         ILogger<StravaController> logger,
@@ -27,7 +25,8 @@ public class StravaController : ControllerBase
         IStravaClient stravaClient,
         IAthleteRepository athleteRepository,
         IActivityRepository activityRepository,
-        IActivityService activityService)
+        IActivityService activityService,
+        Services.IAuthenticationService authenticationService)
     {
         _logger = logger;
         _stravaConfig = stravaConfig;
@@ -35,6 +34,7 @@ public class StravaController : ControllerBase
         _athleteRepository = athleteRepository;
         _activityRepository = activityRepository;
         _activityService = activityService;
+        _authenticationService = authenticationService;
     }
 
     [HttpPost]
@@ -76,11 +76,10 @@ public class StravaController : ControllerBase
     public async Task<ActionResult> Authorize([FromQuery] string code, CancellationToken ct)
     {
         var tokenResponse = await _stravaClient.GetAccessTokenByAuthorizationCodeAsync(code, ct);
-        await LoginAsync(tokenResponse);
 
         if (tokenResponse.Athlete != null)
         {
-            await _athleteRepository.UpsertAthleteAsync(
+            var athlete = await _athleteRepository.UpsertAthleteAsync(
                 stravaId: tokenResponse.Athlete.Id,
                 name: $"{tokenResponse.Athlete.Firstname} {tokenResponse.Athlete.Lastname}",
                 imgUrl: tokenResponse.Athlete.Profile,
@@ -88,36 +87,14 @@ public class StravaController : ControllerBase
                 refreshToken: tokenResponse.RefreshToken ?? string.Empty,
                 accessTokenExpiry: DateTimeOffset.FromUnixTimeSeconds(tokenResponse.ExpiresAt),
                 ct);
+
+            await _authenticationService.LoginAsync(HttpContext, athlete, ct);
+        }
+        else
+        {
+            throw new Exception("Missing athlete data");
         }
 
         return LocalRedirect("/");
-    }
-
-    private async Task LoginAsync(TokenResponse tokenResponse)
-    {
-        var fullName = $"{tokenResponse.Athlete?.Firstname} {tokenResponse.Athlete?.Lastname}";
-        var claims = new List<Claim>
-        {
-            new Claim(ClaimTypes.Name, fullName),
-            new Claim(ClaimTypes.UserData, JsonSerializer.Serialize(tokenResponse)),
-        };
-
-        var claimsIdentity = new ClaimsIdentity(
-            claims, CookieAuthenticationDefaults.AuthenticationScheme);
-
-        var authProperties = new AuthenticationProperties
-        {
-            AllowRefresh = true,
-            ExpiresUtc = DateTimeOffset.UtcNow.AddHours(1),
-            IsPersistent = true,
-            RedirectUri = "/",
-        };
-
-        await HttpContext.SignInAsync(
-            CookieAuthenticationDefaults.AuthenticationScheme,
-            new ClaimsPrincipal(claimsIdentity),
-            authProperties);
-
-        _logger.LogInformation($"User {tokenResponse.Athlete?.Id} logged in at {DateTime.Now}.");
     }
 }
