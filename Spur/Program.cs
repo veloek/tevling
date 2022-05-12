@@ -30,6 +30,7 @@ public class Program
             .AddScoped<IChallengeRepository, ChallengeRepository>();
 
         builder.Services.AddScoped<IActivityService, ActivityService>();
+        builder.Services.AddScoped<IAthleteService, AthleteService>();
         builder.Services.AddScoped<IChallengeService, ChallengeService>();
 
         builder.Services.AddHttpClient<IStravaClient, StravaClient>();

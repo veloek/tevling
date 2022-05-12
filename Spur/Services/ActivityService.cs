@@ -9,17 +9,20 @@ public class ActivityService : IActivityService
     private readonly ILogger<ActivityService> _logger;
     private readonly IActivityRepository _activityRepository;
     private readonly IAthleteRepository _athleteRepository;
+    private readonly IAthleteService _athleteService;
     private readonly IStravaClient _stravaClient;
 
     public ActivityService(
         ILogger<ActivityService> logger,
         IActivityRepository activityRepository,
         IAthleteRepository athleteRepository,
+        IAthleteService athleteService,
         IStravaClient stravaClient)
     {
         _logger = logger;
         _activityRepository = activityRepository;
         _athleteRepository = athleteRepository;
+        _athleteService = athleteService;
         _stravaClient = stravaClient;
     }
 
@@ -90,8 +93,23 @@ public class ActivityService : IActivityService
 
     private async Task<ActivityDetails> FetchActivityDetailsAsync(Activity activity, CancellationToken ct = default)
     {
-        // TODO: Use athlete's access token / refresh token to call Strava API
-        //       and get activity details
-        throw new NotImplementedException();
+        var accessToken = await _athleteService.GetAccessTokenAsync(activity.AthleteId, ct);
+        var stravaActivity = await _stravaClient.GetActivityAsync(activity.StravaId, accessToken, ct);
+
+        var activityDetails = new ActivityDetails
+        {
+            Name = stravaActivity.Name ?? string.Empty,
+            Description = stravaActivity.Description,
+            DistanceInMeters = stravaActivity.Distance,
+            MovingTimeInSeconds = stravaActivity.MovingTime,
+            ElapsedTimeInSeconds = stravaActivity.ElapsedTime,
+            TotalElevationGain = stravaActivity.TotalElevationGain,
+            Calories = stravaActivity.Calories,
+            Type = stravaActivity.Type,
+            StartDate = stravaActivity.StartDate,
+            Manual = stravaActivity.Manual,
+        };
+
+        return activityDetails;
     }
 }
