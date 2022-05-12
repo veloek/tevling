@@ -1,5 +1,6 @@
 using Spur.Clients;
 using Spur.Data;
+using Spur.Model;
 
 namespace Spur.Services;
 
@@ -36,6 +37,15 @@ public class AthleteService : IAthleteService
         }
 
         return athlete.AccessToken;
+    }
+
+    public async Task<Athlete> GetAthleteByIdAsync(int athleteId, CancellationToken ct = default)
+    {
+        var athlete = await _athleteRepository.GetAthleteByIdAsync(athleteId, ct);
+        if (athlete == null)
+            throw new Exception("Unknown athlete id: " + athleteId);
+
+        return athlete;
     }
 
     private async Task<string> RefreshAccessToken(string refreshToken, CancellationToken ct)

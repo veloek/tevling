@@ -61,6 +61,7 @@ public class AthleteRepository : IAthleteRepository
         CancellationToken ct = default)
     {
         var athlete = await _dataContext.Athletes
+            .Include(a => a.Activities)
             .FirstOrDefaultAsync(a => a.Id == athleteId, ct);
 
         return athlete;

@@ -1,7 +1,8 @@
 ﻿@page "/"
 
 @using Microsoft.AspNetCore.Identity
-@using System.Security.Claims;
+@using System.Security.Claims
+@using Spur.Model
 
 @inject AuthenticationStateProvider Auth
 
@@ -13,6 +14,22 @@ Welcome to your new app :-)
 
 <SurveyPrompt Title="How is Blazor working for you?" />
 
+@if (activities is not null)
+{
+    <h4>Activities:</h4>
+    <ul>
+    @foreach (var activity in activities)
+    {
+        <li>@activity.Id</li>
+    }
+    </ul>
+}
+else
+{
+    <p>No activities yet...</p>
+}
+
+@inject IAthleteService AthleteService
 @code {
     #pragma warning disable CS8618
     [CascadingParameter]
@@ -20,10 +37,18 @@ Welcome to your new app :-)
     #pragma warning restore CS8618
 
     private string fullName = string.Empty;
+    private Activity[]? activities;
 
     protected override async Task OnInitializedAsync()
     {
         var authenticationState = await AuthenticationStateTask;
         fullName = authenticationState.User.FindFirst(ClaimTypes.Name)?.Value ?? string.Empty;
+
+        var athleteIdStr = authenticationState.User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? string.Empty;
+        if (int.TryParse(athleteIdStr, out var athleteId))
+        {
+            var athlete = await AthleteService.GetAthleteByIdAsync(athleteId);
+            activities = athlete.Activities?.ToArray();
+        }
     }
 }
