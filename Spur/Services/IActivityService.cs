@@ -4,5 +4,12 @@ namespace Spur.Services;
 
 public interface IActivityService
 {
-    Task<ActivityDetails> FetchActivityDetailsAsync(Activity activity, CancellationToken ct = default);
+    Task<Activity> CreateActivityAsync(long stravaAthleteId, long stravaActivityId,
+        CancellationToken ct = default);
+
+    Task<Activity> UpdateActivityAsync(long stravaAthleteId, long stravaActivityId,
+        CancellationToken ct = default);
+
+    Task DeleteActivityAsync(long stravaAthleteId, long stravaActivityId,
+        CancellationToken ct = default);
 }

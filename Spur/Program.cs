@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Spur.Clients;
 using Spur.Data;
 using Spur.Services;
 
@@ -30,6 +31,8 @@ public class Program
 
         builder.Services.AddScoped<IActivityService, ActivityService>();
         builder.Services.AddScoped<IChallengeService, ChallengeService>();
+
+        builder.Services.AddHttpClient<IStravaClient, StravaClient>();
 
         var app = builder.Build();
 
