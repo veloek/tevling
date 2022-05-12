@@ -6,6 +6,6 @@ public class Activity
     public long StravaId { get; set; }
 
     public int AthleteId { get; set; }
-    public Athlete? Athlete { get; set; }
-    public ActivityDetails? Details { get; set; }
+    public Athlete Athlete { get; set; } = default!;
+    public ActivityDetails Details { get; set; } = default!;
 }

@@ -36,7 +36,7 @@ public class DataContext : DbContext, IDataContext
             .WithMany(a => a.Activities);
 
         modelBuilder.Entity<Activity>()
-            .HasOne(a => a.Details);
+            .OwnsOne(a => a.Details);
 
         modelBuilder.Entity<Athlete>()
             .HasMany(a => a.Challenges)
