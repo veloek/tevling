@@ -29,11 +29,8 @@ public class ActivityService : IActivityService
     public async Task<Activity> CreateActivityAsync(long stravaAthleteId, long stravaActivityId,
         CancellationToken ct = default)
     {
-        var athlete = await _athleteRepository.GetAthleteByStravaIdAsync(stravaAthleteId, ct);
-        if (athlete == null)
-        {
+        var athlete = await _athleteRepository.GetAthleteByStravaIdAsync(stravaAthleteId, ct) ??
             throw new Exception($"Unknown athlete ID {stravaAthleteId}");
-        }
 
         _logger.LogInformation($"Adding activity ID {stravaActivityId} for athlete {athlete.Id}");
         var activity = await _activityRepository.AddActivityAsync(athlete.Id, stravaActivityId, ct);
@@ -50,17 +47,11 @@ public class ActivityService : IActivityService
     public async Task<Activity> UpdateActivityAsync(long stravaAthleteId, long stravaActivityId,
         CancellationToken ct = default)
     {
-        var athlete = await _athleteRepository.GetAthleteByStravaIdAsync(stravaAthleteId, ct);
-        if (athlete == null)
-        {
+        var athlete = await _athleteRepository.GetAthleteByStravaIdAsync(stravaAthleteId, ct) ??
             throw new Exception($"Unknown athlete ID {stravaAthleteId}");
-        }
 
-        var activity = await _activityRepository.GetActivityAsync(athlete.Id, stravaActivityId, ct);
-        if (activity == null)
-        {
+        var activity = await _activityRepository.GetActivityAsync(athlete.Id, stravaActivityId, ct) ??
             throw new Exception($"Unknown activity ID {stravaActivityId}");
-        }
 
         _logger.LogInformation($"Fetching activity details for activity ID {stravaActivityId}");
         var activityDetails = await FetchActivityDetailsAsync(activity, CancellationToken.None);

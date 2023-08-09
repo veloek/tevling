@@ -26,8 +26,7 @@ public class AthleteService : IAthleteService
 
     public async Task<string> GetAccessTokenAsync(int athleteId, CancellationToken ct = default)
     {
-        var athlete = await _athleteRepository.GetAthleteByIdAsync(athleteId, ct);
-        if (athlete == null)
+        var athlete = await _athleteRepository.GetAthleteByIdAsync(athleteId, ct) ??
             throw new Exception("Unknown athlete id: " + athleteId);
 
         if ((athlete.AccessTokenExpiry - DateTimeOffset.Now) < TimeSpan.FromMinutes(1))
@@ -41,8 +40,7 @@ public class AthleteService : IAthleteService
 
     public async Task<Athlete> GetAthleteByIdAsync(int athleteId, CancellationToken ct = default)
     {
-        var athlete = await _athleteRepository.GetAthleteByIdAsync(athleteId, ct);
-        if (athlete == null)
+        var athlete = await _athleteRepository.GetAthleteByIdAsync(athleteId, ct) ??
             throw new Exception("Unknown athlete id: " + athleteId);
 
         return athlete;

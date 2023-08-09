@@ -49,9 +49,7 @@ public class StravaClient : IStravaClient
         response.EnsureSuccessStatusCode();
 
         var responseBody = await response.Content.ReadAsStringAsync(ct);
-        var tokenResponse = JsonSerializer.Deserialize<TokenResponse>(responseBody);
-
-        if (tokenResponse is null)
+        var tokenResponse = JsonSerializer.Deserialize<TokenResponse>(responseBody) ??
             throw new Exception("Error deserializing token response");
 
         return tokenResponse;
@@ -74,9 +72,7 @@ public class StravaClient : IStravaClient
         response.EnsureSuccessStatusCode();
 
         var responseBody = await response.Content.ReadAsStringAsync(ct);
-        var tokenResponse = JsonSerializer.Deserialize<TokenResponse>(responseBody);
-
-        if (tokenResponse is null)
+        var tokenResponse = JsonSerializer.Deserialize<TokenResponse>(responseBody) ??
             throw new Exception("Error deserializing token response");
 
         return tokenResponse;
@@ -93,9 +89,7 @@ public class StravaClient : IStravaClient
         response.EnsureSuccessStatusCode();
 
         var responseBody = await response.Content.ReadAsStringAsync(ct);
-        var activity = JsonSerializer.Deserialize<Activity>(responseBody);
-
-        if (activity is null)
+        var activity = JsonSerializer.Deserialize<Activity>(responseBody) ??
             throw new Exception("Error deserializing activity");
 
         return activity;
