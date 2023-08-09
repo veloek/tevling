@@ -32,7 +32,7 @@ public class AthleteRepository : IAthleteRepository
         if (athlete == null)
         {
             newAthlete = true;
-            athlete = new Athlete { StravaId = stravaId, Created = DateTimeOffset.Now };
+            athlete = new Athlete { StravaId = stravaId, Created = DateTimeOffset.UtcNow };
         }
 
         athlete.Name = name;
