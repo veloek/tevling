@@ -15,24 +15,21 @@ public class StravaController : ControllerBase
     private readonly StravaConfig _stravaConfig;
     private readonly IStravaClient _stravaClient;
     private readonly IAthleteRepository _athleteRepository;
-    private readonly IActivityRepository _activityRepository;
     private readonly IActivityService _activityService;
-    private readonly Services.IAuthenticationService _authenticationService;
+    private readonly IAuthenticationService _authenticationService;
 
     public StravaController(
         ILogger<StravaController> logger,
         StravaConfig stravaConfig,
         IStravaClient stravaClient,
         IAthleteRepository athleteRepository,
-        IActivityRepository activityRepository,
         IActivityService activityService,
-        Services.IAuthenticationService authenticationService)
+        IAuthenticationService authenticationService)
     {
         _logger = logger;
         _stravaConfig = stravaConfig;
         _stravaClient = stravaClient;
         _athleteRepository = athleteRepository;
-        _activityRepository = activityRepository;
         _activityService = activityService;
         _authenticationService = authenticationService;
     }
