@@ -1,0 +1,25 @@
+name: Docker Image CI
+
+on:
+  push:
+    branches: [ "main" ]
+
+env: 
+  DOCKER_REPO: ${{ secrets.DOCKER_REPO }}
+  DOCKER_TOKEN: ${{ secrets.DOCKER_TOKEN }}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Docker login
+      run: docker login -u $DOCKER_REPO -p $DOCKER_TOKEN
+    
+    - name: Docker build
+      run: docker build . --file Dockerfile --tag $DOCKER_REPO/spur:${{ vars.GITHUB_SHA }}
+      
+    - name: Docker push
+      run: docker push $DOCKER_REPO/spur:${{ vars.GITHUB_SHA }}
+    
