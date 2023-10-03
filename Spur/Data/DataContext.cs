@@ -1,3 +1,4 @@
+using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Spur.Model;
 
@@ -27,7 +28,11 @@ public class DataContext : DbContext, IDataContext
     // The following configures EF to create a Sqlite database file in the
     // special "local" folder for your platform.
     protected override void OnConfiguring(DbContextOptionsBuilder options)
-        => options.UseSqlite($"Data Source={DbPath}");
+        => options.UseSqlite(new SqliteConnectionStringBuilder()
+            {
+                DataSource = DbPath,
+                Pooling = false,
+            }.ToString());
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
