@@ -89,9 +89,17 @@ public class StravaClient : IStravaClient
         response.EnsureSuccessStatusCode();
 
         var responseBody = await response.Content.ReadAsStringAsync(ct);
-        var activity = JsonSerializer.Deserialize<Activity>(responseBody) ??
-            throw new Exception("Error deserializing activity");
+        try
+        {
+            var activity = JsonSerializer.Deserialize<Activity>(responseBody) ??
+                throw new Exception("Error deserializing activity");
 
-        return activity;
+            return activity;
+        }
+        catch
+        {
+            _logger.LogInformation(responseBody);
+            throw;
+        }
     }
 }
