@@ -68,9 +68,8 @@ public class StravaController : ControllerBase
     [Route("activity")]
     public async Task OnActivity([FromBody] WebhookEvent activity, CancellationToken ct)
     {
-        // TODO: Re-enable the subscription ID verification at some point.
-        // if (activity.SubscriptionId != _stravaConfig.SubscriptionId)
-        //     throw new Exception("Invalid subscription ID");
+        if (activity.SubscriptionId != _stravaConfig.SubscriptionId)
+            throw new Exception("Invalid subscription ID");
 
         try
         {
