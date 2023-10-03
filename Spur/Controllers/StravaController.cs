@@ -39,6 +39,17 @@ public class StravaController : ControllerBase
     }
 
     /// <summary>
+    /// Endpoint used by Strava to validate subscription callback address.
+    /// Just needs to return 200 OK.
+    /// </summary>
+    [HttpGet]
+    [Route("activity")]
+    public void ValidateSubscriptionCallback()
+    {
+        // No need to do anything
+    }
+
+    /// <summary>
     /// Callback endpoint for Strava subscription.
     /// </summary>
     /// <param name="activity"></param>
