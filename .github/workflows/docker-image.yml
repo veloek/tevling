@@ -18,8 +18,7 @@ jobs:
       run: docker login -u $DOCKER_REPO -p $DOCKER_TOKEN
     
     - name: Docker build
-      run: docker build . --file Dockerfile --tag $DOCKER_REPO/spur:$GITHUB_SHA
+      run: docker build . --file Dockerfile --tag $DOCKER_REPO/spur:$GITHUB_SHA --tag $DOCKER_REPO/spur:latest
       
     - name: Docker push
-      run: docker push $DOCKER_REPO/spur:$GITHUB_SHA
-    
+      run: docker push $DOCKER_REPO/spur --all-tags
