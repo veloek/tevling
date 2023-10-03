@@ -1,5 +1,8 @@
+using System.Text.Json.Serialization;
+
 namespace Spur.Strava;
 
+[JsonConverter(typeof(JsonStringEnumConverter))]
 public enum ActivityType
 {
     AlpineSki,

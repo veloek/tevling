@@ -15,7 +15,7 @@ public class Activity
 
     [JsonPropertyName("upload_id")]
     // The identifier of the upload that resulted in this activity
-    public long UploadId { get; set; }
+    public long? UploadId { get; set; }
 
     [JsonPropertyName("athlete")]
     // An instance of MetaAthlete.
@@ -123,7 +123,7 @@ public class Activity
 
     [JsonPropertyName("workout_type")]
     // The activity's workout type
-    public int WorkoutType { get; set; }
+    public int? WorkoutType { get; set; }
 
     [JsonPropertyName("upload_id_str")]
     // The unique identifier of the upload in string format
