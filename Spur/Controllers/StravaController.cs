@@ -7,6 +7,10 @@ using Spur.Strava;
 
 namespace Spur.Controllers;
 
+/// <summary>
+/// Callback API used for authentication flow and Strava subscription.
+/// (No endpoints used by webapp)
+/// </summary>
 [ApiController]
 [Route("api")]
 public class StravaController : ControllerBase
@@ -34,6 +38,13 @@ public class StravaController : ControllerBase
         _authenticationService = authenticationService;
     }
 
+    /// <summary>
+    /// Callback endpoint for Strava subscription.
+    /// </summary>
+    /// <param name="activity"></param>
+    /// <param name="ct"></param>
+    /// <returns></returns>
+    /// <exception cref="Exception"></exception>
     [HttpPost]
     [Route("activity")]
     public async Task OnActivity([FromBody] WebhookEvent activity, CancellationToken ct)
@@ -68,6 +79,16 @@ public class StravaController : ControllerBase
         return Task.CompletedTask;
     }
 
+    /// <summary>
+    /// Callback endpoint for Strava authentication flow.
+    ///
+    /// Creates or updates athlete on login. Stores access/refresh token
+    /// so we can fetch information from Strava API on the user's behalf.
+    /// </summary>
+    /// <param name="code"></param>
+    /// <param name="ct"></param>
+    /// <returns></returns>
+    /// <exception cref="Exception"></exception>
     [HttpGet]
     [Route("authorize")]
     public async Task<ActionResult> Authorize([FromQuery] string code, CancellationToken ct)
