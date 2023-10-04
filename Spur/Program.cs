@@ -17,7 +17,7 @@ public class Program
         builder.Services.AddControllers();
 
         var section = builder.Configuration.GetSection(nameof(StravaConfig));
-        var stravaConfig = section.Get<StravaConfig>();
+        var stravaConfig = section.Get<StravaConfig>() ?? new();
         builder.Services.AddSingleton(stravaConfig);
 
         builder.Services
