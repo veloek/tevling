@@ -35,7 +35,7 @@ public class ActivityService : IActivityService
         _logger.LogInformation($"Adding activity ID {stravaActivityId} for athlete {athlete.Id}");
         var activity = await _activityRepository.AddActivityAsync(athlete.Id, stravaActivityId, ct);
 
-        _logger.LogInformation($"Fetching activity details for activity ID {stravaActivityId}");
+        _logger.LogDebug($"Fetching activity details for activity ID {stravaActivityId}");
         var activityDetails = await FetchActivityDetailsAsync(activity, CancellationToken.None);
 
         activity.Details = activityDetails;
@@ -53,9 +53,10 @@ public class ActivityService : IActivityService
         var activity = await _activityRepository.GetActivityAsync(athlete.Id, stravaActivityId, ct) ??
             throw new Exception($"Unknown activity ID {stravaActivityId}");
 
-        _logger.LogInformation($"Fetching activity details for activity ID {stravaActivityId}");
+        _logger.LogDebug($"Fetching activity details for activity ID {stravaActivityId}");
         var activityDetails = await FetchActivityDetailsAsync(activity, CancellationToken.None);
 
+        _logger.LogInformation($"Updating activity ID {stravaActivityId} for athlete {athlete.Id}");
         activity.Details = activityDetails;
         activity = await _activityRepository.UpdateActivityAsync(activity, CancellationToken.None);
 
@@ -79,6 +80,7 @@ public class ActivityService : IActivityService
             return;
         }
 
+        _logger.LogInformation($"Deleting activity ID {stravaActivityId} for athlete {athlete.Id}");
         await _activityRepository.RemoveActivityAsync(activity, ct);
     }
 
