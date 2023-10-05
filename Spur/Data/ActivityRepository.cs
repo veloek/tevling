@@ -19,7 +19,7 @@ public class ActivityRepository : IActivityRepository
     public async Task<Activity?> GetActivityAsync(int athleteId, long stravaId,
         CancellationToken ct = default)
     {
-        var activity = await _dataContext.Activities
+        Activity? activity = await _dataContext.Activities
             .FirstOrDefaultAsync(a => a.AthleteId == athleteId && a.StravaId == stravaId, ct);
 
         return activity;
@@ -28,7 +28,7 @@ public class ActivityRepository : IActivityRepository
     public async Task<Activity> AddActivityAsync(int athleteId, long stravaId,
         CancellationToken ct = default)
     {
-        var activity = await _dataContext.AddActivityAsync(new Activity
+        Activity activity = await _dataContext.AddActivityAsync(new Activity
         {
             StravaId = stravaId,
             AthleteId = athleteId

@@ -9,15 +9,17 @@ public class Program
 {
     public static async Task Main(string[] args)
     {
-        var builder = WebApplication.CreateBuilder(args);
+        WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
+
+#pragma warning disable IDE0058 // Remove unnecessary expression value
 
         // Add services to the container.
         builder.Services.AddRazorPages();
         builder.Services.AddServerSideBlazor();
         builder.Services.AddControllers();
 
-        var section = builder.Configuration.GetSection(nameof(StravaConfig));
-        var stravaConfig = section.Get<StravaConfig>() ?? new();
+        IConfigurationSection section = builder.Configuration.GetSection(nameof(StravaConfig));
+        StravaConfig stravaConfig = section.Get<StravaConfig>() ?? new();
         builder.Services.AddSingleton(stravaConfig);
 
         builder.Services
@@ -37,7 +39,7 @@ public class Program
 
         builder.Services.AddHttpClient<IStravaClient, StravaClient>();
 
-        var app = builder.Build();
+        WebApplication app = builder.Build();
 
         // Configure the HTTP request pipeline.
         if (!app.Environment.IsDevelopment())
@@ -55,8 +57,10 @@ public class Program
         app.MapBlazorHub();
         app.MapFallbackToPage("/_Host");
 
-        using var serviceScope = app.Services.CreateScope();
-        var dataContext = serviceScope.ServiceProvider.GetRequiredService<IDataContext>();
+#pragma warning restore IDE0058 // Remove unnecessary expression value
+
+        using IServiceScope serviceScope = app.Services.CreateScope();
+        IDataContext dataContext = serviceScope.ServiceProvider.GetRequiredService<IDataContext>();
         await dataContext.InitAsync();
 
         await app.RunAsync();

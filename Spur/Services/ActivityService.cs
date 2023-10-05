@@ -29,14 +29,14 @@ public class ActivityService : IActivityService
     public async Task<Activity> CreateActivityAsync(long stravaAthleteId, long stravaActivityId,
         CancellationToken ct = default)
     {
-        var athlete = await _athleteRepository.GetAthleteByStravaIdAsync(stravaAthleteId, ct) ??
+        Athlete athlete = await _athleteRepository.GetAthleteByStravaIdAsync(stravaAthleteId, ct) ??
             throw new Exception($"Unknown athlete ID {stravaAthleteId}");
 
         _logger.LogInformation($"Adding activity ID {stravaActivityId} for athlete {athlete.Id}");
-        var activity = await _activityRepository.AddActivityAsync(athlete.Id, stravaActivityId, ct);
+        Activity activity = await _activityRepository.AddActivityAsync(athlete.Id, stravaActivityId, ct);
 
         _logger.LogDebug($"Fetching activity details for activity ID {stravaActivityId}");
-        var activityDetails = await FetchActivityDetailsAsync(activity, CancellationToken.None);
+        ActivityDetails activityDetails = await FetchActivityDetailsAsync(activity, CancellationToken.None);
 
         activity.Details = activityDetails;
         activity = await _activityRepository.UpdateActivityAsync(activity, CancellationToken.None);
@@ -47,14 +47,14 @@ public class ActivityService : IActivityService
     public async Task<Activity> UpdateActivityAsync(long stravaAthleteId, long stravaActivityId,
         CancellationToken ct = default)
     {
-        var athlete = await _athleteRepository.GetAthleteByStravaIdAsync(stravaAthleteId, ct) ??
+        Athlete athlete = await _athleteRepository.GetAthleteByStravaIdAsync(stravaAthleteId, ct) ??
             throw new Exception($"Unknown athlete ID {stravaAthleteId}");
 
-        var activity = await _activityRepository.GetActivityAsync(athlete.Id, stravaActivityId, ct) ??
+        Activity activity = await _activityRepository.GetActivityAsync(athlete.Id, stravaActivityId, ct) ??
             throw new Exception($"Unknown activity ID {stravaActivityId}");
 
         _logger.LogDebug($"Fetching activity details for activity ID {stravaActivityId}");
-        var activityDetails = await FetchActivityDetailsAsync(activity, CancellationToken.None);
+        ActivityDetails activityDetails = await FetchActivityDetailsAsync(activity, CancellationToken.None);
 
         _logger.LogInformation($"Updating activity ID {stravaActivityId} for athlete {athlete.Id}");
         activity.Details = activityDetails;
@@ -66,14 +66,14 @@ public class ActivityService : IActivityService
     public async Task DeleteActivityAsync(long stravaAthleteId, long stravaActivityId,
         CancellationToken ct = default)
     {
-        var athlete = await _athleteRepository.GetAthleteByStravaIdAsync(stravaAthleteId, ct);
+        Athlete? athlete = await _athleteRepository.GetAthleteByStravaIdAsync(stravaAthleteId, ct);
         if (athlete == null)
         {
             _logger.LogWarning($"Received activity update for unknown athlete ID {stravaAthleteId}");
             return;
         }
 
-        var activity = await _activityRepository.GetActivityAsync(athlete.Id, stravaActivityId, ct);
+        Activity? activity = await _activityRepository.GetActivityAsync(athlete.Id, stravaActivityId, ct);
         if (activity == null)
         {
             _logger.LogWarning($"Received activity update for unknown activity ID {stravaActivityId}");
@@ -81,15 +81,15 @@ public class ActivityService : IActivityService
         }
 
         _logger.LogInformation($"Deleting activity ID {stravaActivityId} for athlete {athlete.Id}");
-        await _activityRepository.RemoveActivityAsync(activity, ct);
+        _ = await _activityRepository.RemoveActivityAsync(activity, ct);
     }
 
     private async Task<ActivityDetails> FetchActivityDetailsAsync(Activity activity, CancellationToken ct = default)
     {
-        var accessToken = await _athleteService.GetAccessTokenAsync(activity.AthleteId, ct);
-        var stravaActivity = await _stravaClient.GetActivityAsync(activity.StravaId, accessToken, ct);
+        string accessToken = await _athleteService.GetAccessTokenAsync(activity.AthleteId, ct);
+        Strava.Activity stravaActivity = await _stravaClient.GetActivityAsync(activity.StravaId, accessToken, ct);
 
-        var activityDetails = new ActivityDetails
+        ActivityDetails activityDetails = new()
         {
             Name = stravaActivity.Name ?? string.Empty,
             Description = stravaActivity.Description,

@@ -18,7 +18,7 @@ public class ChallengeService : IChallengeService
 
     public async Task<IReadOnlyList<Challenge>> GetChallengesAsync(CancellationToken ct = default)
     {
-        var challenges = await _challengeRepository.GetAllChallenges().ToListAsync(ct);
+        List<Challenge> challenges = await _challengeRepository.GetAllChallenges().ToListAsync(ct);
         return challenges;
     }
 

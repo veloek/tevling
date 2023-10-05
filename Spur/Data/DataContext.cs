@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Spur.Model;
 
 namespace Spur.Data;
@@ -19,18 +20,21 @@ public class DataContext : DbContext, IDataContext
     {
         // var folder = Environment.SpecialFolder.LocalApplicationData;
         // var path = Environment.GetFolderPath(folder);
-        var path = Environment.CurrentDirectory;
+        string path = Environment.CurrentDirectory;
         DbPath = Path.Join(path, "storage", "spur.db");
     }
 #pragma warning restore CS8618
 
     // The following configures EF to create a Sqlite database file in the
     // special "local" folder for your platform.
-    protected override void OnConfiguring(DbContextOptionsBuilder options)
-        => options.UseSqlite($"Data Source={DbPath}");
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
+        _ = optionsBuilder.UseSqlite($"Data Source={DbPath}");
+    }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+#pragma warning disable IDE0058 // Remove unnecessary expression value
         modelBuilder.Entity<Activity>()
             .HasOne(a => a.Athlete)
             .WithMany(a => a.Activities);
@@ -41,6 +45,7 @@ public class DataContext : DbContext, IDataContext
         modelBuilder.Entity<Athlete>()
             .HasMany(a => a.Challenges)
             .WithMany(c => c.Athletes);
+#pragma warning restore IDE0058 // Remove unnecessary expression value
     }
 
     public Task InitAsync()
@@ -51,43 +56,43 @@ public class DataContext : DbContext, IDataContext
 
     public async Task<Athlete> AddAthleteAsync(Athlete athlete, CancellationToken ct = default)
     {
-        var entry = await Athletes.AddAsync(athlete, ct);
-        await SaveChangesAsync(ct);
+        EntityEntry<Athlete> entry = await Athletes.AddAsync(athlete, ct);
+        _ = await SaveChangesAsync(ct);
         return entry.Entity;
     }
 
     public async Task<Athlete> UpdateAthleteAsync(Athlete athlete, CancellationToken ct = default)
     {
-        var entry = Athletes.Update(athlete);
-        await SaveChangesAsync(ct);
+        EntityEntry<Athlete> entry = Athletes.Update(athlete);
+        _ = await SaveChangesAsync(ct);
         return entry.Entity;
     }
 
     public async Task<Athlete> RemoveAthleteAsync(Athlete athlete, CancellationToken ct = default)
     {
-        var entry = Athletes.Remove(athlete);
-        await SaveChangesAsync(ct);
+        EntityEntry<Athlete> entry = Athletes.Remove(athlete);
+        _ = await SaveChangesAsync(ct);
         return entry.Entity;
     }
 
     public async Task<Activity> AddActivityAsync(Activity activity, CancellationToken ct = default)
     {
-        var entry = await Activities.AddAsync(activity, ct);
-        await SaveChangesAsync(ct);
+        EntityEntry<Activity> entry = await Activities.AddAsync(activity, ct);
+        _ = await SaveChangesAsync(ct);
         return entry.Entity;
     }
 
     public async Task<Activity> UpdateActivityAsync(Activity activity, CancellationToken ct = default)
     {
-        var entry = Activities.Update(activity);
-        await SaveChangesAsync(ct);
+        EntityEntry<Activity> entry = Activities.Update(activity);
+        _ = await SaveChangesAsync(ct);
         return entry.Entity;
     }
 
     public async Task<Activity> RemoveActivityAsync(Activity activity, CancellationToken ct = default)
     {
-        var entry = Activities.Remove(activity);
-        await SaveChangesAsync(ct);
+        EntityEntry<Activity> entry = Activities.Remove(activity);
+        _ = await SaveChangesAsync(ct);
         return entry.Entity;
     }
 }

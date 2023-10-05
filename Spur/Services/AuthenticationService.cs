@@ -16,16 +16,16 @@ public class AuthenticationService : IAuthenticationService
 
     public async Task LoginAsync(HttpContext httpContext, Athlete athlete, CancellationToken ct = default)
     {
-        var claims = new List<Claim>
+        List<Claim> claims = new()
         {
             new Claim(ClaimTypes.Name, athlete.Name),
             new Claim(ClaimTypes.NameIdentifier, athlete.Id.ToString()),
         };
 
-        var claimsIdentity = new ClaimsIdentity(
+        ClaimsIdentity claimsIdentity = new(
             claims, CookieAuthenticationDefaults.AuthenticationScheme);
 
-        var authProperties = new AuthenticationProperties
+        AuthenticationProperties authProperties = new()
         {
             AllowRefresh = true,
             ExpiresUtc = DateTimeOffset.UtcNow.AddHours(1),

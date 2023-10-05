@@ -18,7 +18,7 @@ public class AthleteRepository : IAthleteRepository
 
     public async Task<bool> AthleteExistsAsync(long stravaId, CancellationToken ct = default)
     {
-        var exists = await _dataContext.Athletes.AnyAsync(a => a.StravaId == stravaId, ct);
+        bool exists = await _dataContext.Athletes.AnyAsync(a => a.StravaId == stravaId, ct);
         return exists;
     }
 
@@ -26,8 +26,8 @@ public class AthleteRepository : IAthleteRepository
         string accessToken, string refreshToken, DateTimeOffset accessTokenExpiry,
         CancellationToken ct = default)
     {
-        var newAthlete = false;
-        var athlete = await GetAthleteByStravaIdAsync(stravaId, ct);
+        bool newAthlete = false;
+        Athlete? athlete = await GetAthleteByStravaIdAsync(stravaId, ct);
 
         if (athlete == null)
         {
@@ -51,7 +51,7 @@ public class AthleteRepository : IAthleteRepository
     public async Task<Athlete?> GetAthleteByStravaIdAsync(long stravaId,
         CancellationToken ct = default)
     {
-        var athlete = await _dataContext.Athletes
+        Athlete? athlete = await _dataContext.Athletes
             .FirstOrDefaultAsync(a => a.StravaId == stravaId, ct);
 
         return athlete;
@@ -60,7 +60,7 @@ public class AthleteRepository : IAthleteRepository
     public async Task<Athlete?> GetAthleteByIdAsync(long athleteId,
         CancellationToken ct = default)
     {
-        var athlete = await _dataContext.Athletes
+        Athlete? athlete = await _dataContext.Athletes
             .Include(a => a.Activities)
             .FirstOrDefaultAsync(a => a.Id == athleteId, ct);
 

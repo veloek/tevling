@@ -26,7 +26,7 @@ public class StravaClient : IStravaClient
         }
         catch
         {
-            var fallback = "https://www.strava.com/api/v3/";
+            string fallback = "https://www.strava.com/api/v3/";
             _logger.LogWarning($"Invalid BaseApiUri '{_stravaConfig.BaseApiUri}'. Using fallback '{fallback}'.");
             _httpClient.BaseAddress = new Uri(fallback);
         }
@@ -35,7 +35,7 @@ public class StravaClient : IStravaClient
     public async Task<TokenResponse> GetAccessTokenByAuthorizationCodeAsync(
         string authorizationCode, CancellationToken ct = default)
     {
-        var content = new FormUrlEncodedContent(new[]
+        FormUrlEncodedContent content = new(new[]
             {
                 new KeyValuePair<string, string?>("client_id", _stravaConfig.ClientId.ToString()),
                 new KeyValuePair<string, string?>("client_secret", _stravaConfig.ClientSecret),
@@ -43,13 +43,13 @@ public class StravaClient : IStravaClient
                 new KeyValuePair<string, string?>("code", authorizationCode),
             });
 
-        var response = await _httpClient.PostAsync(_stravaConfig.TokenUri, content, ct);
+        HttpResponseMessage response = await _httpClient.PostAsync(_stravaConfig.TokenUri, content, ct);
 
         // TODO: Handle error properly
-        response.EnsureSuccessStatusCode();
+        _ = response.EnsureSuccessStatusCode();
 
-        var responseBody = await response.Content.ReadAsStringAsync(ct);
-        var tokenResponse = JsonSerializer.Deserialize<TokenResponse>(responseBody) ??
+        string responseBody = await response.Content.ReadAsStringAsync(ct);
+        TokenResponse tokenResponse = JsonSerializer.Deserialize<TokenResponse>(responseBody) ??
             throw new Exception("Error deserializing token response");
 
         return tokenResponse;
@@ -58,7 +58,7 @@ public class StravaClient : IStravaClient
     public async Task<TokenResponse> GetAccessTokenByRefreshTokenAsync(
         string refreshToken, CancellationToken ct = default)
     {
-        var content = new FormUrlEncodedContent(new[]
+        FormUrlEncodedContent content = new(new[]
             {
                 new KeyValuePair<string, string?>("client_id", _stravaConfig.ClientId.ToString()),
                 new KeyValuePair<string, string?>("client_secret", _stravaConfig.ClientSecret),
@@ -66,13 +66,13 @@ public class StravaClient : IStravaClient
                 new KeyValuePair<string, string?>("refresh_token", refreshToken),
             });
 
-        var response = await _httpClient.PostAsync(_stravaConfig.TokenUri, content, ct);
+        HttpResponseMessage response = await _httpClient.PostAsync(_stravaConfig.TokenUri, content, ct);
 
         // TODO: Handle error properly
-        response.EnsureSuccessStatusCode();
+        _ = response.EnsureSuccessStatusCode();
 
-        var responseBody = await response.Content.ReadAsStringAsync(ct);
-        var tokenResponse = JsonSerializer.Deserialize<TokenResponse>(responseBody) ??
+        string responseBody = await response.Content.ReadAsStringAsync(ct);
+        TokenResponse tokenResponse = JsonSerializer.Deserialize<TokenResponse>(responseBody) ??
             throw new Exception("Error deserializing token response");
 
         return tokenResponse;
@@ -80,18 +80,18 @@ public class StravaClient : IStravaClient
 
     public async Task<Activity> GetActivityAsync(long stravaId, string accessToken, CancellationToken ct = default)
     {
-        var request = new HttpRequestMessage(HttpMethod.Get, $"activities/{stravaId}");
+        HttpRequestMessage request = new(HttpMethod.Get, $"activities/{stravaId}");
         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
 
-        var response = await _httpClient.SendAsync(request, ct);
+        HttpResponseMessage response = await _httpClient.SendAsync(request, ct);
 
         // TODO: Handle error properly
-        response.EnsureSuccessStatusCode();
+        _ = response.EnsureSuccessStatusCode();
 
-        var responseBody = await response.Content.ReadAsStringAsync(ct);
+        string responseBody = await response.Content.ReadAsStringAsync(ct);
         try
         {
-            var activity = JsonSerializer.Deserialize<Activity>(responseBody) ??
+            Activity activity = JsonSerializer.Deserialize<Activity>(responseBody) ??
                 throw new Exception("Error deserializing activity");
 
             return activity;

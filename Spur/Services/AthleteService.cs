@@ -26,7 +26,7 @@ public class AthleteService : IAthleteService
 
     public async Task<string> GetAccessTokenAsync(int athleteId, CancellationToken ct = default)
     {
-        var athlete = await _athleteRepository.GetAthleteByIdAsync(athleteId, ct) ??
+        Athlete athlete = await _athleteRepository.GetAthleteByIdAsync(athleteId, ct) ??
             throw new Exception("Unknown athlete id: " + athleteId);
 
         if ((athlete.AccessTokenExpiry - DateTimeOffset.Now) < TimeSpan.FromMinutes(1))
@@ -40,7 +40,7 @@ public class AthleteService : IAthleteService
 
     public async Task<Athlete> GetAthleteByIdAsync(int athleteId, CancellationToken ct = default)
     {
-        var athlete = await _athleteRepository.GetAthleteByIdAsync(athleteId, ct) ??
+        Athlete athlete = await _athleteRepository.GetAthleteByIdAsync(athleteId, ct) ??
             throw new Exception("Unknown athlete id: " + athleteId);
 
         return athlete;
@@ -48,7 +48,7 @@ public class AthleteService : IAthleteService
 
     private async Task<string> RefreshAccessToken(string refreshToken, CancellationToken ct)
     {
-        var tokenResponse = await _stravaClient.GetAccessTokenByRefreshTokenAsync(refreshToken, ct);
+        Strava.TokenResponse tokenResponse = await _stravaClient.GetAccessTokenByRefreshTokenAsync(refreshToken, ct);
 
         if (tokenResponse.AccessToken is null)
             throw new Exception("AccessToken is null");

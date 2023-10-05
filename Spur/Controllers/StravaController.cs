@@ -92,7 +92,7 @@ public class StravaController : ControllerBase
 
     private Task LogUnknownEvent(WebhookEvent @event)
     {
-        var json = JsonSerializer.Serialize(@event);
+        string json = JsonSerializer.Serialize(@event);
         _logger.LogWarning($"Received unknown event: {json}");
 
         return Task.CompletedTask;
@@ -112,11 +112,11 @@ public class StravaController : ControllerBase
     [Route("authorize")]
     public async Task<ActionResult> Authorize([FromQuery] string code, CancellationToken ct)
     {
-        var tokenResponse = await _stravaClient.GetAccessTokenByAuthorizationCodeAsync(code, ct);
+        TokenResponse tokenResponse = await _stravaClient.GetAccessTokenByAuthorizationCodeAsync(code, ct);
 
         if (tokenResponse.Athlete != null)
         {
-            var athlete = await _athleteRepository.UpsertAthleteAsync(
+            Model.Athlete athlete = await _athleteRepository.UpsertAthleteAsync(
                 stravaId: tokenResponse.Athlete.Id,
                 name: $"{tokenResponse.Athlete.Firstname} {tokenResponse.Athlete.Lastname}",
                 imgUrl: tokenResponse.Athlete.Profile,
