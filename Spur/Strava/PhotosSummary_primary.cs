@@ -17,6 +17,6 @@ public class PhotosSummary_primary
     public string? UniqueId { get; set; }
 
     [JsonPropertyName("urls")]
-    // An instance of string.
-    public string? Urls { get; set; }
+    // A key-value collection of photo URLs with size as key.
+    public Dictionary<string, string>? Urls { get; set; }
 }

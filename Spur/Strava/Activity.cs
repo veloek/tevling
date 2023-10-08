@@ -199,11 +199,11 @@ public class Activity
 
     [JsonPropertyName("splits_metric")]
     // The splits of this activity in metric units (for runs)
-    public Split? SplitsMetric { get; set; }
+    public Split[]? SplitsMetric { get; set; }
 
     [JsonPropertyName("splits_standard")]
     // The splits of this activity in imperial units (for runs)
-    public Split? SplitsStandard { get; set; }
+    public Split[]? SplitsStandard { get; set; }
 
     [JsonPropertyName("laps")]
     // A collection of Lap objects.
