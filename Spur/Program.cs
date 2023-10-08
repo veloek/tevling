@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.FeatureManagement;
 using Spur.Clients;
 using Spur.Data;
 using Spur.Services;
@@ -17,6 +18,7 @@ public class Program
         builder.Services.AddRazorPages();
         builder.Services.AddServerSideBlazor();
         builder.Services.AddControllers();
+        builder.Services.AddFeatureManagement();
 
         IConfigurationSection section = builder.Configuration.GetSection(nameof(StravaConfig));
         StravaConfig stravaConfig = section.Get<StravaConfig>() ?? new();
