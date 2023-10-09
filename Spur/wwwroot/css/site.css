@@ -73,45 +73,6 @@ html,body {
     padding: 0;
 }
 
-.spur-login {
-    width: 500px;
-    margin: auto;
-    padding: 50px;
-    text-align: center;
-}
-
-.login-title {
-    font-size: 32px;
-}
-
-.login-subtitle {
-    font-style: italic;
-    font-size: 14px;
-}
-
-.spur-logo {
-    margin: 2rem 0;
-}
-
-.login-button-container {
-    display: flex;
-    justify-content: center;
-    align-items: end;
-    column-gap: 15px;
-}
-
-button.strava-login {
-    background-image: url('../strava.png');
-    background-position: center;
-    background-size: 90%;
-    background-repeat: no-repeat;
-    border: solid black 1px;
-    border-radius: 3px;
-    padding: 8px 15px;
-    text-indent: -9999px;
-    width: 100px;
-}
-
 .button {
     box-shadow: 2px 3px 10px #2b2b2b;
     cursor: pointer;
