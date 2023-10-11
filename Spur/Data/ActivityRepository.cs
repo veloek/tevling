@@ -31,7 +31,8 @@ public class ActivityRepository : IActivityRepository
         Activity activity = await _dataContext.AddActivityAsync(new Activity
         {
             StravaId = stravaId,
-            AthleteId = athleteId
+            AthleteId = athleteId,
+            Details = new ActivityDetails(),
         }, ct);
 
         return activity;
