@@ -48,6 +48,13 @@ public class DataContext : DbContext, IDataContext
         modelBuilder.Entity<Athlete>()
             .HasMany(a => a.Challenges)
             .WithMany(c => c.Athletes);
+
+        modelBuilder.Entity<Athlete>()
+            .HasMany(a => a.Following)
+            .WithMany(a => a.Followers)
+            .UsingEntity<Following>(
+                e => e.HasOne<Athlete>().WithMany().HasForeignKey(e => e.FolloweeId),
+                e => e.HasOne<Athlete>().WithMany().HasForeignKey(e => e.FollowerId));
 #pragma warning restore IDE0058 // Remove unnecessary expression value
     }
 

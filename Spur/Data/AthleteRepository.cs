@@ -62,6 +62,8 @@ public class AthleteRepository : IAthleteRepository
     {
         Athlete? athlete = await _dataContext.Athletes
             .Include(a => a.Activities)
+            .Include(a => a.Following)
+            .Include(a => a.Followers)
             .FirstOrDefaultAsync(a => a.Id == athleteId, ct);
 
         return athlete;

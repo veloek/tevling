@@ -13,4 +13,12 @@ public class Athlete
 
     public ICollection<Activity>? Activities { get; set; }
     public ICollection<Challenge>? Challenges { get; set; }
+    public ICollection<Athlete>? Following { get; set; }
+    public ICollection<Athlete>? Followers { get; set; }
+
+    public bool IsFollowing(int athleteId)
+    {
+        bool? result = Following?.Select(athlete => athlete.Id).Contains(athleteId);
+        return result == true;
+    }
 }
