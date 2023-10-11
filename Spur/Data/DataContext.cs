@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Spur.Model;
 
 namespace Spur.Data;
@@ -40,7 +41,9 @@ public class DataContext : DbContext, IDataContext
             .WithMany(a => a.Activities);
 
         modelBuilder.Entity<Activity>()
-            .OwnsOne(a => a.Details);
+            .OwnsOne(a => a.Details)
+            .Property(d => d.StartDate)
+            .HasConversion(new DateTimeOffsetToBinaryConverter());
 
         modelBuilder.Entity<Athlete>()
             .HasMany(a => a.Challenges)
