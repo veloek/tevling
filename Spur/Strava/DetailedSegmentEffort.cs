@@ -83,11 +83,11 @@ public class DetailedSegmentEffort
 
     [JsonPropertyName("kom_rank")]
     // The rank of the effort on the global leaderboard if it belongs in the top 10 at the time of upload
-    public int KomRank { get; set; }
+    public int? KomRank { get; set; }
 
     [JsonPropertyName("pr_rank")]
     // The rank of the effort on the athlete's leaderboard if it belongs in the top 3 at the time of upload
-    public int PrRank { get; set; }
+    public int? PrRank { get; set; }
 
     [JsonPropertyName("hidden")]
     // Whether this effort should be hidden when viewed within an activity
