@@ -1,3 +1,4 @@
+using System.Runtime.CompilerServices;
 using Microsoft.EntityFrameworkCore;
 using Spur.Model;
 
@@ -7,13 +8,16 @@ public class ActivityRepository : IActivityRepository
 {
     private readonly ILogger<ActivityRepository> _logger;
     private readonly IDataContext _dataContext;
+    private readonly IAthleteRepository _athleteRepository;
 
     public ActivityRepository(
         ILogger<ActivityRepository> logger,
-        IDataContext dataContext)
+        IDataContext dataContext,
+        IAthleteRepository athleteRepository)
     {
         _logger = logger;
         _dataContext = dataContext;
+        _athleteRepository = athleteRepository;
     }
 
     public async Task<Activity?> GetActivityAsync(int athleteId, long stravaId,
@@ -23,6 +27,27 @@ public class ActivityRepository : IActivityRepository
             .FirstOrDefaultAsync(a => a.AthleteId == athleteId && a.StravaId == stravaId, ct);
 
         return activity;
+    }
+
+    public async IAsyncEnumerable<Activity> GetActivitiesForAthlete(int athleteId,
+        [EnumeratorCancellation] CancellationToken ct = default)
+    {
+        Athlete? athlete = await _athleteRepository.GetAthleteByIdAsync(athleteId, ct);
+
+        if (athlete is null)
+        {
+            throw new ArgumentException($"Athlete {athleteId} not found");
+        }
+
+        IAsyncEnumerable<Activity> activities = _dataContext.Activities
+            .Where(activity => activity.AthleteId == athlete.Id || athlete.Following!.Select(a => a.Id).Contains(activity.AthleteId))
+            .OrderByDescending(activity => activity.Details.StartDate)
+            .AsAsyncEnumerable();
+
+        await foreach (Activity activity in activities.WithCancellation(ct))
+        {
+            yield return activity;
+        }
     }
 
     public async Task<Activity> AddActivityAsync(int athleteId, long stravaId,

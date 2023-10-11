@@ -1,3 +1,5 @@
+using System.Reactive.Linq;
+using System.Reactive.Subjects;
 using Spur.Clients;
 using Spur.Data;
 using Spur.Model;
@@ -11,6 +13,7 @@ public class ActivityService : IActivityService
     private readonly IAthleteRepository _athleteRepository;
     private readonly IAthleteService _athleteService;
     private readonly IStravaClient _stravaClient;
+    private readonly Subject<ActivityFeed> _activityFeed = new();
 
     public ActivityService(
         ILogger<ActivityService> logger,
@@ -41,6 +44,8 @@ public class ActivityService : IActivityService
         activity.Details = activityDetails;
         activity = await _activityRepository.UpdateActivityAsync(activity, CancellationToken.None);
 
+        _activityFeed.OnNext(new ActivityFeed { Activity = activity, Action = FeedAction.Create });
+
         return activity;
     }
 
@@ -59,6 +64,8 @@ public class ActivityService : IActivityService
         _logger.LogInformation($"Updating activity ID {stravaActivityId} for athlete {athlete.Id}");
         activity.Details = activityDetails;
         activity = await _activityRepository.UpdateActivityAsync(activity, CancellationToken.None);
+
+        _activityFeed.OnNext(new ActivityFeed { Activity = activity, Action = FeedAction.Update });
 
         return activity;
     }
@@ -82,6 +89,33 @@ public class ActivityService : IActivityService
 
         _logger.LogInformation($"Deleting activity ID {stravaActivityId} for athlete {athlete.Id}");
         _ = await _activityRepository.RemoveActivityAsync(activity, ct);
+
+        _activityFeed.OnNext(new ActivityFeed { Activity = activity, Action = FeedAction.Delete });
+    }
+
+    public async Task<Activity[]> GetActivitiesForAthleteAsync(int athleteId, int pageSize, int page = 0,
+        CancellationToken ct = default)
+    {
+        Activity[] activities = await _activityRepository.GetActivitiesForAthlete(athleteId, ct)
+            .Skip(page * pageSize)
+            .Take(pageSize)
+            .ToArrayAsync(ct);
+
+        return activities;
+    }
+
+    public IObservable<ActivityFeed> GetActivityFeedForAthlete(int athleteId)
+    {
+        return Observable
+            .FromAsync(ct => _athleteRepository.GetAthleteByIdAsync(athleteId, ct))
+            .SelectMany(athlete =>
+            {
+                if (athlete is null)
+                {
+                    return Observable.Throw<ActivityFeed>(new ArgumentException($"Athlete {athleteId} not found"));
+                }
+                return _activityFeed.Where(a => a.Activity.AthleteId == athlete.Id || athlete.IsFollowing(a.Activity.AthleteId));
+            });
     }
 
     private async Task<ActivityDetails> FetchActivityDetailsAsync(Activity activity, CancellationToken ct = default)

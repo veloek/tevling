@@ -1,0 +1,102 @@
+@using Spur.Model
+
+@if (Activities.Length > 0)
+{
+    <ul>
+    @foreach (Activity activity in Activities)
+    {
+        <ActivityCard Activity=@activity></ActivityCard>
+    }
+    </ul>
+}
+else
+{
+    <p>No activities yet...</p>
+}
+
+@inject IActivityService ActivityService
+@inject ILogger<ActivityFeed> Logger
+@code {
+    [Parameter]
+    public int? AthleteId { get; set; }
+
+    private Activity[] Activities = Array.Empty<Activity>();
+    private List<Activity> _activities = new();
+    private IDisposable? _activityFeedSubscription;
+    private int _pageSize = 10;
+    private int _page = 0;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (AthleteId.HasValue)
+        {
+            await FetchActivities(AthleteId.Value);
+            SubscribeToActivityFeed(AthleteId.Value);
+        }
+    }
+
+    private async Task FetchActivities(int athleteId)
+    {
+        Activity[] activities = await ActivityService.GetActivitiesForAthleteAsync(athleteId, _pageSize, _page);
+        AddActivities(activities);
+    }
+
+    private void SubscribeToActivityFeed(int athleteId)
+    {
+        _activityFeedSubscription = ActivityService.GetActivityFeedForAthlete(athleteId)
+            .Catch<Model.ActivityFeed, Exception>(err =>
+            {
+                Logger.LogError(err, "Error in activity feed");
+                return Observable.Throw<Model.ActivityFeed>(err).Delay(TimeSpan.FromSeconds(1));
+            })
+            .Retry()
+            .Subscribe(feed =>
+            {
+                switch (feed.Action)
+                {
+                    case FeedAction.Create:
+                        AddActivities(feed.Activity);
+                        break;
+                    case FeedAction.Update:
+                        ReplaceActivity(feed.Activity);
+                        break;
+                    case FeedAction.Delete:
+                        RemoveActivity(feed.Activity);
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException("Unknown activity feed action: " + feed.Action);
+                }
+            });
+    }
+
+    private void AddActivities(params Activity[] activities)
+    {
+        _activities.AddRange(activities);
+
+        UpdateActivities();
+    }
+
+    private void ReplaceActivity(Activity activity)
+    {
+        _activities.RemoveAll(a => a.Id == activity.Id);
+        _activities.Add(activity);
+
+        UpdateActivities();
+    }
+
+    private void RemoveActivity(Activity activity)
+    {
+        _activities.RemoveAll(a => a.Id == activity.Id);
+
+        UpdateActivities();
+    }
+
+    private void UpdateActivities()
+    {
+        Activities = _activities
+            .OrderByDescending(activity => activity.Details.StartDate)
+            .ToArray();
+
+        StateHasChanged();
+    }
+}

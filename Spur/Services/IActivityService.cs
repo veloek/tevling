@@ -12,4 +12,9 @@ public interface IActivityService
 
     Task DeleteActivityAsync(long stravaAthleteId, long stravaActivityId,
         CancellationToken ct = default);
+
+    Task<Activity[]> GetActivitiesForAthleteAsync(int athleteId, int pageSize, int page = 0,
+        CancellationToken ct = default);
+
+    IObservable<ActivityFeed> GetActivityFeedForAthlete(int athleteId);
 }

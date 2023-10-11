@@ -5,6 +5,8 @@ public interface IActivityRepository
 {
     Task<Activity?> GetActivityAsync(int athleteId, long stravaId,
         CancellationToken ct = default);
+    IAsyncEnumerable<Activity> GetActivitiesForAthlete(int athleteId,
+        CancellationToken ct = default);
     Task<Activity> AddActivityAsync(int athleteId, long stravaId,
         CancellationToken ct = default);
     Task<Activity> UpdateActivityAsync(Activity activity,

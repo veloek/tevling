@@ -2,53 +2,36 @@
 
 @using Microsoft.AspNetCore.Identity
 @using System.Security.Claims
-@using Spur.Model
+
+<PageTitle>Spur</PageTitle>
+
+<h1>Hello, @Athlete?.Name</h1>
+
+<button class="button" @onclick="AddActivity">Add activity</button>
+
+<ActivityFeed AthleteId="@Athlete?.Id" />
 
 @inject AuthenticationStateProvider Auth
-
-<PageTitle>Home</PageTitle>
-
-<h1>Hello, @fullName!</h1>
-
-Welcome to your new app :-)
-
-<SurveyPrompt Title="How is Blazor working for you?" />
-
-@if (activities is not null)
-{
-    <h4>Activities:</h4>
-    <ul>
-    @foreach (var activity in activities)
-    {
-        <li>@activity.Id</li>
-    }
-    </ul>
-}
-else
-{
-    <p>No activities yet...</p>
-}
-
 @inject IAthleteService AthleteService
+@inject IActivityService ActivityService
 @code {
-    #pragma warning disable CS8618
-    [CascadingParameter]
-    private Task<AuthenticationState> AuthenticationStateTask { get; set; }
-    #pragma warning restore CS8618
-
-    private string fullName = string.Empty;
-    private Activity[]? activities;
+    private Athlete? Athlete;
 
     protected override async Task OnInitializedAsync()
     {
-        var authenticationState = await AuthenticationStateTask;
-        fullName = authenticationState.User.FindFirst(ClaimTypes.Name)?.Value ?? string.Empty;
+        AuthenticationState authenticationState = await Auth.GetAuthenticationStateAsync();
 
-        var athleteIdStr = authenticationState.User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? string.Empty;
-        if (int.TryParse(athleteIdStr, out var athleteId))
+        string athleteIdStr = authenticationState.User.FindFirst(
+            ClaimTypes.NameIdentifier)?.Value ?? string.Empty;
+
+        if (int.TryParse(athleteIdStr, out int athleteId))
         {
-            var athlete = await AthleteService.GetAthleteByIdAsync(athleteId);
-            activities = athlete.Activities?.ToArray();
+            Athlete = await AthleteService.GetAthleteByIdAsync(athleteId);
         }
+    }
+
+    private Task AddActivity()
+    {
+        return ActivityService.CreateActivityAsync(Athlete!.StravaId, Random.Shared.Next(1000, 10000));
     }
 }
