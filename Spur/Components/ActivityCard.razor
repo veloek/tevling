@@ -1,30 +1,49 @@
 @if (Activity is not null)
 {
-    <div class="activity-card">
-        <div class="activity-card-header">
-            <div class="athlete-photo">
-                <img src="@Activity.Athlete.ImgUrl" />
+    <li class="activity-card">
+        <div class="athlete-photo">
+            <img src="@Activity.Athlete.ImgUrl" width="50" />
+        </div>
+        <div class="activity-card-content">
+            <div class="activity-card-header">
+                <h5 class="athlete-name">@Activity.Athlete.Name</h5>
+                <p class="activity-time">@ActivityTime</p>
             </div>
-            <div class="activity-card-header-content">
-                <h5 class="activity-athlete">@Activity.Athlete.Name</h5>
-                <p class="activity-time">@Activity.Details.StartDate</p>
+            <div class="activity-card-body">
+                <h4 class="activity-title">@Activity.Details.Name - @Stats</h4>
+                <p class="activity-description">@Activity.Details.Description</p>
             </div>
         </div>
-        <div class="activity-card-body">
-            <div class="activity-icon">
-                @Activity.Details.Type
-            </div>
-            <div class="activity-card-body-content">
-                <h4 class="activity-title">@Activity.Details.Name</h4>
-                <p class="activity-title">@Activity.Details.Description</p>
-            </div>
-        </div>
-    </div>
+    </li>
 }
 
+@using System.Globalization
 @using Spur.Model
 
 @code {
     [Parameter]
     public Activity? Activity { get; set; }
+
+    private string? ActivityTime =>
+        Activity?.Details.StartDate.ToString("yyyy'-'MM'-'dd' 'HH':'mm':'ss", CultureInfo.InvariantCulture);
+
+    private string Stats
+    {
+        get
+        {
+            if (Activity is not null)
+            {
+                if (Activity.Details.DistanceInMeters > 0)
+                {
+                    float distanceInKm = Activity.Details.DistanceInMeters / 1000;
+                    return $"{distanceInKm.ToString("F1", CultureInfo.InvariantCulture)} km";
+                }
+
+                TimeSpan elapsedTime = TimeSpan.FromSeconds(Activity.Details.ElapsedTimeInSeconds);
+                return $"{elapsedTime.ToString("g")}";
+            }
+
+            return string.Empty;
+        }
+    }
 }
