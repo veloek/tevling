@@ -1,19 +1,18 @@
 ﻿@page "/"
 
-@using Microsoft.AspNetCore.Identity
 @using System.Security.Claims
+@using Microsoft.AspNetCore.Identity
 
 <PageTitle>Spur</PageTitle>
 
 <h1>Hello, @Athlete?.Name</h1>
 
-<button class="button" @onclick="AddActivity">Add activity</button>
+<DevTools Athlete="@Athlete" />
 
 <ActivityFeed AthleteId="@Athlete?.Id" />
 
 @inject AuthenticationStateProvider Auth
 @inject IAthleteService AthleteService
-@inject IActivityService ActivityService
 @code {
     private Athlete? Athlete;
 
@@ -28,10 +27,5 @@
         {
             Athlete = await AthleteService.GetAthleteByIdAsync(athleteId);
         }
-    }
-
-    private Task AddActivity()
-    {
-        return ActivityService.CreateActivityAsync(Athlete!.StravaId, Random.Shared.Next(1000, 10000));
     }
 }

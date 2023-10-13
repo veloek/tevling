@@ -1,0 +1,32 @@
+@using Microsoft.FeatureManagement;
+
+@if (@FeatureGate)
+{
+    <button class="button" @onclick="AddActivity">Add activity</button>
+}
+
+@inject IActivityService ActivityService
+@inject IFeatureManager FeatureManager
+@code {
+    [Parameter]
+    public Athlete? Athlete { get; set; }
+
+    private bool FeatureGate;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (await FeatureManager.IsEnabledAsync("DevController"))
+        {
+            FeatureGate = true;
+        }
+    }
+
+
+    private Task AddActivity()
+    {
+        if (Athlete is null)
+            throw new ArgumentException(nameof(Athlete));
+
+        return ActivityService.CreateActivityAsync(Athlete.StravaId, Random.Shared.Next(1000, 10000));
+    }
+}
