@@ -68,20 +68,24 @@ public class AthleteService : IAthleteService
 
         if ((athlete.AccessTokenExpiry - DateTimeOffset.Now) < TimeSpan.FromMinutes(1))
         {
-            athlete.AccessToken = await RefreshAccessToken(athlete.RefreshToken, ct);
+            (string accessToken, DateTimeOffset expiry) = await RefreshAccessToken(athlete.RefreshToken, ct);
+            athlete.AccessToken = accessToken;
+            athlete.AccessTokenExpiry = expiry;
             athlete = await _dataContext.UpdateAthleteAsync(athlete, ct);
         }
 
         return athlete.AccessToken;
     }
 
-    private async Task<string> RefreshAccessToken(string refreshToken, CancellationToken ct)
+    private async Task<(string accessToken, DateTimeOffset expiry)> RefreshAccessToken(
+        string refreshToken, CancellationToken ct)
     {
-        Strava.TokenResponse tokenResponse = await _stravaClient.GetAccessTokenByRefreshTokenAsync(refreshToken, ct);
+        Strava.TokenResponse tokenResponse = await _stravaClient
+            .GetAccessTokenByRefreshTokenAsync(refreshToken, ct);
 
         if (tokenResponse.AccessToken is null)
             throw new Exception("AccessToken is null");
 
-        return tokenResponse.AccessToken;
+        return (tokenResponse.AccessToken, DateTimeOffset.FromUnixTimeSeconds(tokenResponse.ExpiresAt));
     }
 }
