@@ -2,7 +2,7 @@ using Spur.Model;
 
 namespace Spur.Data;
 
-public interface IDataContext
+public interface IDataContext : IDisposable, IAsyncDisposable
 {
     IQueryable<Activity> Activities { get; }
     IQueryable<Athlete> Athletes { get; }
