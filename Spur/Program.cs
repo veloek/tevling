@@ -28,10 +28,7 @@ public class Program
             .AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
             .AddCookie();
 
-        builder.Services.AddDbContext<IDataContext, DataContext>()
-            .AddScoped<IAthleteRepository, AthleteRepository>()
-            .AddScoped<IActivityRepository, ActivityRepository>()
-            .AddScoped<IChallengeRepository, ChallengeRepository>();
+        builder.Services.AddDbContext<IDataContext, DataContext>();
 
         builder.Services.AddScoped<IActivityService, ActivityService>();
         builder.Services.AddScoped<IAthleteService, AthleteService>();

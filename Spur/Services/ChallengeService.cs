@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using Spur.Data;
 using Spur.Model;
 
@@ -6,19 +7,19 @@ namespace Spur.Services;
 public class ChallengeService : IChallengeService
 {
     private readonly ILogger<ChallengeService> _logger;
-    private readonly IChallengeRepository _challengeRepository;
+    private readonly IDataContext _dataContext;
 
     public ChallengeService(
         ILogger<ChallengeService> logger,
-        IChallengeRepository challengeRepository)
+        IDataContext dataContext)
     {
         _logger = logger;
-        _challengeRepository = challengeRepository;
+        _dataContext = dataContext;
     }
 
     public async Task<IReadOnlyList<Challenge>> GetChallengesAsync(CancellationToken ct = default)
     {
-        List<Challenge> challenges = await _challengeRepository.GetAllChallenges().ToListAsync(ct);
+        List<Challenge> challenges = await _dataContext.Challenges.ToListAsync(ct);
         return challenges;
     }
 

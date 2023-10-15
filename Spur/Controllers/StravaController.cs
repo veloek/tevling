@@ -1,7 +1,6 @@
 using System.Text.Json;
 using Microsoft.AspNetCore.Mvc;
 using Spur.Clients;
-using Spur.Data;
 using Spur.Services;
 using Spur.Strava;
 
@@ -18,7 +17,7 @@ public class StravaController : ControllerBase
     private readonly ILogger<StravaController> _logger;
     private readonly StravaConfig _stravaConfig;
     private readonly IStravaClient _stravaClient;
-    private readonly IAthleteRepository _athleteRepository;
+    private readonly IAthleteService _athleteService;
     private readonly IActivityService _activityService;
     private readonly IAuthenticationService _authenticationService;
 
@@ -26,14 +25,14 @@ public class StravaController : ControllerBase
         ILogger<StravaController> logger,
         StravaConfig stravaConfig,
         IStravaClient stravaClient,
-        IAthleteRepository athleteRepository,
+        IAthleteService athleteService,
         IActivityService activityService,
         IAuthenticationService authenticationService)
     {
         _logger = logger;
         _stravaConfig = stravaConfig;
         _stravaClient = stravaClient;
-        _athleteRepository = athleteRepository;
+        _athleteService = athleteService;
         _activityService = activityService;
         _authenticationService = authenticationService;
     }
@@ -116,7 +115,7 @@ public class StravaController : ControllerBase
 
         if (tokenResponse.Athlete != null)
         {
-            Model.Athlete athlete = await _athleteRepository.UpsertAthleteAsync(
+            Model.Athlete athlete = await _athleteService.UpsertAthleteAsync(
                 stravaId: tokenResponse.Athlete.Id,
                 name: $"{tokenResponse.Athlete.Firstname} {tokenResponse.Athlete.Lastname}",
                 imgUrl: tokenResponse.Athlete.Profile,
