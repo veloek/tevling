@@ -1,17 +1,19 @@
 @if (Activity is not null)
 {
-    <li class="activity-card">
-        <div class="athlete-photo">
-            <img src="@Activity.Athlete.ImgUrl" width="50" />
-        </div>
-        <div class="activity-card-content">
-            <div class="activity-card-header">
-                <h5 class="athlete-name">@Activity.Athlete.Name</h5>
-                <p class="activity-time">@ActivityTime</p>
+    <li class="list-group-item">
+        <div class="activity-card">
+            <div class="athlete-photo">
+                <img src="@Activity.Athlete.ImgUrl" width="50" />
             </div>
-            <div class="activity-card-body">
-                <h4 class="activity-title">@Activity.Details.Name - @Stats</h4>
-                <p class="activity-description">@Activity.Details.Description</p>
+            <div class="activity-card-content">
+                <div class="activity-card-header">
+                    <h5 class="athlete-name">@Activity.Athlete.Name</h5>
+                    <p class="activity-time">@ActivityTime</p>
+                </div>
+                <div class="activity-card-body">
+                    <h4 class="activity-title">@Activity.Details.Name - @Stats</h4>
+                    <p class="activity-description">@Activity.Details.Description</p>
+                </div>
             </div>
         </div>
     </li>

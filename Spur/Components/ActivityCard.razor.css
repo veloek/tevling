@@ -1,12 +1,7 @@
 .activity-card {
-    margin: 1em 0;
     display: flex;
     flex-direction: row;
     column-gap: 1em;
-    height: 70px;
-    border: solid #efefef 1px;
-    padding: 10px 10px;
-    box-shadow: 1px 2px 5px 1px #efefef;
 }
 
 .athlete-photo {
@@ -14,6 +9,7 @@
     align-items: center;
     border-radius: 50%;
     overflow: hidden;
+    height: fit-content;
 }
 
 .activity-card-content {
