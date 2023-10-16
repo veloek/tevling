@@ -1,0 +1,7 @@
+.avatar {
+    display: flex;
+    align-items: center;
+    border-radius: 50%;
+    overflow: hidden;
+    height: fit-content;
+}

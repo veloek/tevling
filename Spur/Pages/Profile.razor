@@ -1,0 +1,39 @@
+@page "/profile"
+
+<h1>@Athlete?.Name</h1>
+
+<button class="btn btn-primary" @onclick="Import">Import activities (30d)</button>
+
+@if (!string.IsNullOrEmpty(ImportResult))
+{
+    <p>@ImportResult</p>
+}
+
+@inject IAthleteService AthleteService
+@inject IActivityService ActivityService
+@code {
+    private Athlete? Athlete;
+    private string? ImportResult;
+
+    protected override async Task OnInitializedAsync()
+    {
+        Athlete = await AthleteService.GetCurrentAthlete();
+    }
+
+    public async Task Import()
+    {
+        if (Athlete is not null)
+        {
+            ImportResult = "Importing activities, please wait...";
+            try
+            {
+                await ActivityService.ImportActivitiesForAthlete(Athlete.Id, DateTimeOffset.Now - TimeSpan.FromDays(30));
+                ImportResult = "Import completed successfully";
+            }
+            catch (Exception ex)
+            {
+                ImportResult = $"Import failed with error: {ex.Message}";
+            }
+        }
+    }
+}

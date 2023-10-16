@@ -1,5 +1,7 @@
+using System.Collections.Specialized;
 using System.Net.Http.Headers;
 using System.Text.Json;
+using System.Web;
 using Spur.Strava;
 
 namespace Spur.Clients;
@@ -78,7 +80,8 @@ public class StravaClient : IStravaClient
         return tokenResponse;
     }
 
-    public async Task<Activity> GetActivityAsync(long stravaId, string accessToken, CancellationToken ct = default)
+    public async Task<Activity> GetActivityAsync(
+        long stravaId, string accessToken, CancellationToken ct = default)
     {
         HttpRequestMessage request = new(HttpMethod.Get, $"activities/{stravaId}");
         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
@@ -95,6 +98,43 @@ public class StravaClient : IStravaClient
                 throw new Exception("Error deserializing activity");
 
             return activity;
+        }
+        catch
+        {
+            _logger.LogInformation(responseBody);
+            throw;
+        }
+    }
+
+    public async Task<Activity[]> GetAthleteActivitiesAsync(
+        string accessToken,
+        DateTimeOffset? before = null,
+        DateTimeOffset? after = null,
+        int? page = null,
+        int? pageSize = null,
+        CancellationToken ct = default)
+    {
+        NameValueCollection query = HttpUtility.ParseQueryString(string.Empty);
+        if (before.HasValue) query["before"] = before.Value.ToUnixTimeSeconds().ToString();
+        if (after.HasValue) query["after"] = after.Value.ToUnixTimeSeconds().ToString();
+        if (page.HasValue) query["page"] = page.Value.ToString();
+        if (pageSize.HasValue) query["per_page"] = pageSize.Value.ToString();
+
+        HttpRequestMessage request = new(HttpMethod.Get, $"athlete/activities?{query}");
+        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+
+        HttpResponseMessage response = await _httpClient.SendAsync(request, ct);
+
+        // TODO: Handle error properly
+        _ = response.EnsureSuccessStatusCode();
+
+        string responseBody = await response.Content.ReadAsStringAsync(ct);
+        try
+        {
+            Activity[] activities = JsonSerializer.Deserialize<Activity[]>(responseBody) ??
+                throw new Exception("Error deserializing activities");
+
+            return activities;
         }
         catch
         {

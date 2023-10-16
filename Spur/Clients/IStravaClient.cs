@@ -12,4 +12,12 @@ public interface IStravaClient
 
     Task<Activity> GetActivityAsync(long stravaId, string accessToken,
         CancellationToken ct = default);
+
+    Task<Activity[]> GetAthleteActivitiesAsync(
+        string accessToken,
+        DateTimeOffset? before = null,
+        DateTimeOffset? after = null,
+        int? page = null,
+        int? pageSize = null,
+        CancellationToken ct = default);
 }

@@ -9,7 +9,7 @@
 
     <main>
         <div class="top-row px-4">
-            <a href="https://docs.microsoft.com/aspnet/" target="_blank">About</a>
+            <h4>@Athlete?.Name</h4><a href="/profile"><Avatar Url="@Athlete?.ImgUrl" Size="30" /></a>
         </div>
 
         <article class="content px-4">
@@ -17,3 +17,14 @@
         </article>
     </main>
 </div>
+
+@inject IAthleteService AthleteService
+
+@code {
+    private Athlete? Athlete;
+
+    protected override async Task OnInitializedAsync()
+    {
+        Athlete = await AthleteService.GetCurrentAthlete();
+    }
+}

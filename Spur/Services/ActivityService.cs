@@ -127,12 +127,72 @@ public class ActivityService : IActivityService
             });
     }
 
+    public async Task ImportActivitiesForAthlete(int athleteId, DateTimeOffset startTime,
+        CancellationToken ct = default)
+    {
+        string accessToken = await _athleteService.GetAccessTokenAsync(athleteId, ct);
+        int page = 1;
+        int pageSize = 3;
+        Strava.Activity[] activities;
+
+        _logger.LogInformation($"Importing activities for athlete {athleteId} starting from {startTime}");
+        do
+        {
+            _logger.LogInformation($"Fetching page {page} of import");
+
+            activities = await _stravaClient.GetAthleteActivitiesAsync(
+                accessToken, after: startTime, page: page, pageSize: pageSize, ct: ct);
+
+            foreach (Strava.Activity stravaActivity in activities)
+            {
+                Activity? existingActivity = await _dataContext.Activities
+                    .FirstOrDefaultAsync(a => a.StravaId == stravaActivity.Id);
+
+                Activity activity;
+                if (existingActivity is null)
+                {
+                    _logger.LogInformation($"Adding activity ID {stravaActivity.Id} for athlete {athleteId}");
+                    activity  = await _dataContext.AddActivityAsync(new Activity()
+                    {
+                        StravaId = stravaActivity.Id,
+                        AthleteId = athleteId,
+                        Details = MapActivityDetails(stravaActivity),
+                    }, ct);
+
+                    _activityFeed.OnNext(new ActivityFeed { Activity = activity, Action = FeedAction.Create });
+                }
+                else
+                {
+                    _logger.LogInformation($"Updating activity ID {stravaActivity.Id} for athlete {athleteId}");
+                    existingActivity.Details = MapActivityDetails(stravaActivity);
+                    activity = await _dataContext.UpdateActivityAsync(existingActivity, ct);
+
+                    _activityFeed.OnNext(new ActivityFeed { Activity = activity, Action = FeedAction.Update });
+                }
+            }
+
+            // Give the Strava API time to breathe before the next request
+            if (activities.Length == pageSize)
+            {
+                await Task.Delay(TimeSpan.FromSeconds(1), ct);
+            }
+
+        } while (activities.Length == pageSize && page++ <= 10); // Fail safe at 10 pages max
+    }
+
     private async Task<ActivityDetails> FetchActivityDetailsAsync(Activity activity, CancellationToken ct = default)
     {
         string accessToken = await _athleteService.GetAccessTokenAsync(activity.AthleteId, ct);
         Strava.Activity stravaActivity = await _stravaClient.GetActivityAsync(activity.StravaId, accessToken, ct);
 
-        ActivityDetails activityDetails = new()
+        ActivityDetails activityDetails = MapActivityDetails(stravaActivity);
+
+        return activityDetails;
+    }
+
+    private static ActivityDetails MapActivityDetails(Strava.Activity stravaActivity)
+    {
+        return new()
         {
             Name = stravaActivity.Name ?? string.Empty,
             Description = stravaActivity.Description,
@@ -145,7 +205,5 @@ public class ActivityService : IActivityService
             StartDate = stravaActivity.StartDate,
             Manual = stravaActivity.Manual,
         };
-
-        return activityDetails;
     }
 }

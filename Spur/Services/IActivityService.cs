@@ -17,4 +17,7 @@ public interface IActivityService
         CancellationToken ct = default);
 
     IObservable<ActivityFeed> GetActivityFeedForAthlete(int athleteId);
+
+    Task ImportActivitiesForAthlete(int athleteId, DateTimeOffset startTime,
+        CancellationToken ct = default);
 }

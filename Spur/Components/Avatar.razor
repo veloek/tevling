@@ -1,0 +1,10 @@
+<div class="avatar">
+    <img src="@Url" width="@Size" />
+</div>
+
+@code {
+    [Parameter]
+    public string? Url { get; set; }
+    [Parameter]
+    public int Size { get; set; }
+}

@@ -1,3 +1,5 @@
+using System.Security.Claims;
+using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Spur.Clients;
 using Spur.Data;
@@ -10,15 +12,18 @@ public class AthleteService : IAthleteService
     private readonly ILogger<AthleteService> _logger;
     private readonly IDataContext _dataContext;
     private readonly IStravaClient _stravaClient;
+    private readonly AuthenticationStateProvider _authenticationStateProvider;
 
     public AthleteService(
         ILogger<AthleteService> logger,
         IDataContext dataContext,
-        IStravaClient stravaClient)
+        IStravaClient stravaClient,
+        AuthenticationStateProvider authenticationStateProvider)
     {
         _logger = logger;
         _dataContext = dataContext;
         _stravaClient = stravaClient;
+        _authenticationStateProvider = authenticationStateProvider;
     }
 
     public async Task<Athlete> GetAthleteByIdAsync(int athleteId, CancellationToken ct = default)
@@ -30,6 +35,24 @@ public class AthleteService : IAthleteService
             .FirstOrDefaultAsync(a => a.Id == athleteId, ct) ??
             throw new Exception("Unknown athlete id: " + athleteId);
 
+        return athlete;
+    }
+
+    // TODO: Move this to some other (auth?) service
+    public async Task<Athlete?> GetCurrentAthlete(CancellationToken ct = default)
+    {
+        AuthenticationState authenticationState = await _authenticationStateProvider
+            .GetAuthenticationStateAsync();
+
+        string athleteIdStr = authenticationState.User.FindFirst(
+            ClaimTypes.NameIdentifier)?.Value ?? string.Empty;
+
+        Athlete? athlete = null;
+
+        if (int.TryParse(athleteIdStr, out int athleteId))
+        {
+            athlete = await GetAthleteByIdAsync(athleteId, ct);
+        }
         return athlete;
     }
 

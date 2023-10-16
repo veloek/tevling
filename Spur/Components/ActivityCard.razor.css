@@ -4,14 +4,6 @@
     column-gap: 1em;
 }
 
-.athlete-photo {
-    display: flex;
-    align-items: center;
-    border-radius: 50%;
-    overflow: hidden;
-    height: fit-content;
-}
-
 .activity-card-content {
     flex: 1;
     display: flex;
