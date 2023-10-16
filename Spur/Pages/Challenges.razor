@@ -1,10 +1,9 @@
-﻿@page "/fetchdata"
+﻿@page "/challenges"
 
-<PageTitle>Weather forecast</PageTitle>
+<PageTitle>Challenges</PageTitle>
 
 @using Spur.Model
 @using Spur.Services
-@inject IChallengeService ChallengeService
 
 <h1>Challenges</h1>
 
@@ -12,7 +11,7 @@
 
 @if (challenges == null)
 {
-    <p><button @onclick="FetchChallenges">Fetch challenges</button></p>
+    <p><button class="btn btn-primary" @onclick="FetchChallenges">Fetch challenges</button></p>
 }
 else
 {
@@ -37,6 +36,7 @@ else
     </table>
 }
 
+@inject IChallengeService ChallengeService
 @code {
     private IEnumerable<Challenge>? challenges;
 
