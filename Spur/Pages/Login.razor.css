@@ -36,3 +36,8 @@ button.strava-login {
     text-indent: -9999px;
     width: 100px;
 }
+
+.copyright {
+    font-size: 10px;
+    margin-top: 2rem;
+}
