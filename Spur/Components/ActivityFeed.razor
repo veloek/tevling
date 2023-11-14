@@ -1,18 +1,20 @@
-@using Spur.Model
-
+<ul class="list-group">
 @if (Activities.Length > 0)
 {
-    <ul class="list-group">
     @foreach (Activity activity in Activities)
     {
-        <ActivityCard Activity=@activity></ActivityCard>
+        <ActivityCard Activity="activity"></ActivityCard>
     }
-    </ul>
+
+    <InfiniteScrollingMarker LoadMore="LoadMore">
+        <LoadingTemplate>Loading...</LoadingTemplate>
+    </InfiniteScrollingMarker>
 }
 else
 {
-    <p>No activities yet...</p>
+    <li class="list-group-item">No activities yet...</li>
 }
+</ul>
 
 @inject IActivityService ActivityService
 @inject ILogger<ActivityFeed> Logger
@@ -23,7 +25,7 @@ else
     private Activity[] Activities = Array.Empty<Activity>();
     private List<Activity> _activities = new();
     private IDisposable? _activityFeedSubscription;
-    private int _pageSize = 100;
+    private int _pageSize = 10;
     private int _page = 0;
 
     protected override async Task OnInitializedAsync()
@@ -33,6 +35,14 @@ else
             await FetchActivities(AthleteId.Value);
             SubscribeToActivityFeed(AthleteId.Value);
         }
+    }
+
+    private async Task<bool> LoadMore(CancellationToken ct = default)
+    {
+        int prevCount = _activities.Count;
+        _page++;
+        await FetchActivities(AthleteId!.Value);
+        return _activities.Count > prevCount;
     }
 
     private async Task FetchActivities(int athleteId)
