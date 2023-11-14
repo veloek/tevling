@@ -44,10 +44,10 @@ else
     private void SubscribeToActivityFeed(int athleteId)
     {
         _activityFeedSubscription = ActivityService.GetActivityFeedForAthlete(athleteId)
-            .Catch<Model.ActivityFeed, Exception>(err =>
+            .Catch<ActivityFeedUpdate, Exception>(err =>
             {
                 Logger.LogError(err, "Error in activity feed");
-                return Observable.Throw<Model.ActivityFeed>(err).Delay(TimeSpan.FromSeconds(1));
+                return Observable.Throw<ActivityFeedUpdate>(err).Delay(TimeSpan.FromSeconds(1));
             })
             .Retry()
             .Subscribe(feed =>

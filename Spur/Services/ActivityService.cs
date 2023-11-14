@@ -13,7 +13,7 @@ public class ActivityService : IActivityService
     private readonly IDataContext _dataContext;
     private readonly IAthleteService _athleteService;
     private readonly IStravaClient _stravaClient;
-    private readonly Subject<ActivityFeed> _activityFeed = new();
+    private readonly Subject<ActivityFeedUpdate> _activityFeed = new();
 
     public ActivityService(
         ILogger<ActivityService> logger,
@@ -48,7 +48,7 @@ public class ActivityService : IActivityService
         activity.Details = activityDetails;
         activity = await _dataContext.UpdateActivityAsync(activity, CancellationToken.None);
 
-        _activityFeed.OnNext(new ActivityFeed { Activity = activity, Action = FeedAction.Create });
+        _activityFeed.OnNext(new ActivityFeedUpdate { Activity = activity, Action = FeedAction.Create });
 
         return activity;
     }
@@ -71,7 +71,7 @@ public class ActivityService : IActivityService
         activity.Details = activityDetails;
         activity = await _dataContext.UpdateActivityAsync(activity, CancellationToken.None);
 
-        _activityFeed.OnNext(new ActivityFeed { Activity = activity, Action = FeedAction.Update });
+        _activityFeed.OnNext(new ActivityFeedUpdate { Activity = activity, Action = FeedAction.Update });
 
         return activity;
     }
@@ -90,7 +90,7 @@ public class ActivityService : IActivityService
         _logger.LogInformation($"Deleting activity ID {stravaActivityId} for athlete {athlete.Id}");
         _ = await _dataContext.RemoveActivityAsync(activity, ct);
 
-        _activityFeed.OnNext(new ActivityFeed { Activity = activity, Action = FeedAction.Delete });
+        _activityFeed.OnNext(new ActivityFeedUpdate { Activity = activity, Action = FeedAction.Delete });
     }
 
     public async Task<Activity[]> GetActivitiesForAthleteAsync(int athleteId, int pageSize, int page = 0,
@@ -111,7 +111,7 @@ public class ActivityService : IActivityService
         return activities;
     }
 
-    public IObservable<ActivityFeed> GetActivityFeedForAthlete(int athleteId)
+    public IObservable<ActivityFeedUpdate> GetActivityFeedForAthlete(int athleteId)
     {
         return Observable
             .FromAsync(ct => _dataContext.Athletes
@@ -121,7 +121,7 @@ public class ActivityService : IActivityService
             {
                 if (athlete is null)
                 {
-                    return Observable.Throw<ActivityFeed>(new ArgumentException($"Athlete {athleteId} not found"));
+                    return Observable.Throw<ActivityFeedUpdate>(new ArgumentException($"Athlete {athleteId} not found"));
                 }
                 return _activityFeed.Where(a => a.Activity.AthleteId == athlete.Id || athlete.IsFollowing(a.Activity.AthleteId));
             });
@@ -159,7 +159,7 @@ public class ActivityService : IActivityService
                         Details = MapActivityDetails(stravaActivity),
                     }, ct);
 
-                    _activityFeed.OnNext(new ActivityFeed { Activity = activity, Action = FeedAction.Create });
+                    _activityFeed.OnNext(new ActivityFeedUpdate { Activity = activity, Action = FeedAction.Create });
                 }
                 else
                 {
@@ -167,7 +167,7 @@ public class ActivityService : IActivityService
                     existingActivity.Details = MapActivityDetails(stravaActivity);
                     activity = await _dataContext.UpdateActivityAsync(existingActivity, ct);
 
-                    _activityFeed.OnNext(new ActivityFeed { Activity = activity, Action = FeedAction.Update });
+                    _activityFeed.OnNext(new ActivityFeedUpdate { Activity = activity, Action = FeedAction.Update });
                 }
             }
 
