@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.FeatureManagement.Mvc;
 using Spur.Strava;
 
@@ -16,9 +17,10 @@ public class DevController : ControllerBase
 
     [HttpGet]
     [Route("strava/authorize")]
-    public IActionResult Authorize([FromQuery]string redirect_uri)
+    public IActionResult Authorize([FromQuery(Name = "redirect_uri")]string redirectUri)
     {
-        return Redirect(redirect_uri + "?code=code");
+        string uri = QueryHelpers.AddQueryString(redirectUri, "code", "code");
+        return Redirect(uri);
     }
 
     [HttpGet]

@@ -109,7 +109,7 @@ public class StravaController : ControllerBase
     /// <exception cref="Exception"></exception>
     [HttpGet]
     [Route("authorize")]
-    public async Task<ActionResult> Authorize([FromQuery] string code, CancellationToken ct)
+    public async Task<ActionResult> Authorize([FromQuery] string code, [FromQuery] string? returnUrl, CancellationToken ct)
     {
         TokenResponse tokenResponse = await _stravaClient.GetAccessTokenByAuthorizationCodeAsync(code, ct);
 
@@ -131,6 +131,6 @@ public class StravaController : ControllerBase
             throw new Exception("Missing athlete data");
         }
 
-        return LocalRedirect("/");
+        return LocalRedirect(returnUrl ?? "/");
     }
 }

@@ -1,7 +1,6 @@
 ﻿@page "/login"
 @layout LoginLayout
 @attribute [AllowAnonymous]
-@inject StravaConfig StravaConfig
 
 <PageTitle>Login</PageTitle>
 
@@ -13,10 +12,18 @@
         <div class="login-button-container">Login with <button class="button strava-login" type="submit">Strava</button>
         </div>
         <input type="hidden" name="client_id" value="@StravaConfig.ClientId" />
-        <input type="hidden" name="redirect_uri" value="@StravaConfig.RedirectUri" />
+        <input type="hidden" name="redirect_uri" value="@RedirectUri" />
         <input type="hidden" name="response_type" value="@StravaConfig.ResponseType" />
         <input type="hidden" name="approval_prompt" value="@StravaConfig.ApprovalPrompt" />
         <input type="hidden" name="scope" value="@StravaConfig.Scope" />
     </form>
     <p class="copyright">Copyright © 2022-2023 - Spur Contributors</p>
 </section>
+
+@inject StravaConfig StravaConfig
+@code {
+    [SupplyParameterFromQuery(Name = "returnUrl")]
+    private string ReturnUrl { get; set; } = string.Empty;
+
+    private string RedirectUri => $"{StravaConfig.RedirectUri}?returnUrl={Uri.EscapeDataString(ReturnUrl)}";
+}
