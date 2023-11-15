@@ -1,67 +1,60 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.FeatureManagement;
+using Spur;
 using Spur.Clients;
 using Spur.Data;
 using Spur.Services;
 
-namespace Spur;
+WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
-public class Program
-{
-    public static async Task Main(string[] args)
+// Add services to the container.
+builder.Services.AddRazorPages();
+builder.Services.AddRazorComponents().AddInteractiveServerComponents();
+builder.Services.AddControllers();
+builder.Services.AddFeatureManagement();
+
+IConfigurationSection section = builder.Configuration.GetSection(nameof(StravaConfig));
+StravaConfig stravaConfig = section.Get<StravaConfig>() ?? new();
+builder.Services.AddSingleton(stravaConfig);
+
+builder.Services
+    .AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(options =>
     {
-        WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
+        options.LoginPath = "/login";
+        options.ReturnUrlParameter = "returnUrl";
+    });
 
-#pragma warning disable IDE0058 // Remove unnecessary expression value
+builder.Services.AddDbContext<IDataContext, DataContext>();
 
-        // Add services to the container.
-        builder.Services.AddRazorPages();
-        builder.Services.AddServerSideBlazor();
-        builder.Services.AddControllers();
-        builder.Services.AddFeatureManagement();
+builder.Services.AddScoped<IActivityService, ActivityService>();
+builder.Services.AddScoped<IAthleteService, AthleteService>();
+builder.Services.AddScoped<IChallengeService, ChallengeService>();
 
-        IConfigurationSection section = builder.Configuration.GetSection(nameof(StravaConfig));
-        StravaConfig stravaConfig = section.Get<StravaConfig>() ?? new();
-        builder.Services.AddSingleton(stravaConfig);
+builder.Services.AddSingleton<IAuthenticationService, AuthenticationService>();
 
-        builder.Services
-            .AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-            .AddCookie();
+builder.Services.AddHttpClient<IStravaClient, StravaClient>();
 
-        builder.Services.AddDbContext<IDataContext, DataContext>();
+WebApplication app = builder.Build();
 
-        builder.Services.AddScoped<IActivityService, ActivityService>();
-        builder.Services.AddScoped<IAthleteService, AthleteService>();
-        builder.Services.AddScoped<IChallengeService, ChallengeService>();
-
-        builder.Services.AddSingleton<IAuthenticationService, AuthenticationService>();
-
-        builder.Services.AddHttpClient<IStravaClient, StravaClient>();
-
-        WebApplication app = builder.Build();
-
-        // Configure the HTTP request pipeline.
-        if (!app.Environment.IsDevelopment())
-        {
-            app.UseExceptionHandler("/Error");
-        }
-
-        app.UseStaticFiles();
-        app.UseRouting();
-
-        app.UseAuthentication();
-        app.UseAuthorization();
-
-        app.MapControllers();
-        app.MapBlazorHub();
-        app.MapFallbackToPage("/_Host");
-
-#pragma warning restore IDE0058 // Remove unnecessary expression value
-
-        using IServiceScope serviceScope = app.Services.CreateScope();
-        IDataContext dataContext = serviceScope.ServiceProvider.GetRequiredService<IDataContext>();
-        await dataContext.InitAsync();
-
-        await app.RunAsync();
-    }
+// Configure the HTTP request pipeline.
+if (!app.Environment.IsDevelopment())
+{
+    app.UseExceptionHandler("/Error");
 }
+
+app.UseStaticFiles();
+app.UseRouting();
+
+app.UseAuthentication();
+app.UseAuthorization();
+
+app.MapControllers();
+
+app.MapRazorComponents<App>().AddInteractiveServerRenderMode();
+
+using IServiceScope serviceScope = app.Services.CreateScope();
+IDataContext dataContext = serviceScope.ServiceProvider.GetRequiredService<IDataContext>();
+await dataContext.InitAsync();
+
+await app.RunAsync();

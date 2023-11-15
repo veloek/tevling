@@ -1,8 +1,7 @@
 ﻿@page "/login"
 @layout LoginLayout
 @attribute [AllowAnonymous]
-
-@using Microsoft.AspNetCore.Authentication
+@inject StravaConfig StravaConfig
 
 <PageTitle>Login</PageTitle>
 
@@ -21,27 +20,3 @@
     </form>
     <p class="copyright">Copyright © 2022-2023 - Spur Contributors</p>
 </section>
-
-@inject NavigationManager Navigation
-@inject StravaConfig StravaConfig
-@code {
-    #pragma warning disable CS8618
-    [CascadingParameter]
-    private Task<AuthenticationState> AuthenticationStateTask { get; set; }
-    #pragma warning restore CS8618
-
-    protected override async Task OnInitializedAsync()
-    {
-        var authenticationState = await AuthenticationStateTask;
-        var returnUrl = Navigation.ToBaseRelativePath(Navigation.Uri);
-
-        if ((authenticationState?.User?.Identity is null || !authenticationState.User.Identity.IsAuthenticated)
-        && !returnUrl.StartsWith("login"))
-        {
-            if (string.IsNullOrWhiteSpace(returnUrl))
-                Navigation.NavigateTo("login", true);
-            else
-                Navigation.NavigateTo($"login?returnUrl={returnUrl}", true);
-        }
-    }
-}
