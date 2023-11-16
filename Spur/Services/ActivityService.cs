@@ -110,6 +110,9 @@ public class ActivityService : IActivityService
             ?? throw new Exception($"Unknown athlete ID {athleteId}");
 
         Activity[] activities = await dataContext.Activities
+            .Include(a => a.Details)
+            .Include(a => a.Athlete)
+            .ThenInclude(a => a!.Following)
             .Where(activity => activity.AthleteId == athlete.Id || athlete.Following!.Select(a => a.Id).Contains(activity.AthleteId))
             .OrderByDescending(activity => activity.Details.StartDate)
             .Skip(page * pageSize)
