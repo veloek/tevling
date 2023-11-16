@@ -1,6 +1,7 @@
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Components.Authorization;
 using Spur.Model;
 
 namespace Spur.Services;
@@ -8,10 +9,17 @@ namespace Spur.Services;
 public class AuthenticationService : IAuthenticationService
 {
     private readonly ILogger<AuthenticationService> _logger;
+    private readonly AuthenticationStateProvider _authenticationStateProvider;
+    private readonly IAthleteService _athleteService;
 
-    public AuthenticationService(ILogger<AuthenticationService> logger)
+    public AuthenticationService(
+        ILogger<AuthenticationService> logger,
+        AuthenticationStateProvider authenticationStateProvider,
+        IAthleteService athleteService)
     {
         _logger = logger;
+        _authenticationStateProvider = authenticationStateProvider;
+        _athleteService = athleteService;
     }
 
     public async Task LoginAsync(HttpContext httpContext, Athlete athlete, CancellationToken ct = default)
@@ -39,5 +47,22 @@ public class AuthenticationService : IAuthenticationService
             authProperties);
 
         _logger.LogInformation($"User ID {athlete.Id} logged in at {DateTime.Now}.");
+    }
+
+    public async Task<Athlete?> GetCurrentAthleteAsync(CancellationToken ct = default)
+    {
+        AuthenticationState authenticationState = await _authenticationStateProvider
+            .GetAuthenticationStateAsync();
+
+        string athleteIdStr = authenticationState.User.FindFirst(
+            ClaimTypes.NameIdentifier)?.Value ?? string.Empty;
+
+        Athlete? athlete = null;
+
+        if (int.TryParse(athleteIdStr, out int athleteId))
+        {
+            athlete = await _athleteService.GetAthleteByIdAsync(athleteId, ct);
+        }
+        return athlete;
     }
 }

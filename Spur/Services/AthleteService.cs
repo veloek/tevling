@@ -1,5 +1,3 @@
-using System.Security.Claims;
-using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Spur.Clients;
 using Spur.Data;
@@ -12,18 +10,15 @@ public class AthleteService : IAthleteService
     private readonly ILogger<AthleteService> _logger;
     private readonly IDbContextFactory<DataContext> _dataContextFactory;
     private readonly IStravaClient _stravaClient;
-    private readonly AuthenticationStateProvider _authenticationStateProvider;
 
     public AthleteService(
         ILogger<AthleteService> logger,
         IDbContextFactory<DataContext> dataContextFactory,
-        IStravaClient stravaClient,
-        AuthenticationStateProvider authenticationStateProvider)
+        IStravaClient stravaClient)
     {
         _logger = logger;
         _dataContextFactory = dataContextFactory;
         _stravaClient = stravaClient;
-        _authenticationStateProvider = authenticationStateProvider;
     }
 
     public async Task<Athlete> GetAthleteByIdAsync(int athleteId, CancellationToken ct = default)
@@ -32,29 +27,12 @@ public class AthleteService : IAthleteService
 
         Athlete athlete = await dataContext.Athletes
             .Include(a => a.Activities)
+            .Include(a => a.Challenges)
             .Include(a => a.Following)
             .Include(a => a.Followers)
             .FirstOrDefaultAsync(a => a.Id == athleteId, ct) ??
             throw new Exception("Unknown athlete id: " + athleteId);
 
-        return athlete;
-    }
-
-    // TODO: Move this to some other (auth?) service
-    public async Task<Athlete?> GetCurrentAthlete(CancellationToken ct = default)
-    {
-        AuthenticationState authenticationState = await _authenticationStateProvider
-            .GetAuthenticationStateAsync();
-
-        string athleteIdStr = authenticationState.User.FindFirst(
-            ClaimTypes.NameIdentifier)?.Value ?? string.Empty;
-
-        Athlete? athlete = null;
-
-        if (int.TryParse(athleteIdStr, out int athleteId))
-        {
-            athlete = await GetAthleteByIdAsync(athleteId, ct);
-        }
         return athlete;
     }
 

@@ -1,4 +1,4 @@
-﻿@page "/"
+@page "/"
 
 <PageTitle>Spur</PageTitle>
 
@@ -6,12 +6,12 @@
 
 <ActivityFeed AthleteId="@Athlete?.Id" />
 
-@inject IAthleteService AthleteService
+@inject IAuthenticationService AuthenticationService
 @code {
     private Athlete? Athlete;
 
     protected override async Task OnInitializedAsync()
     {
-        Athlete = await AthleteService.GetCurrentAthlete();
+        Athlete = await AuthenticationService.GetCurrentAthleteAsync();
     }
 }

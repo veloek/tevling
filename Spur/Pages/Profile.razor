@@ -9,7 +9,7 @@
     <p>@ImportResult</p>
 }
 
-@inject IAthleteService AthleteService
+@inject IAuthenticationService AuthenticationService
 @inject IActivityService ActivityService
 @code {
     private Athlete? Athlete;
@@ -17,7 +17,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        Athlete = await AthleteService.GetCurrentAthlete();
+        Athlete = await AuthenticationService.GetCurrentAthleteAsync();
     }
 
     public async Task Import()
