@@ -16,7 +16,7 @@ public interface IActivityService
     Task<Activity[]> GetActivitiesForAthleteAsync(int athleteId, int pageSize, int page = 0,
         CancellationToken ct = default);
 
-    IObservable<ActivityFeedUpdate> GetActivityFeedForAthlete(int athleteId);
+    IObservable<FeedUpdate<Activity>> GetActivityFeedForAthlete(int athleteId);
 
     Task ImportActivitiesForAthlete(int athleteId, DateTimeOffset startTime,
         CancellationToken ct = default);

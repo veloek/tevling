@@ -54,10 +54,10 @@ else
     private void SubscribeToActivityFeed(int athleteId)
     {
         _activityFeedSubscription = ActivityService.GetActivityFeedForAthlete(athleteId)
-            .Catch<ActivityFeedUpdate, Exception>(err =>
+            .Catch<FeedUpdate<Activity>, Exception>(err =>
             {
                 Logger.LogError(err, "Error in activity feed");
-                return Observable.Throw<ActivityFeedUpdate>(err).Delay(TimeSpan.FromSeconds(1));
+                return Observable.Throw<FeedUpdate<Activity>>(err).Delay(TimeSpan.FromSeconds(1));
             })
             .Retry()
             .Subscribe(feed =>
@@ -65,13 +65,13 @@ else
                 switch (feed.Action)
                 {
                     case FeedAction.Create:
-                        AddActivities(feed.Activity);
+                        AddActivities(feed.Item);
                         break;
                     case FeedAction.Update:
-                        ReplaceActivity(feed.Activity);
+                        ReplaceActivity(feed.Item);
                         break;
                     case FeedAction.Delete:
-                        RemoveActivity(feed.Activity);
+                        RemoveActivity(feed.Item);
                         break;
                     default:
                         throw new ArgumentOutOfRangeException("Unknown activity feed action: " + feed.Action);
