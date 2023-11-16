@@ -41,7 +41,6 @@ public class ActivityService : IActivityService
         {
             StravaId = stravaActivityId,
             AthleteId = athlete.Id,
-            Details = new ActivityDetails(),
         }, ct);
 
         _logger.LogDebug($"Fetching activity details for activity ID {stravaActivityId}");

@@ -4,10 +4,10 @@
 {
     <li class="list-group-item">
         <div class="activity-card">
-            <Avatar Url="@Activity.Athlete.ImgUrl" Size="50" />
+            <Avatar Url="@Activity.Athlete?.ImgUrl" Size="50" />
             <div class="activity-card-content">
                 <div class="activity-card-header">
-                    <h5 class="athlete-name">@Activity.Athlete.Name</h5>
+                    <h5 class="athlete-name">@Activity.Athlete?.Name</h5>
                     <p class="activity-time">@ActivityTime</p>
                 </div>
                 <div class="activity-card-body">
