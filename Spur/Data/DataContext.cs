@@ -36,6 +36,22 @@ public class DataContext : DbContext
             .UsingEntity<Following>(
                 e => e.HasOne<Athlete>().WithMany().HasForeignKey(e => e.FolloweeId),
                 e => e.HasOne<Athlete>().WithMany().HasForeignKey(e => e.FollowerId));
+
+        modelBuilder.Entity<Challenge>()
+            .HasOne(c => c.CreatedBy);
+
+        // Store list of activity types as comma separated string
+        modelBuilder.Entity<Challenge>()
+            .Property(c => c.ActivityTypes)
+            .HasConversion(
+                a => string.Join(',', a),
+                a => a.Split(',', StringSplitOptions.RemoveEmptyEntries)
+                        .Select(t => Enum.Parse<Strava.ActivityType>(t))
+                        .ToArray(),
+                new ValueComparer<Strava.ActivityType[]>(
+                    (c1, c2) => c1 != null && c2 != null && c1.SequenceEqual(c2),
+                    c => c.Aggregate(0, (a, v) => HashCode.Combine(a, v.GetHashCode())),
+                    c => c.ToArray()));
     }
 
     public Task InitAsync()
@@ -82,6 +98,27 @@ public class DataContext : DbContext
     public async Task<Activity> RemoveActivityAsync(Activity activity, CancellationToken ct = default)
     {
         EntityEntry<Activity> entry = Activities.Remove(activity);
+        _ = await SaveChangesAsync(ct);
+        return entry.Entity;
+    }
+
+    public async Task<Challenge> AddChallengeAsync(Challenge challenge, CancellationToken ct = default)
+    {
+        EntityEntry<Challenge> entry = await Challenges.AddAsync(challenge, ct);
+        _ = await SaveChangesAsync(ct);
+        return entry.Entity;
+    }
+
+    public async Task<Challenge> UpdateChallengeAsync(Challenge challenge, CancellationToken ct = default)
+    {
+        EntityEntry<Challenge> entry = Challenges.Update(challenge);
+        _ = await SaveChangesAsync(ct);
+        return entry.Entity;
+    }
+
+    public async Task<Challenge> RemoveChallengeAsync(Challenge challenge, CancellationToken ct = default)
+    {
+        EntityEntry<Challenge> entry = Challenges.Remove(challenge);
         _ = await SaveChangesAsync(ct);
         return entry.Entity;
     }

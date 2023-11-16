@@ -1,19 +1,18 @@
+using System.ComponentModel.DataAnnotations;
 using Spur.Strava;
 
 namespace Spur.Model;
 
-public class Challenge
+public class ChallengeFormModel
 {
-    public int Id { get; set; }
+    [Required, MinLength(3)]
     public string Title { get; set; } = string.Empty;
+
     public string Description { get; set; } = string.Empty;
     public DateTimeOffset Start { get; set; }
     public DateTimeOffset End { get; set; }
     public ChallengeMeasurement Measurement { get; set; }
     public ActivityType[] ActivityTypes { get; set; } = [];
-    public DateTimeOffset Created { get; set; }
-
-    public int CreatedById { get; set; }
-    public Athlete? CreatedBy { get; set; }
-    public ICollection<Athlete>? Athletes { get; set; }
+    public int[] Athletes { get; set; } = [];
+    public int CreatedBy { get; set; }
 }

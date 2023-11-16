@@ -4,6 +4,14 @@ namespace Spur.Services;
 
 public interface IChallengeService
 {
-    Task<IReadOnlyList<Challenge>> GetChallengesAsync(CancellationToken ct = default);
-    Task<Challenge> CreateChallengeAsync(CancellationToken ct = default);
+    Task<Challenge[]> GetChallengesForAthleteAsync(int athleteId, CancellationToken ct = default);
+
+    IObservable<FeedUpdate<Challenge>> GetChallengeFeedForAthlete(int athleteId);
+
+    Task<Challenge> CreateChallengeAsync(ChallengeFormModel challenge, CancellationToken ct = default);
+
+    Task<Challenge> UpdateChallengeAsync(int challengeId, ChallengeFormModel editChallenge,
+        CancellationToken ct = default);
+
+    Task DeleteChallengeAsync(int challengeId, CancellationToken ct = default);
 }

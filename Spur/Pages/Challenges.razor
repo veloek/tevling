@@ -2,46 +2,146 @@
 
 <PageTitle>Challenges</PageTitle>
 
-@using Spur.Model
-@using Spur.Services
-
 <h1>Challenges</h1>
 
-<p>List all challenges</p>
+<a class="btn btn-primary" href="challenges/create">Add challenge</a>
 
-@if (challenges == null)
-{
-    <p><button class="btn btn-primary" @onclick="FetchChallenges">Fetch challenges</button></p>
-}
-else
-{
-    <table class="table">
-        <thead>
+<table class="table table-sm table-striped table-hover">
+    <thead>
+        <tr>
+            <th scope="col">Id</th>
+            <th scope="col"></th>
+            <th scope="col">Title</th>
+            <th scope="col">Description</th>
+            <th scope="col">Start</th>
+            <th scope="col">End</th>
+            <th scope="col">Measurement</th>
+            <th scope="col">Activities</th>
+            <th scope="col">Athletes</th>
+            <th scope="col"></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var challenge in ChallengeList)
+        {
             <tr>
-                <th>Id</th>
-                <th>Start</th>
-                <th>End</th>
+                <th scope="row">@challenge.Id</th>
+                @if (challenge.CreatedById == AthleteId)
+                {
+                    <td><a style="color:inherit" href="challenges/@challenge.Id/edit"><span class="oi oi-pencil" aria-hidden="true"></span></a></td>
+                }
+                else
+                {
+                    <td><span class="oi oi-pencil" aria-hidden="true"></span></td>
+                }
+                <td>@challenge.Title</td>
+                <td>@challenge.Description</td>
+                <td>@challenge.Start.DateTime.ToShortDateString()</td>
+                <td>@challenge.End.DateTime.ToShortDateString()</td>
+                <td>@challenge.Measurement</td>
+                <td>@string.Join(", ", challenge.ActivityTypes)</td>
+                <td>@challenge.Athletes?.Count</td>
+                @if (challenge.CreatedById == AthleteId)
+                {
+                    <td><span @onclick="() => DeleteChallenge(challenge)" class="oi oi-trash" aria-hidden="true" style="cursor:pointer"></span></td>
+                }
+                else
+                {
+                    <td><span class="oi oi-trash" aria-hidden="true"></span></td>
+                }
             </tr>
-        </thead>
-        <tbody>
-            @foreach (var challenge in challenges)
-            {
-                <tr>
-                    <td>@challenge.Id</td>
-                    <td>@challenge.Start.DateTime.ToShortDateString()</td>
-                    <td>@challenge.End.DateTime.ToShortDateString()</td>
-                </tr>
-            }
-        </tbody>
-    </table>
-}
+        }
+    </tbody>
+</table>
 
+@inject IAuthenticationService AuthenticationService
 @inject IChallengeService ChallengeService
+@inject IJSRuntime JSRuntime
+@inject ILogger<Challenges> Logger
 @code {
-    private IEnumerable<Challenge>? challenges;
+    private Challenge[] ChallengeList { get; set; } = [];
+    private List<Challenge> _challenges = new();
+    private int AthleteId { get; set; }
+    private IDisposable? _challengeFeedSubscription;
 
-    public async Task FetchChallenges()
+    protected override async Task OnInitializedAsync()
     {
-        challenges = await ChallengeService.GetChallengesAsync();
+        Athlete? athlete = await AuthenticationService.GetCurrentAthleteAsync();
+
+        if (athlete != null)
+        {
+            AthleteId = athlete.Id;
+            Challenge[] challenges = await ChallengeService.GetChallengesForAthleteAsync(AthleteId);
+            AddChallenges(challenges);
+            SubscribeToChallengeFeed(AthleteId);
+        }
+    }
+
+    private void SubscribeToChallengeFeed(int athleteId)
+    {
+        _challengeFeedSubscription = ChallengeService.GetChallengeFeedForAthlete(athleteId)
+            .Catch<FeedUpdate<Challenge>, Exception>(err =>
+            {
+                Logger.LogError(err, "Error in challenge feed");
+                return Observable.Throw<FeedUpdate<Challenge>>(err).Delay(TimeSpan.FromSeconds(1));
+            })
+            .Retry()
+            .Subscribe(feed =>
+            {
+                switch (feed.Action)
+                {
+                    case FeedAction.Create:
+                        AddChallenges(feed.Item);
+                        break;
+                    case FeedAction.Update:
+                        ReplaceChallenge(feed.Item);
+                        break;
+                    case FeedAction.Delete:
+                        RemoveChallenge(feed.Item);
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException("Unknown challenge feed action: " + feed.Action);
+                }
+            });
+    }
+
+    private void AddChallenges(params Challenge[] challenges)
+    {
+        _challenges.AddRange(challenges);
+
+        UpdateChallenges();
+    }
+
+    private void ReplaceChallenge(Challenge challenge)
+    {
+        _challenges.RemoveAll(c => c.Id == challenge.Id);
+        _challenges.Add(challenge);
+
+        UpdateChallenges();
+    }
+
+    private void RemoveChallenge(Challenge challenge)
+    {
+        _challenges.RemoveAll(c => c.Id == challenge.Id);
+
+        UpdateChallenges();
+    }
+
+    private void UpdateChallenges()
+    {
+        ChallengeList = _challenges
+            .OrderByDescending(c => c.Start)
+            .ToArray();
+
+        InvokeAsync(StateHasChanged);
+    }
+
+    private async Task DeleteChallenge(Challenge challenge)
+    {
+        bool confirmed = await JSRuntime.InvokeAsync<bool>("confirm", "Are you sure?");
+        if (confirmed)
+        {
+            await ChallengeService.DeleteChallengeAsync(challenge.Id);
+        }
     }
 }

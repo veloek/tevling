@@ -1,0 +1,150 @@
+<EditForm FormName="create-challenge" method="post" Model="@Challenge" OnValidSubmit="SubmitForm">
+    <div class="form-row">
+        <label>Title:
+            <InputText @bind-Value="@Challenge.Title" class="form-control" />
+        </label>
+    </div>
+    <div class="form-row">
+        <label>Description:
+            <InputTextArea @bind-Value="@Challenge.Description" class="form-control" />
+        </label>
+    </div>
+    <div class="form-row">
+        <label>Start:
+            <InputDate @bind-Value="@Challenge.Start" Type="InputDateType.Date"
+                max="@Challenge.End.ToString("yyyy-MM-dd")" class="form-control" />
+        </label>
+        <label>End:
+            <InputDate @bind-Value="@Challenge.End" Type="InputDateType.Date"
+                min="@Challenge.Start.ToString("yyyy-MM-dd")" class="form-control" />
+        </label>
+    </div>
+    <div class="form-row">
+        <label>Measurement:
+            <InputSelect @bind-Value="@Challenge.Measurement" class="form-control">
+                @foreach (var measurement in Enum.GetValues<ChallengeMeasurement>())
+                {
+                    <option value="@measurement">@measurement</option>
+                }
+            </InputSelect>
+        </label>
+    </div>
+    <div class="form-row">
+        <label>Activities:
+            <InputSelect @bind-Value="@Challenge.ActivityTypes" class="form-control" multiple>
+                @foreach (var activityType in Enum.GetValues<Strava.ActivityType>())
+                {
+                    <option value="@activityType">@activityType</option>
+                }
+            </InputSelect>
+        </label>
+    </div>
+    <div class="form-row">
+        <label>Athletes:
+            <InputSelect @bind-Value="@Challenge.Athletes" class="form-control" multiple>
+                <option value="@Athlete?.Id">@Athlete?.Name</option>
+
+                @foreach (var athlete in FollowingAthletes)
+                {
+                    <option value="@athlete.Id">@athlete.Name</option>
+                }
+            </InputSelect>
+        </label>
+    </div>
+
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="form-group">
+        <button class="btn btn-primary" type="submit">@SubmitLabel</button>
+        <button class="btn btn-secondary" type="button" @onclick="Cancel">@CancelLabel</button>
+    </div>
+</EditForm>
+
+
+@inject IAuthenticationService AuthenticationService
+@inject IChallengeService ChallengeService
+@code {
+    [Parameter]
+    public string SubmitLabel { get; set; } = "Submit";
+
+    [Parameter]
+    public string CancelLabel { get; set; } = "Cancel";
+
+    [Parameter]
+    public Action<ChallengeFormModel>? OnSubmit { get; set; }
+
+    [Parameter]
+    public Func<ChallengeFormModel, Task>? OnSubmitAsync { get; set; }
+
+    [Parameter]
+    public Action? OnCancel { get; set; }
+
+    [Parameter]
+    public Func<Task>? OnCancelAsync { get; set; }
+
+    [Parameter]
+    public Challenge? EditChallenge { get; set; }
+
+    [SupplyParameterFromForm]
+    public ChallengeFormModel Challenge { get; set; } = new();
+
+    private Athlete? Athlete { get; set; }
+    private Athlete[] FollowingAthletes { get; set; } = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        Athlete = await AuthenticationService.GetCurrentAthleteAsync();
+
+        if (Athlete != null)
+        {
+            FollowingAthletes = Athlete.Following?.ToArray()
+                ?? throw new Exception("Following is not initialized");
+        }
+    }
+
+    protected override void OnParametersSet()
+    {
+        if (EditChallenge != null)
+        {
+            Challenge.Title = EditChallenge.Title;
+            Challenge.Description = EditChallenge.Description;
+            Challenge.Start = EditChallenge.Start;
+            Challenge.End = EditChallenge.End;
+            Challenge.Measurement = EditChallenge.Measurement;
+            Challenge.ActivityTypes = EditChallenge.ActivityTypes;
+            Challenge.Athletes = EditChallenge.Athletes?.Select(a => a.Id).ToArray()
+                ?? throw new Exception("Athletes not initialized");
+            Challenge.CreatedBy = EditChallenge.CreatedById;
+        }
+        else
+        {
+            Challenge = new()
+                {
+                    Start = DateTimeOffset.Now,
+                    End = DateTimeOffset.Now.AddMonths(1),
+                    CreatedBy = Athlete?.Id ?? throw new Exception("Athlete is null"),
+                };
+        }
+    }
+
+    private async Task SubmitForm()
+    {
+        OnSubmit?.Invoke(Challenge);
+
+        if (OnSubmitAsync != null)
+        {
+            await OnSubmitAsync(Challenge);
+        }
+    }
+
+    private async Task Cancel()
+    {
+        OnCancel?.Invoke();
+
+        if (OnCancelAsync != null)
+        {
+            await OnCancelAsync();
+        }
+    }
+}

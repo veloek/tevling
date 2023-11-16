@@ -1,0 +1,57 @@
+﻿@page "/challenges/{id:int}/edit"
+
+<PageTitle>Challenge</PageTitle>
+
+@if (Challenge != null)
+{
+    <h1>Edit challenge: @Challenge.Title</h1>
+
+    <ChallengeForm EditChallenge="@Challenge" SubmitLabel="Edit" OnSubmitAsync="OnSubmit" OnCancelAsync="OnCancel" />
+}
+else
+{
+    <p class="error">404 - Challenge ID @Id not found.</p>
+}
+
+@inject IAuthenticationService AuthenticationService
+@inject IChallengeService ChallengeService
+@inject IJSRuntime JSRuntime
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    private Challenge? Challenge { get; set; }
+    private Athlete? _athlete;
+    private Challenge[] _challenges = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        _athlete = await AuthenticationService.GetCurrentAthleteAsync();
+
+        if (_athlete != null)
+        {
+            _challenges = await ChallengeService.GetChallengesForAthleteAsync(_athlete.Id);
+        }
+    }
+
+    protected override void OnParametersSet()
+    {
+        Challenge = _challenges.FirstOrDefault(c => c.Id == Id);
+    }
+
+    private async Task OnSubmit(ChallengeFormModel challenge)
+    {
+        await ChallengeService.UpdateChallengeAsync(Challenge!.Id, challenge);
+        await GoBack();
+    }
+
+    private async Task OnCancel()
+    {
+        await GoBack();
+    }
+
+    private async Task GoBack()
+    {
+        await JSRuntime.InvokeVoidAsync("history.go", -1);
+    }
+}
