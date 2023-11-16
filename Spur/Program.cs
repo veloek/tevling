@@ -32,9 +32,9 @@ builder.Services.AddDbContextFactory<DataContext>(optionsBuilder =>
     optionsBuilder.UseSqlite($"Data Source={dbPath}");
 });
 
-builder.Services.AddScoped<IActivityService, ActivityService>();
-builder.Services.AddScoped<IAthleteService, AthleteService>();
-builder.Services.AddScoped<IChallengeService, ChallengeService>();
+builder.Services.AddSingleton<IActivityService, ActivityService>();
+builder.Services.AddSingleton<IAthleteService, AthleteService>();
+builder.Services.AddSingleton<IChallengeService, ChallengeService>();
 
 builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
 
