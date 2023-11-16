@@ -22,7 +22,7 @@ else
     [Parameter]
     public int? AthleteId { get; set; }
 
-    private Activity[] Activities = Array.Empty<Activity>();
+    private Activity[] Activities = [];
     private List<Activity> _activities = new();
     private IDisposable? _activityFeedSubscription;
     private int _pageSize = 10;
