@@ -7,19 +7,21 @@ namespace Spur.Services;
 public class ChallengeService : IChallengeService
 {
     private readonly ILogger<ChallengeService> _logger;
-    private readonly IDataContext _dataContext;
+    private readonly IDbContextFactory<DataContext> _dataContextFactory;
 
     public ChallengeService(
         ILogger<ChallengeService> logger,
-        IDataContext dataContext)
+        IDbContextFactory<DataContext> dataContextFactory)
     {
         _logger = logger;
-        _dataContext = dataContext;
+        _dataContextFactory = dataContextFactory;
     }
 
     public async Task<IReadOnlyList<Challenge>> GetChallengesAsync(CancellationToken ct = default)
     {
-        List<Challenge> challenges = await _dataContext.Challenges.ToListAsync(ct);
+        using DataContext dataContext = await _dataContextFactory.CreateDbContextAsync(ct);
+
+        List<Challenge> challenges = await dataContext.Challenges.ToListAsync(ct);
         return challenges;
     }
 

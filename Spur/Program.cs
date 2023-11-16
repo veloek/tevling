@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.FeatureManagement;
 using Spur;
 using Spur.Clients;
@@ -25,7 +26,11 @@ builder.Services
         options.ReturnUrlParameter = "returnUrl";
     });
 
-builder.Services.AddDbContext<IDataContext, DataContext>();
+builder.Services.AddDbContextFactory<DataContext>(optionsBuilder =>
+{
+    string dbPath = Path.Join(Environment.CurrentDirectory, "storage", "spur.db");
+    optionsBuilder.UseSqlite($"Data Source={dbPath}");
+});
 
 builder.Services.AddScoped<IActivityService, ActivityService>();
 builder.Services.AddScoped<IAthleteService, AthleteService>();
@@ -54,7 +59,9 @@ app.MapControllers();
 app.MapRazorComponents<App>().AddInteractiveServerRenderMode();
 
 using IServiceScope serviceScope = app.Services.CreateScope();
-IDataContext dataContext = serviceScope.ServiceProvider.GetRequiredService<IDataContext>();
+IDbContextFactory<DataContext> dataContextFactory =
+    serviceScope.ServiceProvider.GetRequiredService<IDbContextFactory<DataContext>>();
+using DataContext dataContext = await dataContextFactory.CreateDbContextAsync();
 await dataContext.InitAsync();
 
 await app.RunAsync();

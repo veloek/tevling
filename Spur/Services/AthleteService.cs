@@ -10,25 +10,27 @@ namespace Spur.Services;
 public class AthleteService : IAthleteService
 {
     private readonly ILogger<AthleteService> _logger;
-    private readonly IDataContext _dataContext;
+    private readonly IDbContextFactory<DataContext> _dataContextFactory;
     private readonly IStravaClient _stravaClient;
     private readonly AuthenticationStateProvider _authenticationStateProvider;
 
     public AthleteService(
         ILogger<AthleteService> logger,
-        IDataContext dataContext,
+        IDbContextFactory<DataContext> dataContextFactory,
         IStravaClient stravaClient,
         AuthenticationStateProvider authenticationStateProvider)
     {
         _logger = logger;
-        _dataContext = dataContext;
+        _dataContextFactory = dataContextFactory;
         _stravaClient = stravaClient;
         _authenticationStateProvider = authenticationStateProvider;
     }
 
     public async Task<Athlete> GetAthleteByIdAsync(int athleteId, CancellationToken ct = default)
     {
-        Athlete athlete = await _dataContext.Athletes
+        using DataContext dataContext = await _dataContextFactory.CreateDbContextAsync(ct);
+
+        Athlete athlete = await dataContext.Athletes
             .Include(a => a.Activities)
             .Include(a => a.Following)
             .Include(a => a.Followers)
@@ -60,8 +62,10 @@ public class AthleteService : IAthleteService
         string accessToken, string refreshToken, DateTimeOffset accessTokenExpiry,
         CancellationToken ct = default)
     {
+        using DataContext dataContext = await _dataContextFactory.CreateDbContextAsync(ct);
+
         bool newAthlete = false;
-        Athlete? athlete = await _dataContext.Athletes
+        Athlete? athlete = await dataContext.Athletes
             .FirstOrDefaultAsync(a => a.StravaId == stravaId, ct);
 
         if (athlete == null)
@@ -77,15 +81,17 @@ public class AthleteService : IAthleteService
         athlete.AccessTokenExpiry = accessTokenExpiry;
 
         athlete = newAthlete
-            ? await _dataContext.AddAthleteAsync(athlete, ct)
-            : await _dataContext.UpdateAthleteAsync(athlete, ct);
+            ? await dataContext.AddAthleteAsync(athlete, ct)
+            : await dataContext.UpdateAthleteAsync(athlete, ct);
 
         return athlete;
     }
 
     public async Task<string> GetAccessTokenAsync(int athleteId, CancellationToken ct = default)
     {
-        Athlete athlete = await _dataContext.Athletes
+        using DataContext dataContext = await _dataContextFactory.CreateDbContextAsync(ct);
+
+        Athlete athlete = await dataContext.Athletes
             .FirstOrDefaultAsync(a => a.Id == athleteId, ct) ??
             throw new Exception("Unknown athlete id: " + athleteId);
 
@@ -94,7 +100,7 @@ public class AthleteService : IAthleteService
             (string accessToken, DateTimeOffset expiry) = await RefreshAccessToken(athlete.RefreshToken, ct);
             athlete.AccessToken = accessToken;
             athlete.AccessTokenExpiry = expiry;
-            athlete = await _dataContext.UpdateAthleteAsync(athlete, ct);
+            athlete = await dataContext.UpdateAthleteAsync(athlete, ct);
         }
 
         return athlete.AccessToken;

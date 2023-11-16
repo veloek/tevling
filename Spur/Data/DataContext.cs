@@ -5,37 +5,18 @@ using Spur.Model;
 
 namespace Spur.Data;
 
-public class DataContext : DbContext, IDataContext
+public class DataContext : DbContext
 {
     public DbSet<Activity> Activities { get; set; }
-    IQueryable<Activity> IDataContext.Activities => Activities;
     public DbSet<Athlete> Athletes { get; set; }
-    IQueryable<Athlete> IDataContext.Athletes => Athletes;
     public DbSet<Challenge> Challenges { get; set; }
-    IQueryable<Challenge> IDataContext.Challenges => Challenges;
 
-    public string DbPath { get; }
-
-#pragma warning disable CS8618
-    public DataContext()
+    public DataContext(DbContextOptions<DataContext> options) : base(options)
     {
-        // var folder = Environment.SpecialFolder.LocalApplicationData;
-        // var path = Environment.GetFolderPath(folder);
-        string path = Environment.CurrentDirectory;
-        DbPath = Path.Join(path, "storage", "spur.db");
-    }
-#pragma warning restore CS8618
-
-    // The following configures EF to create a Sqlite database file in the
-    // special "local" folder for your platform.
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    {
-        _ = optionsBuilder.UseSqlite($"Data Source={DbPath}");
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-#pragma warning disable IDE0058 // Remove unnecessary expression value
         modelBuilder.Entity<Activity>()
             .HasOne(a => a.Athlete)
             .WithMany(a => a.Activities);
@@ -55,7 +36,6 @@ public class DataContext : DbContext, IDataContext
             .UsingEntity<Following>(
                 e => e.HasOne<Athlete>().WithMany().HasForeignKey(e => e.FolloweeId),
                 e => e.HasOne<Athlete>().WithMany().HasForeignKey(e => e.FollowerId));
-#pragma warning restore IDE0058 // Remove unnecessary expression value
     }
 
     public Task InitAsync()
