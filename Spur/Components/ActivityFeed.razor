@@ -107,6 +107,6 @@ else
             .OrderByDescending(activity => activity.Details.StartDate)
             .ToArray();
 
-        StateHasChanged();
+        InvokeAsync(StateHasChanged);
     }
 }
