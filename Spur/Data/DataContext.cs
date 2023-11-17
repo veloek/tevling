@@ -11,9 +11,12 @@ public class DataContext : DbContext
     public DbSet<Athlete> Athletes { get; set; }
     public DbSet<Challenge> Challenges { get; set; }
 
+#pragma warning disable CS8618
     public DataContext(DbContextOptions<DataContext> options) : base(options)
     {
     }
+#pragma warning restore CS8618
+
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
