@@ -72,21 +72,28 @@
 
     public async ValueTask DisposeAsync()
     {
-        _cts.Dispose();
-
-        if (_instance != null)
+        try
         {
-            await _instance.InvokeVoidAsync("dispose");
-            await _instance.DisposeAsync();
-            _instance = null;
-        }
+            _cts.Dispose();
+            if (_instance != null)
+            {
+                await _instance.InvokeVoidAsync("dispose");
+                await _instance.DisposeAsync();
 
-        if (_module != null)
+                _instance = null;
+            }
+
+            if (_module != null)
+            {
+                await _module.DisposeAsync();
+                _module = null;
+            }
+
+            _objectReference?.Dispose();
+        }
+        catch (JSDisconnectedException)
         {
-            await _module.DisposeAsync();
-            _module = null;
+            // Ignore, happens during page reload.
         }
-
-        _objectReference?.Dispose();
     }
 }
