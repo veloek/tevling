@@ -49,7 +49,7 @@ public class AuthenticationService : IAuthenticationService
         _logger.LogInformation($"User ID {athlete.Id} logged in at {DateTime.Now}.");
     }
 
-    public async Task<Athlete?> GetCurrentAthleteAsync(CancellationToken ct = default)
+    public async Task<Athlete> GetCurrentAthleteAsync(CancellationToken ct = default)
     {
         AuthenticationState authenticationState = await _authenticationStateProvider
             .GetAuthenticationStateAsync();
@@ -63,6 +63,12 @@ public class AuthenticationService : IAuthenticationService
         {
             athlete = await _athleteService.GetAthleteByIdAsync(athleteId, ct);
         }
+
+        if (athlete is null)
+        {
+            throw new Exception("Logged in athlete not found");
+        }
+
         return athlete;
     }
 }

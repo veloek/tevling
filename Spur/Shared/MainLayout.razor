@@ -1,4 +1,4 @@
-﻿@inherits LayoutComponentBase
+@inherits LayoutComponentBase
 
 <PageTitle>Spur</PageTitle>
 
@@ -9,7 +9,9 @@
 
     <main>
         <div class="top-row px-4">
-            <h4>@Athlete?.Name</h4><a href="/profile"><Avatar Url="@Athlete?.ImgUrl" Size="30" /></a>
+            <h4>@Athlete.Name</h4><a href="/profile">
+                <Avatar Url="@Athlete.ImgUrl" Size="30" />
+            </a>
         </div>
 
         <article class="content px-4">
@@ -21,7 +23,7 @@
 @inject IAuthenticationService AuthenticationService
 
 @code {
-    private Athlete? Athlete;
+    private Athlete Athlete { get; set; } = default!;
 
     protected override async Task OnInitializedAsync()
     {

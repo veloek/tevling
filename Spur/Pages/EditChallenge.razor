@@ -1,4 +1,4 @@
-﻿@page "/challenges/{id:int}/edit"
+@page "/challenges/{id:int}/edit"
 
 <PageTitle>Challenge</PageTitle>
 
@@ -21,17 +21,14 @@ else
     public int Id { get; set; }
 
     private Challenge? Challenge { get; set; }
-    private Athlete? _athlete;
+    private Athlete _athlete = default!;
     private Challenge[] _challenges = [];
 
     protected override async Task OnInitializedAsync()
     {
         _athlete = await AuthenticationService.GetCurrentAthleteAsync();
 
-        if (_athlete != null)
-        {
-            _challenges = await ChallengeService.GetChallengesForAthleteAsync(_athlete.Id);
-        }
+        _challenges = await ChallengeService.GetChallengesForAthleteAsync(_athlete.Id);
     }
 
     protected override void OnParametersSet()

@@ -42,7 +42,7 @@
     <div class="form-row">
         <label>Athletes:
             <InputSelect @bind-Value="@Challenge.Athletes" class="form-control" multiple>
-                <option value="@Athlete?.Id">@Athlete?.Name</option>
+                <option value="@Athlete.Id">@Athlete.Name</option>
 
                 @foreach (var athlete in FollowingAthletes)
                 {
@@ -89,7 +89,7 @@
     [SupplyParameterFromForm]
     public ChallengeFormModel Challenge { get; set; } = new();
 
-    private Athlete? Athlete { get; set; }
+    private Athlete Athlete { get; set; } = default!;
     private Athlete[] FollowingAthletes { get; set; } = [];
 
     protected override async Task OnInitializedAsync()
@@ -123,7 +123,7 @@
                 {
                     Start = DateTimeOffset.Now,
                     End = DateTimeOffset.Now.AddMonths(1),
-                    CreatedBy = Athlete?.Id ?? throw new Exception("Athlete is null"),
+                    CreatedBy = Athlete.Id,
                 };
         }
     }

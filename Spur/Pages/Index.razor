@@ -4,11 +4,11 @@
 
 <DevTools Athlete="@Athlete" />
 
-<ActivityFeed AthleteId="@Athlete?.Id" />
+<ActivityFeed AthleteId="@Athlete.Id" />
 
 @inject IAuthenticationService AuthenticationService
 @code {
-    private Athlete? Athlete;
+    private Athlete Athlete { get; set; } = default!;
 
     protected override async Task OnInitializedAsync()
     {
