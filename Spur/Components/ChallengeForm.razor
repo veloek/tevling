@@ -90,32 +90,37 @@
     public ChallengeFormModel Challenge { get; set; } = new();
 
     private Athlete Athlete { get; set; } = default!;
-    private Athlete[] FollowingAthletes { get; set; } = [];
+    private List<Athlete> FollowingAthletes { get; set; } = [];
 
     protected override async Task OnInitializedAsync()
     {
         Athlete = await AuthenticationService.GetCurrentAthleteAsync();
 
-        if (Athlete != null)
-        {
-            FollowingAthletes = Athlete.Following?.ToArray()
-                ?? throw new Exception("Following is not initialized");
-        }
+        FollowingAthletes = Athlete.Following?.ToList()
+            ?? throw new Exception("Following is not initialized");
     }
 
     protected override void OnParametersSet()
     {
         if (EditChallenge != null)
         {
+            if (EditChallenge.Athletes is null)
+            {
+                throw new Exception("Athletes not initialized");
+            }
             Challenge.Title = EditChallenge.Title;
             Challenge.Description = EditChallenge.Description;
             Challenge.Start = EditChallenge.Start;
             Challenge.End = EditChallenge.End;
             Challenge.Measurement = EditChallenge.Measurement;
             Challenge.ActivityTypes = EditChallenge.ActivityTypes;
-            Challenge.Athletes = EditChallenge.Athletes?.Select(a => a.Id).ToArray()
-                ?? throw new Exception("Athletes not initialized");
+            Challenge.Athletes = EditChallenge.Athletes.Select(a => a.Id).ToArray();
             Challenge.CreatedBy = EditChallenge.CreatedById;
+
+            // Add athletes that are in the challenge, but not followed by the user.
+            FollowingAthletes.AddRange(EditChallenge.Athletes
+                .Where(a => !FollowingAthletes.Any(aa => a.Id == aa.Id)
+                    && a.Id != Athlete.Id));
         }
         else
         {
