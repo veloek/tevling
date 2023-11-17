@@ -1,4 +1,4 @@
-@page "/challenges/{id:int}/edit"
+﻿@page "/challenges/{id:int}/edit"
 
 <PageTitle>Challenge</PageTitle>
 
@@ -33,7 +33,9 @@ else
 
     protected override void OnParametersSet()
     {
-        Challenge = _challenges.FirstOrDefault(c => c.Id == Id);
+        Challenge = _challenges
+            .Where(c => c.CreatedById == _athlete.Id)
+            .FirstOrDefault(c => c.Id == Id);
     }
 
     private async Task OnSubmit(ChallengeFormModel challenge)
