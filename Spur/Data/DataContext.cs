@@ -10,6 +10,7 @@ public class DataContext : DbContext
     public DbSet<Activity> Activities { get; set; }
     public DbSet<Athlete> Athletes { get; set; }
     public DbSet<Challenge> Challenges { get; set; }
+    public DbSet<Following> Following { get; set; }
 
 #pragma warning disable CS8618
     public DataContext(DbContextOptions<DataContext> options) : base(options)
@@ -17,6 +18,10 @@ public class DataContext : DbContext
     }
 #pragma warning restore CS8618
 
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
+        optionsBuilder.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
+    }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -122,6 +127,20 @@ public class DataContext : DbContext
     public async Task<Challenge> RemoveChallengeAsync(Challenge challenge, CancellationToken ct = default)
     {
         EntityEntry<Challenge> entry = Challenges.Remove(challenge);
+        _ = await SaveChangesAsync(ct);
+        return entry.Entity;
+    }
+
+    public async Task<Following> AddFollowingAsync(Following following, CancellationToken ct = default)
+    {
+        EntityEntry<Following> entry = await Following.AddAsync(following, ct);
+        _ = await SaveChangesAsync(ct);
+        return entry.Entity;
+    }
+
+    public async Task<Following> RemoveFollowingAsync(Following following, CancellationToken ct = default)
+    {
+        EntityEntry<Following> entry = Following.Remove(following);
         _ = await SaveChangesAsync(ct);
         return entry.Entity;
     }

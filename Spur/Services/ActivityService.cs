@@ -43,6 +43,10 @@ public class ActivityService : IActivityService
             AthleteId = athlete.Id,
         }, ct);
 
+        // Since tracking is disabled by default, we need to manually load the athlete for it to
+        // be present in the feed update.
+        await dataContext.Entry(activity).Reference(a => a.Athlete).LoadAsync(ct);
+
         _logger.LogDebug($"Fetching activity details for activity ID {stravaActivityId}");
         ActivityDetails activityDetails = await FetchActivityDetailsAsync(activity, CancellationToken.None);
 

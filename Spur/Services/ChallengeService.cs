@@ -51,6 +51,7 @@ public class ChallengeService : IChallengeService
 
         List<Athlete> athletes = dataContext.Athletes
             .Where(a => newChallenge.Athletes.Contains(a.Id))
+            .AsTracking()
             .ToList();
 
         Challenge challenge = await dataContext.AddChallengeAsync(new Challenge()
@@ -78,6 +79,7 @@ public class ChallengeService : IChallengeService
 
         Challenge challenge = await dataContext.Challenges
             .Include(c => c.Athletes)
+            .AsTracking()
             .FirstOrDefaultAsync(c => c.Id == challengeId, ct) ??
             throw new Exception($"Unknown challenge ID {challengeId}");
 
@@ -85,6 +87,7 @@ public class ChallengeService : IChallengeService
 
         List<Athlete> athletes = dataContext.Athletes
             .Where(a => editChallenge.Athletes.Contains(a.Id))
+            .AsTracking()
             .ToList();
 
         challenge.Title = editChallenge.Title;

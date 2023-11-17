@@ -1,3 +1,5 @@
+using System.Reactive.Linq;
+using System.Reactive.Subjects;
 using Microsoft.EntityFrameworkCore;
 using Spur.Clients;
 using Spur.Data;
@@ -10,6 +12,7 @@ public class AthleteService : IAthleteService
     private readonly ILogger<AthleteService> _logger;
     private readonly IDbContextFactory<DataContext> _dataContextFactory;
     private readonly IStravaClient _stravaClient;
+    private readonly Subject<FeedUpdate<Athlete>> _athleteFeed = new();
 
     public AthleteService(
         ILogger<AthleteService> logger,
@@ -21,19 +24,32 @@ public class AthleteService : IAthleteService
         _stravaClient = stravaClient;
     }
 
-    public async Task<Athlete> GetAthleteByIdAsync(int athleteId, CancellationToken ct = default)
+    public async Task<Athlete?> GetAthleteByIdAsync(int athleteId, CancellationToken ct = default)
     {
         using DataContext dataContext = await _dataContextFactory.CreateDbContextAsync(ct);
 
-        Athlete athlete = await dataContext.Athletes
+        Athlete? athlete = await dataContext.Athletes
             .Include(a => a.Activities)
             .Include(a => a.Challenges)
             .Include(a => a.Following)
             .Include(a => a.Followers)
-            .FirstOrDefaultAsync(a => a.Id == athleteId, ct) ??
-            throw new Exception("Unknown athlete id: " + athleteId);
+            .AsSplitQuery()
+            .FirstOrDefaultAsync(a => a.Id == athleteId, ct);
 
         return athlete;
+    }
+
+    public async Task<Athlete[]> GetAthletesAsync(int pageSize, int page = 0, CancellationToken ct = default)
+    {
+        using DataContext dataContext = await _dataContextFactory.CreateDbContextAsync(ct);
+
+        Athlete[] athletes = await dataContext.Athletes
+            .OrderBy(athlete => athlete.Name)
+            .Skip(page * pageSize)
+            .Take(pageSize)
+            .ToArrayAsync(ct);
+
+        return athletes;
     }
 
     public async Task<Athlete> UpsertAthleteAsync(long stravaId, string name, string? imgUrl,
@@ -58,9 +74,44 @@ public class AthleteService : IAthleteService
         athlete.RefreshToken = refreshToken;
         athlete.AccessTokenExpiry = accessTokenExpiry;
 
-        athlete = newAthlete
-            ? await dataContext.AddAthleteAsync(athlete, ct)
-            : await dataContext.UpdateAthleteAsync(athlete, ct);
+        if (newAthlete)
+        {
+            athlete = await dataContext.AddAthleteAsync(athlete, ct);
+            _athleteFeed.OnNext(new FeedUpdate<Athlete> { Item = athlete, Action = FeedAction.Create });
+        }
+        else
+        {
+            athlete = await dataContext.UpdateAthleteAsync(athlete, ct);
+            _athleteFeed.OnNext(new FeedUpdate<Athlete> { Item = athlete, Action = FeedAction.Update });
+        }
+
+        return athlete;
+    }
+
+    public async Task<Athlete> ToggleFollowingAsync(Athlete athlete, int followingId, CancellationToken ct = default)
+    {
+        using DataContext dataContext = await _dataContextFactory.CreateDbContextAsync(ct);
+
+        Following? existing = await dataContext.Following
+            .Where(f => f.FollowerId == athlete.Id && f.FolloweeId == followingId)
+            .FirstOrDefaultAsync(ct);
+
+        if (existing is null)
+        {
+            await dataContext.AddFollowingAsync(new Following
+            {
+                FollowerId = athlete.Id,
+                FolloweeId = followingId,
+            }, ct);
+        }
+        else
+        {
+            await dataContext.RemoveFollowingAsync(existing, ct);
+        }
+
+        // Get an updated version of the athlete
+        athlete = await GetAthleteByIdAsync(athlete.Id, ct)
+            ?? throw new Exception("Athlete is gone");
 
         return athlete;
     }
@@ -94,5 +145,10 @@ public class AthleteService : IAthleteService
             throw new Exception("AccessToken is null");
 
         return (tokenResponse.AccessToken, DateTimeOffset.FromUnixTimeSeconds(tokenResponse.ExpiresAt));
+    }
+
+    public IObservable<FeedUpdate<Athlete>> GetAthleteFeed()
+    {
+        return _athleteFeed.AsObservable();
     }
 }
