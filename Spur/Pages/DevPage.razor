@@ -1,8 +1,6 @@
-@page "/"
+@page "/dev"
 
-<PageTitle>Spur</PageTitle>
-
-<ActivityFeed AthleteId="@Athlete.Id" />
+<DevTools Athlete="Athlete" />
 
 @inject IAuthenticationService AuthenticationService
 @code {

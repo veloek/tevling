@@ -3,9 +3,11 @@
 @if (@FeatureGate)
 {
     <button class="btn btn-primary" @onclick="AddActivity">Add activity</button>
+    <button class="btn btn-primary" @onclick="AddAthlete">Add athlete</button>
 }
 
 @inject IActivityService ActivityService
+@inject IAthleteService AthleteService
 @inject IFeatureManager FeatureManager
 @code {
     [Parameter]
@@ -28,5 +30,11 @@
             throw new ArgumentException(nameof(Athlete));
 
         return ActivityService.CreateActivityAsync(Athlete.StravaId, Random.Shared.Next(1000, 10000));
+    }
+
+    private Task AddAthlete()
+    {
+        int id = Random.Shared.Next(100, 1000);
+        return AthleteService.UpsertAthleteAsync(Random.Shared.Next(10000, 100000), $"Athlete {id}", null, "", "", default);
     }
 }
