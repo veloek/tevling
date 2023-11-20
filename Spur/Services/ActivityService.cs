@@ -79,6 +79,7 @@ public class ActivityService : IActivityService
             throw new Exception($"Unknown athlete ID {stravaAthleteId}");
 
         Activity activity = await dataContext.Activities
+            .Include(a => a.Athlete)
             .FirstOrDefaultAsync(a => a.AthleteId == athlete.Id && a.StravaId == stravaActivityId, ct) ??
             throw new Exception($"Unknown activity ID {stravaActivityId}");
 
