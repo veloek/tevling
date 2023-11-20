@@ -36,6 +36,17 @@ public class ActivityService : IActivityService
             .FirstOrDefaultAsync(a => a.StravaId == stravaAthleteId, ct) ??
             throw new Exception($"Unknown Strava athlete ID {stravaAthleteId}");
 
+        Activity? existingActivity = await dataContext.Activities
+            .Include(a => a.Details)
+            .Include(a => a.Athlete)
+            .FirstOrDefaultAsync(a => a.AthleteId == athlete.Id && a.StravaId == stravaActivityId, ct);
+
+        if (existingActivity != null)
+        {
+            _logger.LogInformation("Skipping duplicate activity with Strava ID: {StravaId}", stravaActivityId);
+            return existingActivity;
+        }
+
         _logger.LogInformation($"Adding Strava activity ID {stravaActivityId} for athlete ID {athlete.Id}");
         Activity activity = await dataContext.AddActivityAsync(new Activity()
         {
