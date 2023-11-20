@@ -1,28 +1,11 @@
-@using Microsoft.FeatureManagement;
-
-@if (@FeatureGate)
-{
-    <button class="btn btn-primary" @onclick="AddActivity">Add activity</button>
-    <button class="btn btn-primary" @onclick="AddAthlete">Add athlete</button>
-}
+<button class="btn btn-primary" @onclick="AddActivity">Add activity</button>
+<button class="btn btn-primary" @onclick="AddAthlete">Add athlete</button>
 
 @inject IActivityService ActivityService
 @inject IAthleteService AthleteService
-@inject IFeatureManager FeatureManager
 @code {
     [Parameter]
     public Athlete? Athlete { get; set; }
-
-    private bool FeatureGate;
-
-    protected override async Task OnInitializedAsync()
-    {
-        if (await FeatureManager.IsEnabledAsync("DevController"))
-        {
-            FeatureGate = true;
-        }
-    }
-
 
     private Task AddActivity()
     {

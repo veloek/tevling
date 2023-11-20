@@ -1,4 +1,6 @@
-﻿<div class="top-row ps-3 navbar navbar-dark">
+﻿@using Microsoft.FeatureManagement;
+
+<div class="top-row ps-3 navbar navbar-dark">
     <div class="container-fluid">
         <a class="navbar-brand" href="">Spur</a>
         <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
@@ -24,18 +26,31 @@
                 <span class="oi oi-people" aria-hidden="true"></span> Athletes
             </NavLink>
         </div>
+@if (@FeatureGate) {
         <div class="nav-item px-3">
             <NavLink class="nav-link" href="dev">
                 <span class="oi oi-cog" aria-hidden="true"></span> Dev
             </NavLink>
         </div>
+}
     </nav>
 </div>
 
+@inject IFeatureManager FeatureManager
 @code {
     private bool collapseNavMenu = true;
 
     private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
+
+    private bool FeatureGate;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (await FeatureManager.IsEnabledAsync("DevController"))
+        {
+            FeatureGate = true;
+        }
+    }
 
     private void ToggleNavMenu()
     {
