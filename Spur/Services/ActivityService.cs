@@ -34,9 +34,9 @@ public class ActivityService : IActivityService
 
         Athlete athlete = await dataContext.Athletes
             .FirstOrDefaultAsync(a => a.StravaId == stravaAthleteId, ct) ??
-            throw new Exception($"Unknown athlete ID {stravaAthleteId}");
+            throw new Exception($"Unknown Strava athlete ID {stravaAthleteId}");
 
-        _logger.LogInformation($"Adding activity ID {stravaActivityId} for athlete {athlete.Id}");
+        _logger.LogInformation($"Adding Strava activity ID {stravaActivityId} for athlete ID {athlete.Id}");
         Activity activity = await dataContext.AddActivityAsync(new Activity()
         {
             StravaId = stravaActivityId,
