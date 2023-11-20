@@ -72,39 +72,3 @@ html,body {
     margin: 0;
     padding: 0;
 }
-
-.spur-home {
-
-}
-
-.main-header {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    column-gap: 5px;
-    box-shadow: 1px 0 5px #2b2b2b;
-    padding: 3px;
-}
-
-.menu-button {
-    font-size: 30px;
-    background: none;
-    border: none;
-}
-
-.home-title {
-    flex: 1;
-}
-
-.profile-button {
-    background-position: center;
-    background-size: 100%;
-    background-repeat: no-repeat;
-    border: none;
-    border-radius: 3px;
-    padding: 8px 15px;
-    text-indent: -9999px;
-    width: 50px;
-    height: 50px;
-    border-radius: 25px;
-}
