@@ -67,6 +67,7 @@ public class DataContext : DbContext
     {
         EntityEntry<Athlete> entry = await Athletes.AddAsync(athlete, ct);
         _ = await SaveChangesAsync(ct);
+        entry.State = EntityState.Detached;
         return entry.Entity;
     }
 
@@ -74,6 +75,7 @@ public class DataContext : DbContext
     {
         EntityEntry<Athlete> entry = Athletes.Update(athlete);
         _ = await SaveChangesAsync(ct);
+        entry.State = EntityState.Detached;
         return entry.Entity;
     }
 
@@ -81,6 +83,7 @@ public class DataContext : DbContext
     {
         EntityEntry<Athlete> entry = Athletes.Remove(athlete);
         _ = await SaveChangesAsync(ct);
+        entry.State = EntityState.Detached;
         return entry.Entity;
     }
 
@@ -88,6 +91,7 @@ public class DataContext : DbContext
     {
         EntityEntry<Activity> entry = await Activities.AddAsync(activity, ct);
         _ = await SaveChangesAsync(ct);
+        entry.State = EntityState.Detached;
         return entry.Entity;
     }
 
@@ -95,6 +99,7 @@ public class DataContext : DbContext
     {
         EntityEntry<Activity> entry = Activities.Update(activity);
         _ = await SaveChangesAsync(ct);
+        entry.State = EntityState.Detached;
         return entry.Entity;
     }
 
@@ -102,6 +107,7 @@ public class DataContext : DbContext
     {
         EntityEntry<Activity> entry = Activities.Remove(activity);
         _ = await SaveChangesAsync(ct);
+        entry.State = EntityState.Detached;
         return entry.Entity;
     }
 
@@ -109,6 +115,7 @@ public class DataContext : DbContext
     {
         EntityEntry<Challenge> entry = await Challenges.AddAsync(challenge, ct);
         _ = await SaveChangesAsync(ct);
+        entry.State = EntityState.Detached;
         return entry.Entity;
     }
 
@@ -116,6 +123,7 @@ public class DataContext : DbContext
     {
         EntityEntry<Challenge> entry = Challenges.Update(challenge);
         _ = await SaveChangesAsync(ct);
+        entry.State = EntityState.Detached;
         return entry.Entity;
     }
 
@@ -123,6 +131,7 @@ public class DataContext : DbContext
     {
         EntityEntry<Challenge> entry = Challenges.Remove(challenge);
         _ = await SaveChangesAsync(ct);
+        entry.State = EntityState.Detached;
         return entry.Entity;
     }
 
@@ -130,6 +139,7 @@ public class DataContext : DbContext
     {
         EntityEntry<Following> entry = await Following.AddAsync(following, ct);
         _ = await SaveChangesAsync(ct);
+        entry.State = EntityState.Detached;
         return entry.Entity;
     }
 
@@ -137,6 +147,7 @@ public class DataContext : DbContext
     {
         EntityEntry<Following> entry = Following.Remove(following);
         _ = await SaveChangesAsync(ct);
+        entry.State = EntityState.Detached;
         return entry.Entity;
     }
 }
