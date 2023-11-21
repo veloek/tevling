@@ -21,7 +21,7 @@
                     <Avatar Url="@athlete.ImgUrl" Size="30" />
                 </td>
                 <td @onclick="() => ToggleFollowing(athlete.Id)">
-                    <span class="oi oi-heart" style="color:@(Athlete.IsFollowing(athlete.Id) == true ? "red" : "black")"
+                    <span class="oi oi-heart" style="color:@(Athlete.IsFollowing(athlete.Id) == true ? "red" : "gray")"
                         aria-hidden="true"></span>
                 </td>
                 <td>@athlete.Name</td>
