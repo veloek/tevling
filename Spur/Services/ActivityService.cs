@@ -37,7 +37,7 @@ public class ActivityService : IActivityService
             throw new Exception($"Unknown Strava athlete ID {stravaAthleteId}");
 
         Activity? existingActivity = await dataContext.Activities
-            .Include(a => a.Details)
+            .Include(a => a.Details) // TODO: Is this needed?
             .Include(a => a.Athlete)
             .FirstOrDefaultAsync(a => a.AthleteId == athlete.Id && a.StravaId == stravaActivityId, ct);
 
@@ -122,13 +122,14 @@ public class ActivityService : IActivityService
         Athlete athlete = await dataContext.Athletes
             .Include(a => a.Following)
             .FirstOrDefaultAsync(a => a.Id == athleteId, ct)
-            ?? throw new Exception($"Unknown athlete ID {athleteId}");
+                ?? throw new Exception($"Unknown athlete ID {athleteId}");
 
         Activity[] activities = await dataContext.Activities
-            .Include(a => a.Details)
+            .Include(a => a.Details) // TODO: Is this needed?
             .Include(a => a.Athlete)
             .ThenInclude(a => a!.Following)
-            .Where(activity => activity.AthleteId == athlete.Id || athlete.Following!.Select(a => a.Id).Contains(activity.AthleteId))
+            .Where(activity => activity.AthleteId == athlete.Id
+                            || athlete.Following!.Select(a => a.Id).Contains(activity.AthleteId))
             .OrderByDescending(activity => activity.Details.StartDate)
             .Skip(page * pageSize)
             .Take(pageSize)
@@ -187,7 +188,7 @@ public class ActivityService : IActivityService
                 if (existingActivity is null)
                 {
                     _logger.LogInformation($"Adding activity ID {stravaActivity.Id} for athlete {athleteId}");
-                    activity  = await dataContext.AddActivityAsync(new Activity()
+                    activity = await dataContext.AddActivityAsync(new Activity()
                     {
                         StravaId = stravaActivity.Id,
                         AthleteId = athleteId,
