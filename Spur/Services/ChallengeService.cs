@@ -20,27 +20,36 @@ public class ChallengeService : IChallengeService
         _dataContextFactory = dataContextFactory;
     }
 
-    public async Task<Challenge[]> GetChallengesForAthleteAsync(int athleteId, CancellationToken ct = default)
+    public async Task<Challenge?> GetChallengeByIdAsync(int challengeId, CancellationToken ct = default)
+    {
+        using DataContext dataContext = await _dataContextFactory.CreateDbContextAsync(ct);
+
+        Challenge? challenge = await dataContext.Challenges
+            .Include(c => c.Athletes)
+            .Include(c => c.CreatedBy)
+            .FirstOrDefaultAsync(c => c.Id == challengeId, ct);
+
+        return challenge;
+    }
+
+    public async Task<Challenge[]> GetChallengesAsync(int pageSize, int page = 0, CancellationToken ct = default)
     {
         using DataContext dataContext = await _dataContextFactory.CreateDbContextAsync(ct);
 
         Challenge[] challenges = await dataContext.Challenges
             .Include(challenge => challenge.Athletes)
             .Include(challenge => challenge.CreatedBy)
-            .Where(challenge =>
-                challenge.Athletes!.Any(athlete => athlete.Id == athleteId)
-                || challenge.CreatedById == athleteId)
+            .OrderByDescending(challenge => challenge.Start)
+            .Skip(pageSize * page)
+            .Take(pageSize)
             .ToArrayAsync(ct);
 
         return challenges;
     }
 
-    public IObservable<FeedUpdate<Challenge>> GetChallengeFeedForAthlete(int athleteId)
+    public IObservable<FeedUpdate<Challenge>> GetChallengeFeed()
     {
-        return _challengeFeed
-            .Where(update =>
-                update.Item.Athletes?.Any(athlete => athlete.Id == athleteId) == true
-                || update.Item.CreatedById == athleteId);
+        return _challengeFeed.AsObservable();
     }
 
     public async Task<Challenge> CreateChallengeAsync(ChallengeFormModel newChallenge, CancellationToken ct = default)
@@ -95,6 +104,26 @@ public class ChallengeService : IChallengeService
         return challenge;
     }
 
+    public async Task<Challenge> JoinChallengeAsync(int athleteId, int challengeId, CancellationToken ct = default)
+    {
+        Challenge challenge = await GetChallengeByIdAsync(challengeId, ct)
+            ?? throw new Exception($"Challenge ID {challengeId} not found");
+
+        using DataContext dataContext = await _dataContextFactory.CreateDbContextAsync(ct);
+
+        Athlete athlete = await dataContext.Athletes
+            .FirstOrDefaultAsync(a => a.Id == athleteId, ct)
+                ?? throw new Exception($"Athlete ID {athleteId} not found");
+
+        challenge.Athletes!.Add(athlete);
+
+        await dataContext.UpdateChallengeAsync(challenge, ct);
+
+        _challengeFeed.OnNext(new FeedUpdate<Challenge> { Item = challenge, Action = FeedAction.Update });
+
+        return challenge;
+    }
+
     public async Task DeleteChallengeAsync(int challengeId, CancellationToken ct = default)
     {
         using DataContext dataContext = await _dataContextFactory.CreateDbContextAsync(ct);
@@ -108,5 +137,49 @@ public class ChallengeService : IChallengeService
         _ = await dataContext.RemoveChallengeAsync(challenge, ct);
 
         _challengeFeed.OnNext(new FeedUpdate<Challenge> { Item = challenge, Action = FeedAction.Delete });
+    }
+
+    public async Task<ScoreBoard> GetScoreBoardAsync(int challengeId, CancellationToken ct = default)
+    {
+        using DataContext dataContext = await _dataContextFactory.CreateDbContextAsync(ct);
+
+        var result = await dataContext.Challenges
+            .Select(c => new
+            {
+                Challenge = c,
+                Athletes = c.Athletes!
+                    .Select(a => new
+                    {
+                        Athlete = a.Name,
+                        /*
+                        This is not possible with the SQLite provider as it has no support for the APPLY
+                        operation which EFCore requires.
+                        Leaving the idea in here in case a different DB provider is used in the future.
+
+                        Score = a.Activities!
+                            .Where(a => c.ActivityTypes.Length == 0 || c.ActivityTypes.Contains(a.Details.Type))
+                            .Select(a => a.Details.DistanceInMeters).Sum()
+                        */
+                        a.Activities
+                    })
+            })
+            .AsSplitQuery()
+            .FirstAsync(x => x.Challenge.Id == challengeId, ct);
+
+        AthleteScore[] scores = result.Athletes
+            .Select(a => new
+            {
+                a.Athlete,
+                Score = a.Activities!
+                    .Where(a => result.Challenge.ActivityTypes.Length == 0
+                            || result.Challenge.ActivityTypes.Contains(a.Details.Type))
+                    .Select(a => a.Details.DistanceInMeters)
+                    .Sum()
+            })
+            .OrderByDescending(s => s.Score)
+            .Select(a => new AthleteScore(a.Athlete, (int)a.Score))
+            .ToArray();
+
+        return new ScoreBoard(scores);
     }
 }

@@ -4,55 +4,29 @@
 
 <h1>Challenges</h1>
 
-<a class="btn btn-primary" href="challenges/create">Add challenge</a>
+<a class="btn btn-primary mb-2" href="challenges/create">Add challenge</a>
 
-<table class="table table-sm table-striped table-hover">
-    <thead>
-        <tr>
-            <th scope="col">Id</th>
-            <th scope="col"></th>
-            <th scope="col">Title</th>
-            <th scope="col">Description</th>
-            <th scope="col">Start</th>
-            <th scope="col">End</th>
-            <th scope="col">Measurement</th>
-            <th scope="col">Activities</th>
-            <th scope="col">Athletes</th>
-            <th scope="col"></th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var challenge in ChallengeList)
-        {
-            <tr>
-                <th scope="row">@challenge.Id</th>
-                @if (challenge.CreatedById == AthleteId)
-                {
-                    <td><a style="color:inherit" href="challenges/@challenge.Id/edit"><span class="oi oi-pencil" aria-hidden="true"></span></a></td>
-                }
-                else
-                {
-                    <td><span class="oi oi-pencil" aria-hidden="true"></span></td>
-                }
-                <td>@challenge.Title</td>
-                <td>@challenge.Description</td>
-                <td>@challenge.Start.DateTime.ToShortDateString()</td>
-                <td>@challenge.End.DateTime.ToShortDateString()</td>
-                <td>@challenge.Measurement</td>
-                <td>@string.Join(", ", challenge.ActivityTypes)</td>
-                <td>@challenge.Athletes?.Count</td>
-                @if (challenge.CreatedById == AthleteId)
-                {
-                    <td><span @onclick="() => DeleteChallenge(challenge)" class="oi oi-trash" aria-hidden="true" style="cursor:pointer"></span></td>
-                }
-                else
-                {
-                    <td><span class="oi oi-trash" aria-hidden="true"></span></td>
-                }
-            </tr>
-        }
-    </tbody>
-</table>
+<div class="d-flex mb-2">
+    <InputRadioGroup @bind-Value="ShowAllChallenges">
+        <div class="form-check form-check-inline">
+            <label>My challenges: <InputRadio Value="false" /></label>
+        </div>
+        <div class="form-check form-check-inline">
+            <label>All challenges: <InputRadio Value="true" /></label>
+        </div>
+    </InputRadioGroup>
+</div>
+
+<div class="d-flex flex-wrap cg-3 rg-3">
+    @foreach (var challenge in ChallengeList)
+    {
+        <ChallengeCard AthleteId="@AthleteId" Challenge="@challenge" />
+    }
+</div>
+
+<InfiniteScrollingMarker LoadMore="LoadMore">
+    <LoadingTemplate>Loading...</LoadingTemplate>
+</InfiniteScrollingMarker>
 
 @inject IAuthenticationService AuthenticationService
 @inject IChallengeService ChallengeService
@@ -62,7 +36,20 @@
     private Challenge[] ChallengeList { get; set; } = [];
     private List<Challenge> _challenges = new();
     private int AthleteId { get; set; }
+    private bool _showAllChallenges = true;
+    private bool ShowAllChallenges
+    {
+        get => _showAllChallenges;
+        set
+        {
+            _showAllChallenges = value;
+            UpdateChallenges();
+        }
+    }
+
     private IDisposable? _challengeFeedSubscription;
+    private int _pageSize = 10;
+    private int _page = 0;
 
     protected override async Task OnInitializedAsync()
     {
@@ -71,15 +58,28 @@
         if (athlete != null)
         {
             AthleteId = athlete.Id;
-            Challenge[] challenges = await ChallengeService.GetChallengesForAthleteAsync(AthleteId);
-            AddChallenges(challenges);
-            SubscribeToChallengeFeed(AthleteId);
+            await FetchChallenges();
+            SubscribeToChallengeFeed();
         }
     }
 
-    private void SubscribeToChallengeFeed(int athleteId)
+    private async Task<bool> LoadMore(CancellationToken ct = default)
     {
-        _challengeFeedSubscription = ChallengeService.GetChallengeFeedForAthlete(athleteId)
+        int prevCount = _challenges.Count;
+        _page++;
+        await FetchChallenges();
+        return _challenges.Count > prevCount;
+    }
+
+    private async Task FetchChallenges()
+    {
+        Challenge[] challenges = await ChallengeService.GetChallengesAsync(_pageSize, _page);
+        AddChallenges(challenges);
+    }
+
+    private void SubscribeToChallengeFeed()
+    {
+        _challengeFeedSubscription = ChallengeService.GetChallengeFeed()
             .Catch<FeedUpdate<Challenge>, Exception>(err =>
             {
                 Logger.LogError(err, "Error in challenge feed");
@@ -130,6 +130,9 @@
     private void UpdateChallenges()
     {
         ChallengeList = _challenges
+            .Where(c => ShowAllChallenges
+                || (c.Athletes?.Any(athlete => athlete.Id == AthleteId) == true
+                || c.CreatedById == AthleteId))
             .OrderByDescending(c => c.Start)
             .ToArray();
 

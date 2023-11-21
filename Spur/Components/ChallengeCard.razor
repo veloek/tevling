@@ -1,0 +1,106 @@
+@if (Challenge != null)
+{
+    <div class="card challenge-card">
+        @if (ShowScoreBoard && ScoreBoard != null)
+        {
+            <div class="card-header @HeaderStyle d-flex align-items-center cg-2">
+                <button class="btn btn-sm btn-secondary" @onclick="ToggleScoreBoard" style="margin-left: -0.5rem;">
+                    <span class="oi oi-action-undo" aria-hidden="true" />
+                </button>
+                <p class="challenge-title mb-0">@Challenge.Title</p>
+            </div>
+            <ul class="list-group list-group-flush list-group-numbered overflow-auto" style="max-height: 14rem">
+                @foreach (AthleteScore score in ScoreBoard.Scores)
+                {
+                    <li class="list-group-item d-flex justify-content-between">
+                        <h6>@score.Name</h6>
+                        <span>@score.Score</span>
+                    </li>
+                }
+            </ul>
+        }
+        else
+        {
+            <div class="card-header @HeaderStyle d-flex justify-content-between">
+                <span>@Challenge.Measurement</span>
+                <span>@Challenge.Start.ToString("MMM")-@Challenge.End.ToString("MMM")</span>
+            </div>
+            <div class="card-body d-flex flex-column justify-content-between rg-2">
+                <div>
+                    <h5 class="card-title">@Challenge.Title</h5>
+                    <p class="card-text">@Challenge.Description</p>
+                </div>
+                <div class="d-flex flex-wrap cg-1 rg-1">
+                    @if (Challenge.ActivityTypes.Length > 0)
+                    {
+                        foreach (Strava.ActivityType type in Challenge.ActivityTypes)
+                        {
+                            <span class="badge bg-primary">@ActivityTypeExt.ToString(type)</span>
+                        }
+                    }
+                    else
+                    {
+                        <span class="badge bg-primary">All activities</span>
+                    }
+                </div>
+                <p class="card-text">@Challenge.Athletes?.Count participants</p>
+            </div>
+            <div class="backside">
+                @if (Challenge.Athletes?.Count > 0)
+                {
+                    <button class="btn btn-primary" @onclick="ToggleScoreBoard">
+                        <span class="oi oi-list" aria-hidden="true" />
+                        Stats
+                    </button>
+                }
+                @if (Challenge.CreatedById == AthleteId)
+                {
+                    <a class="btn btn-secondary" href="challenges/@Challenge.Id/edit">
+                        <span class="oi oi-pencil" aria-hidden="true" />
+                        Edit
+                    </a>
+                }
+                @if (HasJoined == false)
+                {
+                    <button class="btn btn-info" @onclick="JoinChallenge">
+                        <span class="oi oi-heart" aria-hidden="true" />
+                        Join
+                    </button>
+                }
+            </div>
+        }
+    </div>
+}
+
+@inject IChallengeService ChallengeService
+@code {
+    [Parameter]
+    public int AthleteId { get; set; }
+
+    [Parameter]
+    public Challenge? Challenge { get; set; }
+
+    private ScoreBoard? ScoreBoard { get; set; }
+
+    private bool ShowScoreBoard { get; set; }
+
+    private bool? HasJoined => Challenge?.Athletes?.Any(a => a.Id == AthleteId);
+
+    private string HeaderStyle => HasJoined == true ? "border-primary" : "border-light";
+
+    private async Task ToggleScoreBoard()
+    {
+        if (Challenge != null && (ShowScoreBoard = !ShowScoreBoard))
+        {
+            ScoreBoard = await ChallengeService.GetScoreBoardAsync(Challenge.Id);
+        }
+    }
+
+    private async Task JoinChallenge()
+    {
+        if (Challenge != null)
+        {
+            Challenge = await ChallengeService.JoinChallengeAsync(AthleteId, Challenge.Id);
+        }
+    }
+}

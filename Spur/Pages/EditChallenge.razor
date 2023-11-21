@@ -27,15 +27,16 @@ else
     protected override async Task OnInitializedAsync()
     {
         _athlete = await AuthenticationService.GetCurrentAthleteAsync();
-
-        _challenges = await ChallengeService.GetChallengesForAthleteAsync(_athlete.Id);
     }
 
-    protected override void OnParametersSet()
+    protected override async Task OnParametersSetAsync()
     {
-        Challenge = _challenges
-            .Where(c => c.CreatedById == _athlete.Id)
-            .FirstOrDefault(c => c.Id == Id);
+        Challenge? challenge = await ChallengeService.GetChallengeByIdAsync(Id);
+
+        if (challenge?.CreatedById == _athlete.Id)
+        {
+            Challenge = challenge;
+        }
     }
 
     private async Task OnSubmit(ChallengeFormModel challenge)

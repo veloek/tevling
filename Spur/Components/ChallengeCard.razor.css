@@ -1,0 +1,31 @@
+.challenge-card {
+    width: 18rem;
+    height: fit-content;
+    position: relative;
+}
+
+.challenge-card > .backside {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    column-gap: 0.5rem;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.2s;
+    color: white;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+.challenge-card:hover > .backside {
+    opacity: 1;
+}
+
+.challenge-title {
+    overflow: hidden;
+    text-wrap: nowrap;
+    text-overflow: ellipsis;
+}
