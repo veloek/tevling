@@ -107,12 +107,17 @@ public class ChallengeService : IChallengeService
 
     public async Task<Challenge> JoinChallengeAsync(int athleteId, int challengeId, CancellationToken ct = default)
     {
-        Challenge challenge = await GetChallengeByIdAsync(challengeId, ct)
-            ?? throw new Exception($"Challenge ID {challengeId} not found");
-
         using DataContext dataContext = await _dataContextFactory.CreateDbContextAsync(ct);
 
+        Challenge challenge = await dataContext.Challenges
+            .Include(c => c.Athletes)
+            .Include(c => c.CreatedBy)
+            .AsTracking()
+            .FirstOrDefaultAsync(c => c.Id == challengeId, ct)
+                ?? throw new Exception($"Challenge ID {challengeId} not found");
+
         Athlete athlete = await dataContext.Athletes
+            .AsTracking()
             .FirstOrDefaultAsync(a => a.Id == athleteId, ct)
                 ?? throw new Exception($"Athlete ID {athleteId} not found");
 
