@@ -31,13 +31,19 @@
     </div>
     <div class="form-row mb-2">
         <label>Activities:
-            <InputSelect @bind-Value="@Challenge.ActivityTypes" class="form-control" multiple>
+            <InputSelect @bind-Value="@Challenge.ActivityTypes" class="form-control" multiple style="height: 15rem;">
                 @foreach (var activityType in Enum.GetValues<Strava.ActivityType>())
                 {
-                    <option value="@activityType">@activityType</option>
+                    <option value="@activityType">@ActivityTypeExt.ToString(activityType)</option>
                 }
             </InputSelect>
         </label>
+        <p class="d-flex flex-wrap cg-1 rg-1">
+            @foreach (Strava.ActivityType type in Challenge.ActivityTypes)
+            {
+                <span class="badge rounded-pill bg-primary">@ActivityTypeExt.ToString(type)</span>
+            }
+        </p>
     </div>
 
     <DataAnnotationsValidator />
