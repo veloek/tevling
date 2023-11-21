@@ -84,9 +84,10 @@ public class ChallengeService : IChallengeService
 
         Challenge challenge = await dataContext.Challenges
             .Include(c => c.Athletes)
+            .Include(c => c.CreatedBy)
             .AsTracking()
-            .FirstOrDefaultAsync(c => c.Id == challengeId, ct) ??
-            throw new Exception($"Unknown challenge ID {challengeId}");
+            .FirstOrDefaultAsync(c => c.Id == challengeId, ct)
+                ?? throw new Exception($"Unknown challenge ID {challengeId}");
 
         _logger.LogInformation("Updating challenge ID {ChallengeId}", challengeId);
 
@@ -130,8 +131,8 @@ public class ChallengeService : IChallengeService
 
         Challenge challenge = await dataContext.Challenges
             .Include(c => c.Athletes)
-            .FirstOrDefaultAsync(c => c.Id == challengeId, ct) ??
-            throw new Exception($"Unknown challenge ID {challengeId}");
+            .FirstOrDefaultAsync(c => c.Id == challengeId, ct)
+                ?? throw new Exception($"Unknown challenge ID {challengeId}");
 
         _logger.LogInformation($"Deleting challenge ID {challengeId}");
         _ = await dataContext.RemoveChallengeAsync(challenge, ct);
