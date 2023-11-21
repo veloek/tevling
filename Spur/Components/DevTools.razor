@@ -1,9 +1,11 @@
 <button class="btn btn-primary" @onclick="AddActivity">Add activity</button>
 <button class="btn btn-primary" @onclick="AddOthersActivity">Add activity for others</button>
 <button class="btn btn-primary" @onclick="AddAthlete">Add athlete</button>
+<button class="btn btn-primary" @onclick="AddOthersChallenge">Add challenge by others</button>
 
 @inject IActivityService ActivityService
 @inject IAthleteService AthleteService
+@inject IChallengeService ChallengeService
 @code {
     [Parameter]
     public Athlete? Athlete { get; set; }
@@ -39,5 +41,26 @@
     {
         int id = Random.Shared.Next(100, 1000);
         return AthleteService.UpsertAthleteAsync(Random.Shared.Next(10000, 100000), $"Athlete {id}", null, "", "", default);
+    }
+
+    private Task AddOthersChallenge()
+    {
+
+        int randomAthleteId;
+        do
+        {
+            randomAthleteId = _athletes[Random.Shared.Next(0, _athletes.Length)].Id;
+        } while (randomAthleteId == Athlete?.Id);
+
+        return ChallengeService.CreateChallengeAsync(new ChallengeFormModel
+        {
+            Title = $"Challenge {Random.Shared.Next(1000, 10000)}",
+            Description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+            Start = DateTimeOffset.Now,
+            End = DateTimeOffset.Now.AddMonths(1),
+            Measurement = ChallengeMeasurement.Distance,
+            ActivityTypes = [Strava.ActivityType.Run],
+            CreatedBy = randomAthleteId,
+        });
     }
 }
