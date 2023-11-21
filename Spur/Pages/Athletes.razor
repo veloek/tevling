@@ -7,9 +7,8 @@
 <table class="table table-striped table-hover">
     <thead>
         <tr>
-            <th scope="col">Id</th>
-            <th scope="col"></th>
-            <th scope="col"></th>
+            <th scope="col">Avatar</th>
+            <th scope="col">Follow</th>
             <th scope="col">Name</th>
             <th scope="col">Strava</th>
         </tr>
@@ -18,13 +17,12 @@
         @foreach (var athlete in AthleteList)
         {
             <tr>
-                <th scope="row">@athlete.Id</th>
+                <td>
+                    <Avatar Url="@athlete.ImgUrl" Size="30" />
+                </td>
                 <td @onclick="() => ToggleFollowing(athlete.Id)">
                     <span class="oi oi-heart" style="color:@(Athlete.IsFollowing(athlete.Id) == true ? "red" : "black")"
                         aria-hidden="true"></span>
-                </td>
-                <td>
-                    <Avatar Url="@athlete.ImgUrl" Size="30" />
                 </td>
                 <td>@athlete.Name</td>
                 <td><a href="https://strava.com/athletes/@athlete.StravaId">Profile</a></td>
