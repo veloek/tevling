@@ -1,15 +1,15 @@
 <EditForm FormName="create-challenge" method="post" Model="@Challenge" OnValidSubmit="SubmitForm">
-    <div class="form-row">
+    <div class="form-row mb-2">
         <label>Title:
-            <InputText @bind-Value="@Challenge.Title" class="form-control" />
+            <InputText @bind-Value="@Challenge.Title" size="50" class="form-control" />
         </label>
     </div>
-    <div class="form-row">
+    <div class="form-row mb-2">
         <label>Description:
-            <InputTextArea @bind-Value="@Challenge.Description" class="form-control" />
+            <InputTextArea @bind-Value="@Challenge.Description" cols="50" rows="4" class="form-control" />
         </label>
     </div>
-    <div class="form-row">
+    <div class="form-row mb-2">
         <label>Start:
             <InputDate @bind-Value="@Challenge.Start" Type="InputDateType.Date"
                 max="@Challenge.End.ToString("yyyy-MM-dd")" class="form-control" />
@@ -19,17 +19,17 @@
                 min="@Challenge.Start.ToString("yyyy-MM-dd")" class="form-control" />
         </label>
     </div>
-    <div class="form-row">
-        <label>Measurement:
-            <InputSelect @bind-Value="@Challenge.Measurement" class="form-control">
-                @foreach (var measurement in Enum.GetValues<ChallengeMeasurement>())
-                {
-                    <option value="@measurement">@measurement</option>
-                }
-            </InputSelect>
-        </label>
+    <div class="form-row mb-2">
+        <InputRadioGroup @bind-Value="@Challenge.Measurement">
+            @foreach (var measurement in Enum.GetValues<ChallengeMeasurement>())
+            {
+                <div class="form-check form-check-inline">
+                    <label>@measurement: <InputRadio Value="@measurement" /></label>
+                </div>
+            }
+        </InputRadioGroup>
     </div>
-    <div class="form-row">
+    <div class="form-row mb-2">
         <label>Activities:
             <InputSelect @bind-Value="@Challenge.ActivityTypes" class="form-control" multiple>
                 @foreach (var activityType in Enum.GetValues<Strava.ActivityType>())
@@ -39,7 +39,7 @@
             </InputSelect>
         </label>
     </div>
-    <div class="form-row">
+    <div class="form-row mb-2">
         <label>Athletes:
             <InputSelect @bind-Value="@Challenge.Athletes" class="form-control" multiple>
                 <option value="@Athlete.Id">@Athlete.Name</option>
