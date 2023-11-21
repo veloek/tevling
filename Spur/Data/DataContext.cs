@@ -55,19 +55,6 @@ public class DataContext : DbContext
         modelBuilder.Entity<Challenge>()
             .Property(c => c.End)
             .HasConversion(new DateTimeOffsetToBinaryConverter());
-
-        // Store list of activity types as comma separated string
-        modelBuilder.Entity<Challenge>()
-            .Property(c => c.ActivityTypes)
-            .HasConversion(
-                a => string.Join(',', a),
-                a => a.Split(',', StringSplitOptions.RemoveEmptyEntries)
-                        .Select(t => Enum.Parse<Strava.ActivityType>(t))
-                        .ToArray(),
-                new ValueComparer<Strava.ActivityType[]>(
-                    (c1, c2) => c1 != null && c2 != null && c1.SequenceEqual(c2),
-                    c => c.Aggregate(0, (a, v) => HashCode.Combine(a, v.GetHashCode())),
-                    c => c.ToArray()));
     }
 
     public Task InitAsync()
