@@ -39,18 +39,6 @@
             </InputSelect>
         </label>
     </div>
-    <div class="form-row mb-2">
-        <label>Athletes:
-            <InputSelect @bind-Value="@Challenge.Athletes" class="form-control" multiple>
-                <option value="@Athlete.Id">@Athlete.Name</option>
-
-                @foreach (var athlete in FollowingAthletes)
-                {
-                    <option value="@athlete.Id">@athlete.Name</option>
-                }
-            </InputSelect>
-        </label>
-    </div>
 
     <DataAnnotationsValidator />
     <ValidationSummary />
@@ -90,14 +78,10 @@
     public ChallengeFormModel Challenge { get; set; } = new();
 
     private Athlete Athlete { get; set; } = default!;
-    private List<Athlete> FollowingAthletes { get; set; } = [];
 
     protected override async Task OnInitializedAsync()
     {
         Athlete = await AuthenticationService.GetCurrentAthleteAsync();
-
-        FollowingAthletes = Athlete.Following?.ToList()
-            ?? throw new Exception("Following is not initialized");
     }
 
     protected override void OnParametersSet()
@@ -114,13 +98,7 @@
             Challenge.End = EditChallenge.End;
             Challenge.Measurement = EditChallenge.Measurement;
             Challenge.ActivityTypes = EditChallenge.ActivityTypes;
-            Challenge.Athletes = EditChallenge.Athletes.Select(a => a.Id).ToArray();
             Challenge.CreatedBy = EditChallenge.CreatedById;
-
-            // Add athletes that are in the challenge, but not followed by the user.
-            FollowingAthletes.AddRange(EditChallenge.Athletes
-                .Where(a => !FollowingAthletes.Any(aa => a.Id == aa.Id)
-                    && a.Id != Athlete.Id));
         }
         else
         {

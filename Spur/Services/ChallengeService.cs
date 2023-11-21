@@ -49,11 +49,6 @@ public class ChallengeService : IChallengeService
 
         _logger.LogInformation("Adding new challenge: {Title}", newChallenge.Title);
 
-        List<Athlete> athletes = dataContext.Athletes
-            .Where(a => newChallenge.Athletes.Contains(a.Id))
-            .AsTracking()
-            .ToList();
-
         Challenge challenge = await dataContext.AddChallengeAsync(new Challenge()
         {
             Title = newChallenge.Title,
@@ -64,8 +59,9 @@ public class ChallengeService : IChallengeService
             ActivityTypes = newChallenge.ActivityTypes,
             Created = DateTimeOffset.Now,
             CreatedById = newChallenge.CreatedBy,
-            Athletes = athletes,
         }, ct);
+
+        await dataContext.Entry(challenge).Collection(c => c.Athletes!).LoadAsync(ct);
 
         _challengeFeed.OnNext(new FeedUpdate<Challenge> { Item = challenge, Action = FeedAction.Create });
 
@@ -85,18 +81,12 @@ public class ChallengeService : IChallengeService
 
         _logger.LogInformation("Updating challenge ID {ChallengeId}", challengeId);
 
-        List<Athlete> athletes = dataContext.Athletes
-            .Where(a => editChallenge.Athletes.Contains(a.Id))
-            .AsTracking()
-            .ToList();
-
         challenge.Title = editChallenge.Title;
         challenge.Description = editChallenge.Description;
         challenge.Start = editChallenge.Start;
         challenge.End = editChallenge.End;
         challenge.Measurement = editChallenge.Measurement;
         challenge.ActivityTypes = editChallenge.ActivityTypes;
-        challenge.Athletes = athletes;
 
         challenge = await dataContext.UpdateChallengeAsync(challenge, CancellationToken.None);
 
