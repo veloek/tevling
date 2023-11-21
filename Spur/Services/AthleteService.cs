@@ -76,11 +76,15 @@ public class AthleteService : IAthleteService
 
         if (newAthlete)
         {
+            _logger.LogInformation("Adding new athlete: {Name}", athlete.Name);
+
             athlete = await dataContext.AddAthleteAsync(athlete, ct);
             _athleteFeed.OnNext(new FeedUpdate<Athlete> { Item = athlete, Action = FeedAction.Create });
         }
         else
         {
+            _logger.LogInformation("Updating athlete: {Name}", athlete.Name);
+
             athlete = await dataContext.UpdateAthleteAsync(athlete, ct);
             _athleteFeed.OnNext(new FeedUpdate<Athlete> { Item = athlete, Action = FeedAction.Update });
         }
