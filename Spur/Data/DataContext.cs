@@ -48,6 +48,14 @@ public class DataContext : DbContext
         modelBuilder.Entity<Challenge>()
             .HasOne(c => c.CreatedBy);
 
+        modelBuilder.Entity<Challenge>()
+            .Property(c => c.Start)
+            .HasConversion(new DateTimeOffsetToBinaryConverter());
+
+        modelBuilder.Entity<Challenge>()
+            .Property(c => c.End)
+            .HasConversion(new DateTimeOffsetToBinaryConverter());
+
         // Store list of activity types as comma separated string
         modelBuilder.Entity<Challenge>()
             .Property(c => c.ActivityTypes)
