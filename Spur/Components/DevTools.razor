@@ -1,7 +1,7 @@
 <button class="btn btn-primary" @onclick="AddActivity">Add activity</button>
-<button class="btn btn-primary" @onclick="AddOthersActivity">Add activity for others</button>
+<button class="btn btn-primary" @onclick="AddOthersActivity" disabled="@NoOtherAthletes">Add activity for others</button>
 <button class="btn btn-primary" @onclick="AddAthlete">Add athlete</button>
-<button class="btn btn-primary" @onclick="AddOthersChallenge">Add challenge by others</button>
+<button class="btn btn-primary" @onclick="AddOthersChallenge" disabled="@NoOtherAthletes">Add challenge by others</button>
 
 @inject IActivityService ActivityService
 @inject IAthleteService AthleteService
@@ -9,6 +9,9 @@
 @code {
     [Parameter]
     public Athlete? Athlete { get; set; }
+
+    private bool NoOtherAthletes =>
+        _athletes.Length == 1;
 
     private Athlete[] _athletes = [];
 
@@ -37,10 +40,11 @@
         return ActivityService.CreateActivityAsync(randomAthleteStravaId, Random.Shared.Next(1000, 10000));
     }
 
-    private Task AddAthlete()
+    private async Task AddAthlete()
     {
         int id = Random.Shared.Next(100, 1000);
-        return AthleteService.UpsertAthleteAsync(Random.Shared.Next(10000, 100000), $"Athlete {id}", null, "", "", default);
+        await AthleteService.UpsertAthleteAsync(Random.Shared.Next(10000, 100000), $"Athlete {id}", null, "", "", default);
+        _athletes = await AthleteService.GetAthletesAsync(100);
     }
 
     private Task AddOthersChallenge()
