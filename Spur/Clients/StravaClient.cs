@@ -29,7 +29,8 @@ public class StravaClient : IStravaClient
         catch
         {
             string fallback = "https://www.strava.com/api/v3/";
-            _logger.LogWarning($"Invalid BaseApiUri '{_stravaConfig.BaseApiUri}'. Using fallback '{fallback}'.");
+            _logger.LogWarning("Invalid BaseApiUri: '{BaseApiUrl}', using fallback: '{Fallback}'",
+                _stravaConfig.BaseApiUri, fallback);
             _httpClient.BaseAddress = new Uri(fallback);
         }
     }
@@ -101,6 +102,8 @@ public class StravaClient : IStravaClient
         }
         catch
         {
+            // This was necessary to debug some deserialization issues in prod.
+            // Turns out the Strava API documentation is not 100% accurate...
             _logger.LogInformation(responseBody);
             throw;
         }
@@ -138,6 +141,8 @@ public class StravaClient : IStravaClient
         }
         catch
         {
+            // This was necessary to debug some deserialization issues in prod.
+            // Turns out the Strava API documentation is not 100% accurate...
             _logger.LogInformation(responseBody);
             throw;
         }

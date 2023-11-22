@@ -139,7 +139,7 @@ public class ChallengeService : IChallengeService
             .FirstOrDefaultAsync(c => c.Id == challengeId, ct)
                 ?? throw new Exception($"Unknown challenge ID {challengeId}");
 
-        _logger.LogInformation($"Deleting challenge ID {challengeId}");
+        _logger.LogInformation("Deleting challenge ID {ChallengeId}", challengeId);
         _ = await dataContext.RemoveChallengeAsync(challenge, ct);
 
         _challengeFeed.OnNext(new FeedUpdate<Challenge> { Item = challenge, Action = FeedAction.Delete });

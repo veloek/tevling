@@ -46,7 +46,7 @@ public class AuthenticationService : IAuthenticationService
             new ClaimsPrincipal(claimsIdentity),
             authProperties);
 
-        _logger.LogInformation($"User ID {athlete.Id} logged in at {DateTime.Now}.");
+        _logger.LogInformation("User ID {AthleteId} logged in at {DateTime}", athlete.Id, DateTime.Now);
     }
 
     public async Task<Athlete> GetCurrentAthleteAsync(CancellationToken ct = default)

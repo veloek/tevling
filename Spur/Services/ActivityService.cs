@@ -47,7 +47,7 @@ public class ActivityService : IActivityService
             return existingActivity;
         }
 
-        _logger.LogInformation($"Adding Strava activity ID {stravaActivityId} for athlete ID {athlete.Id}");
+        _logger.LogInformation("Adding Strava activity ID {StravaActivityId} for athlete ID {AthleteId}", stravaActivityId, athlete.Id);
         Activity activity = await dataContext.AddActivityAsync(new Activity()
         {
             StravaId = stravaActivityId,
@@ -58,7 +58,7 @@ public class ActivityService : IActivityService
         // be present in the feed update.
         await dataContext.Entry(activity).Reference(a => a.Athlete).LoadAsync(ct);
 
-        _logger.LogDebug($"Fetching activity details for activity ID {stravaActivityId}");
+        _logger.LogDebug("Fetching activity details for activity ID {StravaActivityId}", stravaActivityId);
         ActivityDetails activityDetails = await FetchActivityDetailsAsync(activity, CancellationToken.None);
 
         activity.Details = activityDetails;
@@ -83,10 +83,10 @@ public class ActivityService : IActivityService
             .FirstOrDefaultAsync(a => a.AthleteId == athlete.Id && a.StravaId == stravaActivityId, ct) ??
             throw new Exception($"Unknown activity ID {stravaActivityId}");
 
-        _logger.LogDebug($"Fetching activity details for activity ID {stravaActivityId}");
+        _logger.LogDebug("Fetching activity details for activity ID {StravaActivityId}", stravaActivityId);
         ActivityDetails activityDetails = await FetchActivityDetailsAsync(activity, CancellationToken.None);
 
-        _logger.LogInformation($"Updating activity ID {stravaActivityId} for athlete {athlete.Id}");
+        _logger.LogInformation("Updating activity ID {StravaActivityId} for athlete {AthleteId}", stravaActivityId, athlete.Id);
         activity.Details = activityDetails;
         activity = await dataContext.UpdateActivityAsync(activity, CancellationToken.None);
 
@@ -108,7 +108,7 @@ public class ActivityService : IActivityService
             .FirstOrDefaultAsync(a => a.AthleteId == athlete.Id && a.StravaId == stravaActivityId, ct) ??
             throw new Exception($"Unknown activity ID {stravaActivityId}");
 
-        _logger.LogInformation($"Deleting activity ID {stravaActivityId} for athlete {athlete.Id}");
+        _logger.LogInformation("Deleting activity ID {StravaActivityId} for athlete {AthleteId}", stravaActivityId, athlete.Id);
         _ = await dataContext.RemoveActivityAsync(activity, ct);
 
         _activityFeed.OnNext(new FeedUpdate<Activity> { Item = activity, Action = FeedAction.Delete });
@@ -171,10 +171,10 @@ public class ActivityService : IActivityService
         int pageSize = 10;
         Strava.Activity[] activities;
 
-        _logger.LogInformation($"Importing activities for athlete {athleteId} starting from {startTime}");
+        _logger.LogInformation("Importing activities for athlete {AthleteId} starting from {StartTime}", athleteId, startTime);
         do
         {
-            _logger.LogInformation($"Fetching page {page} of import");
+            _logger.LogInformation("Fetching page {Page} of import", page);
 
             activities = await _stravaClient.GetAthleteActivitiesAsync(
                 accessToken, after: startTime, page: page, pageSize: pageSize, ct: ct);
@@ -187,7 +187,7 @@ public class ActivityService : IActivityService
                 Activity activity;
                 if (existingActivity is null)
                 {
-                    _logger.LogInformation($"Adding activity ID {stravaActivity.Id} for athlete {athleteId}");
+                    _logger.LogInformation("Adding activity ID {StravaActivityId} for athlete {AthleteId}", stravaActivity.Id, athleteId);
                     activity = await dataContext.AddActivityAsync(new Activity()
                     {
                         StravaId = stravaActivity.Id,
@@ -199,7 +199,7 @@ public class ActivityService : IActivityService
                 }
                 else
                 {
-                    _logger.LogInformation($"Updating activity ID {stravaActivity.Id} for athlete {athleteId}");
+                    _logger.LogInformation("Updating activity ID {StravaActivityId} for athlete {AthleteId}", stravaActivity.Id, athleteId);
                     existingActivity.Details = MapActivityDetails(stravaActivity);
                     activity = await dataContext.UpdateActivityAsync(existingActivity, ct);
 

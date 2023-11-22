@@ -85,14 +85,14 @@ public class StravaController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogError(e, "Error handling activity: " + e.Message);
+            _logger.LogError(e, "Error handling activity: {Message}", e.Message);
         }
     }
 
     private Task LogUnknownEvent(WebhookEvent @event)
     {
         string json = JsonSerializer.Serialize(@event);
-        _logger.LogWarning($"Received unknown event: {json}");
+        _logger.LogWarning("Received unknown event: {Json}", json);
 
         return Task.CompletedTask;
     }
