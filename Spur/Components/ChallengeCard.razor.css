@@ -18,6 +18,7 @@
     transition: opacity 0.2s;
     color: white;
     background-color: rgba(0, 0, 0, 0.5);
+    border-radius: 0.25rem;
 }
 
 .challenge-card:hover > .backside {
