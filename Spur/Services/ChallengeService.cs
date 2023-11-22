@@ -177,8 +177,10 @@ public class ChallengeService : IChallengeService
             {
                 a.Athlete,
                 Score = a.Activities!
-                    .Where(a => result.Challenge.ActivityTypes.Length == 0
-                            || result.Challenge.ActivityTypes.Contains(a.Details.Type))
+                    .Where(a => a.Details.StartDate >= result.Challenge.Start
+                            && a.Details.StartDate < result.Challenge.End
+                            && (result.Challenge.ActivityTypes.Length == 0
+                            || result.Challenge.ActivityTypes.Contains(a.Details.Type)))
                     .Select(a => a.Details.DistanceInMeters)
                     .Sum()
             })
