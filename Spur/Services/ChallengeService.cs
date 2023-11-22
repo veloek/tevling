@@ -176,16 +176,28 @@ public class ChallengeService : IChallengeService
             .Select(a => new
             {
                 a.Athlete,
-                Score = a.Activities!
+                Activities = a.Activities!
                     .Where(a => a.Details.StartDate >= result.Challenge.Start
                             && a.Details.StartDate < result.Challenge.End
                             && (result.Challenge.ActivityTypes.Length == 0
                             || result.Challenge.ActivityTypes.Contains(a.Details.Type)))
-                    .Select(a => a.Details.DistanceInMeters)
-                    .Sum()
             })
-            .OrderByDescending(s => s.Score)
-            .Select(a => new AthleteScore(a.Athlete, (int)a.Score))
+            .Select(a => new
+            {
+                a.Athlete,
+                Sum = result.Challenge.Measurement == ChallengeMeasurement.Distance
+                    ? a.Activities.Select(x => x.Details.DistanceInMeters).Sum()
+                    : a.Activities.Select(x => x.Details.ElapsedTimeInSeconds).Sum(),
+            })
+            .OrderByDescending(s => s.Sum)
+            .Select(s =>
+            {
+                string score = result.Challenge.Measurement == ChallengeMeasurement.Distance
+                    ? $"{s.Sum / 1000} km"
+                    : TimeSpan.FromSeconds(s.Sum).ToString("g");
+
+                return new AthleteScore(s.Athlete, score);
+            })
             .ToArray();
 
         return new ScoreBoard(scores);
