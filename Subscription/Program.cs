@@ -26,7 +26,7 @@ namespace Subscription
                 .AddJsonFile(path + ".Development.json", true)
                 .Build();
             var section = config.GetSection(nameof(StravaConfig));
-            var stravaConfig = section.Get<StravaConfig>();
+            var stravaConfig = section.Get<StravaConfig>() ?? new();
 
             switch (args[0])
             {
