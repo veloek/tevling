@@ -182,6 +182,7 @@ public class ActivityService : IActivityService
             foreach (Strava.Activity stravaActivity in activities)
             {
                 Activity? existingActivity = await dataContext.Activities
+                    .Include(a => a.Athlete)
                     .FirstOrDefaultAsync(a => a.StravaId == stravaActivity.Id);
 
                 Activity activity;
@@ -194,6 +195,8 @@ public class ActivityService : IActivityService
                         AthleteId = athleteId,
                         Details = MapActivityDetails(stravaActivity),
                     }, ct);
+
+                    await dataContext.Entry(activity).Reference(a => a.Athlete).LoadAsync(ct);
 
                     _activityFeed.OnNext(new FeedUpdate<Activity> { Item = activity, Action = FeedAction.Create });
                 }
