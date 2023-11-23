@@ -18,7 +18,7 @@ jobs:
       run: docker login -u $DOCKER_REPO -p $DOCKER_TOKEN
 
     - name: Docker buildx setup
-      run: docker buildx create
+      run: docker buildx create --use --bootstrap
 
     - name: Docker build and push
       run: docker buildx build . --file Dockerfile --tag $DOCKER_REPO/spur:$GITHUB_SHA --tag $DOCKER_REPO/spur:latest --platform linux/arm64,linux/arm,linux/amd64
