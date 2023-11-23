@@ -9,7 +9,7 @@
     <p class="login-subtitle">Accept the challenge</p>
     <div class="spur-logo"><img src="cogwheel.png" width="256" /></div>
     <form action="@StravaConfig.AuthorizeUri" method="get">
-        <div class="login-button-container">Login with <button class="button strava-login" type="submit">Strava</button>
+        <div class="login-button-container">Login with <button class="btn strava-login" type="submit">Strava</button>
         </div>
         <input type="hidden" name="client_id" value="@StravaConfig.ClientId" />
         <input type="hidden" name="redirect_uri" value="@RedirectUri" />
