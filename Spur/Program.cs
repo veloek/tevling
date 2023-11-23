@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.FeatureManagement;
 using Spur;
 using Spur.Clients;
@@ -30,6 +31,8 @@ builder.Services.AddDbContextFactory<DataContext>(optionsBuilder =>
 {
     string dbPath = Path.Join(Environment.CurrentDirectory, "storage", "spur.db");
     optionsBuilder.UseSqlite($"Data Source={dbPath}");
+    optionsBuilder.ConfigureWarnings(w => w.Throw(RelationalEventId.MultipleCollectionIncludeWarning));
+    // optionsBuilder.LogTo(Console.WriteLine);
 });
 
 builder.Services.AddSingleton<IActivityService, ActivityService>();
