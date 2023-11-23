@@ -30,7 +30,6 @@
 
 @inject IAuthenticationService AuthenticationService
 @inject IChallengeService ChallengeService
-@inject IJSRuntime JSRuntime
 @inject ILogger<Challenges> Logger
 @code {
     private Challenge[] ChallengeList { get; set; } = [];
@@ -137,14 +136,5 @@
             .ToArray();
 
         InvokeAsync(StateHasChanged);
-    }
-
-    private async Task DeleteChallenge(Challenge challenge)
-    {
-        bool confirmed = await JSRuntime.InvokeAsync<bool>("confirm", "Are you sure?");
-        if (confirmed)
-        {
-            await ChallengeService.DeleteChallengeAsync(challenge.Id);
-        }
     }
 }
