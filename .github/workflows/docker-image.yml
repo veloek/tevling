@@ -21,4 +21,4 @@ jobs:
       run: docker buildx create --use --bootstrap
 
     - name: Docker build and push
-      run: docker buildx build . --file Dockerfile --tag $DOCKER_REPO/spur:$GITHUB_SHA --tag $DOCKER_REPO/spur:latest --platform linux/arm64,linux/arm,linux/amd64
+      run: docker buildx build . --push --file Dockerfile --tag $DOCKER_REPO/spur:$GITHUB_SHA --tag $DOCKER_REPO/spur:latest --platform linux/arm64,linux/arm,linux/amd64
