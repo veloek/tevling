@@ -1,26 +1,32 @@
 <ul class="list-group">
-@if (Activities.Length > 0)
-{
     @foreach (Activity activity in Activities)
     {
         <ActivityCard Activity="activity"></ActivityCard>
     }
-
-    <InfiniteScrollingMarker LoadMore="LoadMore">
-        <LoadingTemplate>Loading...</LoadingTemplate>
-    </InfiniteScrollingMarker>
-}
-else
-{
-    <li class="list-group-item">No activities yet...</li>
-}
 </ul>
+
+@if (Activities.Length == 0)
+{
+    <h2 class="mb-3">Welcome!</h2>
+    <p>
+        <button class="btn btn-sm btn-primary" @onclick="Import" disabled="@Importing">
+            @(Importing ? "Importing..." : "Import")
+        </button>
+        your last 30 days of activities from Strava and start following some other <a href="athletes">athletes</a>.
+    </p>
+}
+
+<InfiniteScrollingMarker LoadMore="LoadMore">
+    <LoadingTemplate>Loading...</LoadingTemplate>
+</InfiniteScrollingMarker>
 
 @inject IActivityService ActivityService
 @inject ILogger<ActivityFeed> Logger
 @code {
     [Parameter]
     public int? AthleteId { get; set; }
+
+    private bool Importing { get; set; }
 
     private Activity[] Activities = [];
     private List<Activity> _activities = new();
@@ -108,5 +114,21 @@ else
             .ToArray();
 
         InvokeAsync(StateHasChanged);
+    }
+
+    private async Task Import()
+    {
+        if (AthleteId.HasValue)
+        {
+            Importing = true;
+            try
+            {
+                await ActivityService.ImportActivitiesForAthlete(AthleteId.Value, DateTimeOffset.Now - TimeSpan.FromDays(30));
+            }
+            finally
+            {
+                Importing = false;
+            }
+        }
     }
 }
