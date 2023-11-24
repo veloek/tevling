@@ -57,8 +57,9 @@ app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.MapControllers();
+app.UseAntiforgery();
 
+app.MapControllers();
 app.MapRazorComponents<App>().AddInteractiveServerRenderMode();
 
 using IServiceScope serviceScope = app.Services.CreateScope();
