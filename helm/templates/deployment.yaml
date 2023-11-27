@@ -34,6 +34,8 @@ spec:
         volumeMounts:
         - mountPath: /app/storage
           name: data
+      securityContext:
+      {{- .Values.podSecurity | toYaml | nindent 8 }}
       volumes:
       - name: data
         persistentVolumeClaim:
