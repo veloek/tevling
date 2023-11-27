@@ -18,25 +18,19 @@ spec:
       containers:
       - env:
         - name: ASPNETCORE_HTTP_PORTS
-          value: {{ $containerPort := 8080 }}{{ quote $containerPort }}
+          value: {{- $containerPort := 8080 }} {{ quote $containerPort }}
         envFrom:
         - secretRef:
             name: {{ include "spur.fullname" . }}
         image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
         name: spur
         securityContext:
-          allowPrivilegeEscalation: {{ .Values.securityContext.allowPrivilegeEscalation }}
-          runAsNonRoot: {{ .Values.securityContext.runAsNonRoot }}
+        {{- .Values.securityContext | toYaml | nindent 10 }}
         ports:
         - containerPort: {{ $containerPort }}
           name: http
         resources:
-          requests:
-            memory: {{ .Values.resources.request.memory }}
-            cpu: {{ .Values.resources.request.cpu }}
-          limits:
-            memory: {{ .Values.resources.limits.memory }}
-            cpu: {{ .Values.resources.limits.cpu }}
+        {{- .Values.resources | toYaml | nindent 10 }}
         volumeMounts:
         - mountPath: /app/storage
           name: data
