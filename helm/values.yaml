@@ -1,0 +1,40 @@
+replicas: 1
+
+pvc:
+  storageRequest: 200Mi
+
+service:
+  type: ClusterIP
+  ports:
+  - name: http
+    port: 8080
+    protocol: TCP
+    targetPort: http
+
+ingress:
+  host: spur.vtek.no
+  backend:
+    port: http
+
+image:
+  repository: veloek/spur
+  tag: latest
+
+resources:
+  request:
+    memory: 200Mi
+    cpu: 150m
+  limits:
+    memory: 500Mi
+    cpu: 250m
+
+securityContext:
+  allowPrivilegeEscalation: false
+  runAsNonRoot: true
+
+strava:
+  clientId: ""
+  clientSecret: ""
+  redirectUri: ""
+  subscriptionId: ""
+  verifyToken: ""

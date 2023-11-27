@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "spur.fullname" . }}
+  namespace: {{ include "spur.fullname" . }}
+  labels:
+  {{- include "spur.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicas }}
+  selector:
+    matchLabels:
+    {{- include "spur.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+      {{- include "spur.selectorLabels" . | nindent 8 }}
+    spec:
+      containers:
+      - env:
+        - name: ASPNETCORE_HTTP_PORTS
+          value: {{ $containerPort := 8080 }}{{ quote $containerPort }}
+        envFrom:
+        - secretRef:
+            name: {{ include "spur.fullname" . }}
+        image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+        name: spur
+        securityContext:
+          allowPrivilegeEscalation: {{ .Values.securityContext.allowPrivilegeEscalation }}
+          runAsNonRoot: {{ .Values.securityContext.runAsNonRoot }}
+        ports:
+        - containerPort: {{ $containerPort }}
+          name: http
+        resources:
+          requests:
+            memory: {{ .Values.resources.request.memory }}
+            cpu: {{ .Values.resources.request.cpu }}
+          limits:
+            memory: {{ .Values.resources.limits.memory }}
+            cpu: {{ .Values.resources.limits.cpu }}
+        volumeMounts:
+        - mountPath: /app/storage
+          name: data
+      volumes:
+      - name: data
+        persistentVolumeClaim:
+          claimName: {{ include "spur.fullname" . }}-pvc

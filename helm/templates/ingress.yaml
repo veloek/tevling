@@ -1,0 +1,21 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ include "spur.fullname" . }}
+  namespace: {{ include "spur.fullname" . }}
+  labels:
+  {{- include "spur.labels" . | nindent 4 }}
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  rules:
+  - host: {{ .Values.ingress.host }}
+    http:
+      paths:
+      - backend:
+          service:
+            name: {{ include "spur.fullname" . }}
+            port:
+              name: {{ .Values.ingress.backend.port }}
+        path: /
+        pathType: Prefix
