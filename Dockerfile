@@ -18,6 +18,8 @@ COPY --from=build /app/out .
 
 VOLUME /app/storage
 
+RUN umask 0077
+
 ENV ASPNETCORE_HTTP_PORTS=8080
 EXPOSE 8080
 
