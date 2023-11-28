@@ -27,9 +27,13 @@ builder.Services
         options.ReturnUrlParameter = "returnUrl";
     });
 
+// Make sure our data directoy used to store the SQLite DB file exists.
+string dataDir = Path.Join(Environment.CurrentDirectory, "storage");
+Directory.CreateDirectory(dataDir);
+
 builder.Services.AddDbContextFactory<DataContext>(optionsBuilder =>
 {
-    string dbPath = Path.Join(Environment.CurrentDirectory, "storage", "spur.db");
+    string dbPath = Path.Join(dataDir, "spur.db");
     optionsBuilder.UseSqlite($"Data Source={dbPath}");
     optionsBuilder.ConfigureWarnings(w => w.Throw(RelationalEventId.MultipleCollectionIncludeWarning));
     // optionsBuilder.LogTo(Console.WriteLine);
