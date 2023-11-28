@@ -1,4 +1,5 @@
 replicas: 1
+revisionHistoryLimit: 3
 
 pvc:
   storageRequest: 200Mi
