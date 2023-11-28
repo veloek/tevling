@@ -1,0 +1,28 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: spur
+  namespace: argocd
+  annotations:
+    argocd-image-updater.argoproj.io/image-list: spur=veloek/spur:latest
+    argocd-image-updater.argoproj.io/spur.update-strategy: digest
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/veloek/spur.git
+    targetRevision: HEAD
+    path: helm
+    helm:
+      parameters:
+      - name: image.tag
+        value: latest
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: spur
+  ignoreDifferences:
+  - kind: Secret
+    name: spur
+    jsonPointers:
+    - /data
+  syncPolicy:
+    automated: {}
