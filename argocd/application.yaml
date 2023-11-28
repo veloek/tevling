@@ -26,3 +26,5 @@ spec:
     - /data
   syncPolicy:
     automated: {}
+    syncOptions:
+    - RespectIgnoreDifferences=true
