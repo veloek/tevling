@@ -52,10 +52,10 @@ The app is based on ASP.NET using the Blazor framework. Simplicity is highly val
 maintainable as it's not anybody's dayjob.
 
 Debugging should work out of the box in Visual Studio or VS Code (with C# extensions), but to simply
-build (and run) the app only the .NET 8 SDK is required. Use `--watch` to detect changes.
+build (and run) the app only the .NET 8 SDK is required. Use `dotnet watch` to detect changes.
 
 ```
-dotnet run --watch --project Spur/Spur.csproj
+dotnet run --project Spur/Spur.csproj
 ```
 
 Bug reports and PRs are very welcome!
