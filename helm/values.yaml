@@ -21,7 +21,7 @@ image:
   tag: latest
 
 resources:
-  request:
+  requests:
     memory: 200Mi
     cpu: 150m
   limits:
