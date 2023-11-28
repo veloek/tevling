@@ -1,21 +1,18 @@
 @import url('open-iconic/font/css/open-iconic-bootstrap.min.css');
 
+:root {
+    --bs-nav-link-padding-y: 0.5rem;
+    --bs-nav-link-padding-x: 1rem;
+}
+
 html, body {
+    margin: 0;
+    padding: 0;
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
 
 h1:focus {
     outline: none;
-}
-
-a, .btn-link {
-    color: #0071c1;
-}
-
-.btn-primary {
-    color: #fff;
-    background-color: #1b6ec2;
-    border-color: #1861ac;
 }
 
 .content {
@@ -61,16 +58,6 @@ a, .btn-link {
 
 .blazor-error-boundary::after {
     content: "An error has occurred."
-}
-
-
-* {
-    font-family: sans-serif;
-}
-
-html,body {
-    margin: 0;
-    padding: 0;
 }
 
 .cg-1 {
