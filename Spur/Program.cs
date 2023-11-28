@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.FeatureManagement;
@@ -38,6 +39,9 @@ builder.Services.AddDbContextFactory<DataContext>(optionsBuilder =>
     optionsBuilder.ConfigureWarnings(w => w.Throw(RelationalEventId.MultipleCollectionIncludeWarning));
     // optionsBuilder.LogTo(Console.WriteLine);
 });
+
+builder.Services.AddDataProtection()
+    .PersistKeysToFileSystem(new DirectoryInfo(dataDir));
 
 builder.Services.AddSingleton<IActivityService, ActivityService>();
 builder.Services.AddSingleton<IAthleteService, AthleteService>();
