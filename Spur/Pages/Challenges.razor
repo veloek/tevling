@@ -133,6 +133,7 @@
                 || (c.Athletes?.Any(athlete => athlete.Id == AthleteId) == true
                 || c.CreatedById == AthleteId))
             .OrderByDescending(c => c.Start)
+            .ThenBy(c => c.Title)
             .ToArray();
 
         InvokeAsync(StateHasChanged);
