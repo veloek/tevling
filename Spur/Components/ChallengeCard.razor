@@ -45,31 +45,42 @@
                 </div>
                 <p class="card-text">@Challenge.Athletes?.Count participants</p>
             </div>
-            <div class="backside d-flex flex-wrap cg-2 align-items-center justify-content-center">
-                @if (Challenge.Athletes?.Count > 0)
-                {
-                    <button class="btn btn-primary" @onclick="ToggleScoreBoard">
-                        <span class="oi oi-list" aria-hidden="true" />
-                        Stats
-                    </button>
-                }
-                @if (HasJoined == false)
-                {
-                    <button class="btn btn-info" @onclick="JoinChallenge">
-                        <span class="oi oi-heart" aria-hidden="true" />
-                        Join
-                    </button>
-                }
+            <div class="backside d-flex flex-column rg-2 align-items-center justify-content-center">
+                <div class="d-flex cg-2">
+                    @if (Challenge.Athletes?.Count > 0)
+                    {
+                        <button class="btn btn-primary" @onclick="ToggleScoreBoard">
+                            <span class="oi oi-list" aria-hidden="true" />
+                            Stats
+                        </button>
+                    }
+                    @if (HasJoined == false)
+                    {
+                        <button class="btn btn-info" @onclick="JoinChallenge">
+                            <span class="oi oi-heart" aria-hidden="true" />
+                            Join
+                        </button>
+                    }
+                    else if (HasJoined == true)
+                    {
+                        <button class="btn btn-info" @onclick="LeaveChallenge">
+                            <span class="oi oi-heart" aria-hidden="true" />
+                            Leave
+                        </button>
+                    }
+                </div>
                 @if (Challenge.CreatedById == AthleteId)
                 {
-                    <a class="btn btn-secondary" href="challenges/@Challenge.Id/edit">
-                        <span class="oi oi-pencil" aria-hidden="true" />
-                        Edit
-                    </a>
-                    <button class="btn btn-danger" @onclick="DeleteChallenge">
-                        <span class="oi oi-trash" aria-hidden="true" />
-                        Delete
-                    </button>
+                    <div class="d-flex cg-2">
+                        <a class="btn btn-secondary" href="challenges/@Challenge.Id/edit">
+                            <span class="oi oi-pencil" aria-hidden="true" />
+                            Edit
+                        </a>
+                        <button class="btn btn-danger" @onclick="DeleteChallenge">
+                            <span class="oi oi-trash" aria-hidden="true" />
+                            Delete
+                        </button>
+                    </div>
                 }
             </div>
         }
@@ -110,6 +121,14 @@
         if (Challenge != null)
         {
             Challenge = await ChallengeService.JoinChallengeAsync(AthleteId, Challenge.Id);
+        }
+    }
+
+    private async Task LeaveChallenge()
+    {
+        if (Challenge != null)
+        {
+            Challenge = await ChallengeService.LeaveChallengeAsync(AthleteId, Challenge.Id);
         }
     }
 

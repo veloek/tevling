@@ -17,6 +17,8 @@ public interface IChallengeService
 
     Task<Challenge> JoinChallengeAsync(int athleteId, int challengeId, CancellationToken ct = default);
 
+    Task<Challenge> LeaveChallengeAsync(int athleteId, int challengeId, CancellationToken ct = default);
+
     Task DeleteChallengeAsync(int challengeId, CancellationToken ct = default);
 
     Task<ScoreBoard> GetScoreBoardAsync(int challengeId, CancellationToken ct = default);

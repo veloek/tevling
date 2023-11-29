@@ -130,6 +130,31 @@ public class ChallengeService : IChallengeService
         return challenge;
     }
 
+    public async Task<Challenge> LeaveChallengeAsync(int athleteId, int challengeId, CancellationToken ct = default)
+    {
+        using DataContext dataContext = await _dataContextFactory.CreateDbContextAsync(ct);
+
+        Challenge challenge = await dataContext.Challenges
+            .Include(c => c.Athletes)
+            .Include(c => c.CreatedBy)
+            .AsTracking()
+            .FirstOrDefaultAsync(c => c.Id == challengeId, ct)
+                ?? throw new Exception($"Challenge ID {challengeId} not found");
+
+        Athlete? athlete = challenge.Athletes!.FirstOrDefault(a => a.Id == athleteId);
+
+        if (athlete != null)
+        {
+            challenge.Athletes!.Remove(athlete);
+        }
+
+        await dataContext.UpdateChallengeAsync(challenge, ct);
+
+        _challengeFeed.OnNext(new FeedUpdate<Challenge> { Item = challenge, Action = FeedAction.Update });
+
+        return challenge;
+    }
+
     public async Task DeleteChallengeAsync(int challengeId, CancellationToken ct = default)
     {
         using DataContext dataContext = await _dataContextFactory.CreateDbContextAsync(ct);
