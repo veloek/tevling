@@ -1,3 +1,4 @@
+using Blazored.LocalStorage;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.EntityFrameworkCore;
@@ -42,6 +43,8 @@ builder.Services.AddDbContextFactory<DataContext>(optionsBuilder =>
 
 builder.Services.AddDataProtection()
     .PersistKeysToFileSystem(new DirectoryInfo(dataDir));
+
+builder.Services.AddBlazoredLocalStorage();
 
 builder.Services.AddSingleton<IActivityService, ActivityService>();
 builder.Services.AddSingleton<IAthleteService, AthleteService>();

@@ -2,14 +2,16 @@
 
 <PageTitle>Spur</PageTitle>
 
-<div class="page">
+<div class="page" data-bs-theme="@Theme">
     <div class="sidebar">
         <NavMenu />
     </div>
 
     <main>
         <div class="top-row px-4">
-            <h4>@Athlete.Name</h4><a href="/profile">
+            <h4>@Athlete.Name</h4>
+            <DarkMode OnChange="OnThemeChange" />
+            <a href="/profile">
                 <Avatar Url="@Athlete.ImgUrl" Size="30" />
             </a>
         </div>
@@ -21,12 +23,28 @@
 </div>
 
 @inject IAuthenticationService AuthenticationService
-
+@inject Blazored.LocalStorage.ILocalStorageService LocalStorage
 @code {
     private Athlete Athlete { get; set; } = default!;
+    private string? Theme { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
         Athlete = await AuthenticationService.GetCurrentAthleteAsync();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            Theme = await LocalStorage.GetThemeAsync();
+            StateHasChanged();
+        }
+    }
+
+    private void OnThemeChange(string newTheme)
+    {
+        Theme = newTheme;
+        StateHasChanged();
     }
 }
