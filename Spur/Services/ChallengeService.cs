@@ -218,7 +218,7 @@ public class ChallengeService : IChallengeService
             .Select(s =>
             {
                 string score = result.Challenge.Measurement == ChallengeMeasurement.Distance
-                    ? $"{s.Sum / 1000} km"
+                    ? $"{(s.Sum / 1000):0.##} km"
                     : TimeSpan.FromSeconds(s.Sum).ToString("g");
 
                 return new AthleteScore(s.Athlete, score);
