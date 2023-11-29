@@ -7,7 +7,6 @@
 
 @if (Activities.Length == 0)
 {
-    <h2 class="mb-3">Welcome!</h2>
     <p>
         <button class="btn btn-sm btn-primary" @onclick="Import" disabled="@Importing">
             @(Importing ? "Importing..." : "Import")
