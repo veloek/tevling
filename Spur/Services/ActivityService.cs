@@ -161,12 +161,12 @@ public class ActivityService : IActivityService
             });
     }
 
-    public async Task ImportActivitiesForAthlete(int athleteId, DateTimeOffset startTime,
-        CancellationToken ct = default)
+    public async Task ImportActivitiesForAthlete(int athleteId, CancellationToken ct = default)
     {
         using DataContext dataContext = await _dataContextFactory.CreateDbContextAsync(ct);
 
         string accessToken = await _athleteService.GetAccessTokenAsync(athleteId, ct);
+        DateTimeOffset startTime = DateTimeOffset.Now - TimeSpan.FromDays(30);
         int page = 1;
         int pageSize = 10;
         Strava.Activity[] activities;
