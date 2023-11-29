@@ -2,8 +2,8 @@
 bin/
 obj/
 
-# Database
-spur.db*
+# Data storage
+Spur/storage/
 
 # Editor / IDE
 .vscode/
