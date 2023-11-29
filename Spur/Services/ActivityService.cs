@@ -183,6 +183,7 @@ public class ActivityService : IActivityService
             {
                 Activity? existingActivity = await dataContext.Activities
                     .Include(a => a.Athlete)
+                    .AsTracking()
                     .FirstOrDefaultAsync(a => a.StravaId == stravaActivity.Id);
 
                 Activity activity;
