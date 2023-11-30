@@ -16,6 +16,7 @@ builder.Services.AddRazorPages();
 builder.Services.AddRazorComponents().AddInteractiveServerComponents();
 builder.Services.AddControllers();
 builder.Services.AddFeatureManagement();
+builder.Services.AddHealthChecks();
 
 IConfigurationSection section = builder.Configuration.GetSection(nameof(StravaConfig));
 StravaConfig stravaConfig = section.Get<StravaConfig>() ?? new();
@@ -73,6 +74,7 @@ app.UseAuthorization();
 
 app.UseAntiforgery();
 
+app.MapHealthChecks("healthz");
 app.MapControllers();
 app.MapRazorComponents<App>().AddInteractiveServerRenderMode();
 

@@ -30,6 +30,10 @@ spec:
         ports:
         - containerPort: {{ $containerPort }}
           name: http
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: http
         resources:
         {{- .Values.resources | toYaml | nindent 10 }}
         volumeMounts:
