@@ -27,6 +27,9 @@ builder.Services
     {
         options.LoginPath = "/login";
         options.ReturnUrlParameter = "returnUrl";
+        options.ExpireTimeSpan = TimeSpan.FromDays(1);
+        options.Cookie.MaxAge = options.ExpireTimeSpan;
+        options.SlidingExpiration = true;
     });
 
 // Make sure our data directoy used to store the SQLite DB file exists.
