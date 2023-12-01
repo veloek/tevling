@@ -40,7 +40,7 @@ button.strava-login {
     width: 100px;
 }
 
-.copyright {
+::deep .copyright {
     font-size: 10px;
     margin-top: 2rem;
 }
