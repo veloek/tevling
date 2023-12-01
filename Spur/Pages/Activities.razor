@@ -5,6 +5,11 @@
 
 <h1>Activities</h1>
 
+<label class="mb-2">
+    <input class="form-check-input" type="checkbox" @bind-value="ShowOnlyMine" />
+    Show only my activities
+</label>
+
 <ul class="list-group">
     @foreach (Activity activity in ActivityList)
     {
@@ -34,6 +39,16 @@
 @code {
     private bool Importing { get; set; }
     private Activity[] ActivityList = [];
+    private bool ShowOnlyMine
+    {
+        get => _showOnlyMine;
+        set
+        {
+            _showOnlyMine = value;
+            UpdateActivities();
+        }
+    }
+    private bool _showOnlyMine;
     private Athlete _athlete { get; set; } = default!;
     private List<Activity> _activities = new();
     private IDisposable? _activityFeedSubscription;
@@ -123,6 +138,7 @@
     private void UpdateActivities()
     {
         ActivityList = _activities
+            .Where(activity => !ShowOnlyMine || activity.AthleteId == _athlete.Id)
             .OrderByDescending(activity => activity.Details.StartDate)
             .ToArray();
 
