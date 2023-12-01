@@ -2,31 +2,35 @@
 
 <PageTitle>Spur</PageTitle>
 
-<div class="page" data-bs-theme="@Theme">
-    <div class="sidebar">
-        <NavMenu />
-    </div>
-
-    <main>
-        <div class="top-row px-4">
-            <h4>@Athlete.Name</h4>
-            <DarkMode OnChange="OnThemeChange" />
-            <a href="/profile">
-                <Avatar Url="@Athlete.ImgUrl" Size="30" />
-            </a>
+@if (ThemeSet)
+{
+    <div class="page" data-bs-theme="@Theme">
+        <div class="sidebar">
+            <NavMenu />
         </div>
 
-        <article class="content px-4">
-            @Body
-        </article>
-    </main>
-</div>
+        <main>
+            <div class="top-row px-4">
+                <h4>@Athlete.Name</h4>
+                <DarkMode OnChange="OnThemeChange" />
+                <a href="/profile">
+                    <Avatar Url="@Athlete.ImgUrl" Size="30" />
+                </a>
+            </div>
+
+            <article class="content px-4">
+                @Body
+            </article>
+        </main>
+    </div>
+}
 
 @inject IAuthenticationService AuthenticationService
 @inject Blazored.LocalStorage.ILocalStorageService LocalStorage
 @code {
     private Athlete Athlete { get; set; } = default!;
     private string? Theme { get; set; }
+    private bool ThemeSet { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
@@ -38,6 +42,7 @@
         if (firstRender)
         {
             Theme = await LocalStorage.GetThemeAsync();
+            ThemeSet = true;
             StateHasChanged();
         }
     }
