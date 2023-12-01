@@ -1,4 +1,5 @@
 @page "/"
+@page "/activities"
 
 <PageTitle>Spur - Activities</PageTitle>
 
@@ -7,11 +8,20 @@
 <ActivityFeed AthleteId="@Athlete.Id" />
 
 @inject IAuthenticationService AuthenticationService
+@inject NavigationManager NavigationManager
 @code {
     private Athlete Athlete { get; set; } = default!;
 
     protected override async Task OnInitializedAsync()
     {
         Athlete = await AuthenticationService.GetCurrentAthleteAsync();
+
+        // Redirect from / to /activities making this the default page
+        string relativePath = NavigationManager.ToBaseRelativePath(NavigationManager.Uri);
+
+        if (!relativePath.StartsWith("activities"))
+        {
+            NavigationManager.NavigateTo("activities", replace: true);
+        }
     }
 }
