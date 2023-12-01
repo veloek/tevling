@@ -5,17 +5,43 @@
 
 <h1>Activities</h1>
 
-<ActivityFeed AthleteId="@Athlete.Id" />
+<ul class="list-group">
+    @foreach (Activity activity in ActivityList)
+    {
+        <ActivityCard Activity="activity"></ActivityCard>
+    }
+</ul>
 
+@if (ActivityList.Length == 0)
+{
+    <p>
+        <button class="btn btn-sm btn-primary" @onclick="Import" disabled="@Importing">
+            @(Importing ? "Importing..." : "Import")
+        </button>
+        your last 30 days of activities from Strava and start following some other <a href="athletes">athletes</a>.
+    </p>
+}
+
+<InfiniteScrollingMarker LoadMore="LoadMore">
+    <LoadingTemplate>Loading...</LoadingTemplate>
+</InfiniteScrollingMarker>
+
+
+@inject IActivityService ActivityService
 @inject IAuthenticationService AuthenticationService
+@inject ILogger<Activities> Logger
 @inject NavigationManager NavigationManager
 @code {
-    private Athlete Athlete { get; set; } = default!;
+    private bool Importing { get; set; }
+    private Activity[] ActivityList = [];
+    private Athlete _athlete { get; set; } = default!;
+    private List<Activity> _activities = new();
+    private IDisposable? _activityFeedSubscription;
+    private int _pageSize = 50;
+    private int _page = 0;
 
     protected override async Task OnInitializedAsync()
     {
-        Athlete = await AuthenticationService.GetCurrentAthleteAsync();
-
         // Redirect from / to /activities making this the default page
         string relativePath = NavigationManager.ToBaseRelativePath(NavigationManager.Uri);
 
@@ -23,5 +49,97 @@
         {
             NavigationManager.NavigateTo("activities", replace: true);
         }
+
+        _athlete = await AuthenticationService.GetCurrentAthleteAsync();
+
+        await FetchActivities(_athlete.Id);
+        SubscribeToActivityFeed(_athlete.Id);
     }
+
+    private async Task<bool> LoadMore(CancellationToken ct = default)
+    {
+        int prevCount = _activities.Count;
+        _page++;
+        await FetchActivities(_athlete.Id);
+        return _activities.Count > prevCount;
+    }
+
+    private async Task FetchActivities(int athleteId)
+    {
+        Activity[] activities = await ActivityService.GetActivitiesForAthleteAsync(athleteId, _pageSize, _page);
+        AddActivities(activities);
+    }
+
+    private void SubscribeToActivityFeed(int athleteId)
+    {
+        _activityFeedSubscription = ActivityService.GetActivityFeedForAthlete(athleteId)
+            .Catch<FeedUpdate<Activity>, Exception>(err =>
+            {
+                Logger.LogError(err, "Error in activity feed");
+                return Observable.Throw<FeedUpdate<Activity>>(err).Delay(TimeSpan.FromSeconds(1));
+            })
+            .Retry()
+            .Subscribe(feed =>
+            {
+                switch (feed.Action)
+                {
+                    case FeedAction.Create:
+                        AddActivities(feed.Item);
+                        break;
+                    case FeedAction.Update:
+                        ReplaceActivity(feed.Item);
+                        break;
+                    case FeedAction.Delete:
+                        RemoveActivity(feed.Item);
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException("Unknown activity feed action: " + feed.Action);
+                }
+            });
+    }
+
+    private void AddActivities(params Activity[] activities)
+    {
+        _activities.AddRange(activities);
+
+        UpdateActivities();
+    }
+
+    private void ReplaceActivity(Activity activity)
+    {
+        _activities.RemoveAll(a => a.Id == activity.Id);
+        _activities.Add(activity);
+
+        UpdateActivities();
+    }
+
+    private void RemoveActivity(Activity activity)
+    {
+        _activities.RemoveAll(a => a.Id == activity.Id);
+
+        UpdateActivities();
+    }
+
+    private void UpdateActivities()
+    {
+        ActivityList = _activities
+            .OrderByDescending(activity => activity.Details.StartDate)
+            .ToArray();
+
+        InvokeAsync(StateHasChanged);
+    }
+
+    private async Task Import()
+    {
+        Importing = true;
+        try
+        {
+            await ActivityService.ImportActivitiesForAthlete(_athlete.Id);
+        }
+        finally
+        {
+            Importing = false;
+        }
+    }
+
 }
