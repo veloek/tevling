@@ -4,12 +4,25 @@ using Microsoft.AspNetCore.DataProtection;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.FeatureManagement;
+using Serilog;
+using Serilog.Templates;
 using Spur;
 using Spur.Clients;
 using Spur.Data;
 using Spur.Services;
 
+Log.Logger = new LoggerConfiguration()
+    .WriteTo.Console()
+    .CreateBootstrapLogger();
+
+Log.Information("Starting Spur...");
+
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
+
+builder.Host.UseSerilog((context, services, configuration) => configuration
+    .ReadFrom.Configuration(context.Configuration)
+    .ReadFrom.Services(services)
+    .Enrich.FromLogContext());
 
 // Add services to the container.
 builder.Services.AddRazorPages();
@@ -70,15 +83,27 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.UseAntiforgery();
+app.UseSerilogRequestLogging();
 
 app.MapHealthChecks("healthz");
 app.MapControllers();
 app.MapRazorComponents<App>().AddInteractiveServerRenderMode();
 
-using IServiceScope serviceScope = app.Services.CreateScope();
-IDbContextFactory<DataContext> dataContextFactory =
-    serviceScope.ServiceProvider.GetRequiredService<IDbContextFactory<DataContext>>();
-using DataContext dataContext = await dataContextFactory.CreateDbContextAsync();
-await dataContext.InitAsync();
+try
+{
+    using IServiceScope serviceScope = app.Services.CreateScope();
+    IDbContextFactory<DataContext> dataContextFactory =
+        serviceScope.ServiceProvider.GetRequiredService<IDbContextFactory<DataContext>>();
+    using DataContext dataContext = await dataContextFactory.CreateDbContextAsync();
+    await dataContext.InitAsync();
 
-await app.RunAsync();
+    await app.RunAsync();
+}
+catch (Exception e)
+{
+    Log.Fatal(e, "An unhandled exception occurred");
+}
+finally
+{
+    Log.CloseAndFlush();
+}
