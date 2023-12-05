@@ -66,6 +66,7 @@ builder.Services.AddSingleton<IAthleteService, AthleteService>();
 builder.Services.AddSingleton<IChallengeService, ChallengeService>();
 
 builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
+builder.Services.AddScoped<IBrowserTime, BrowserTime>();
 
 builder.Services.AddHttpClient<IStravaClient, StravaClient>();
 

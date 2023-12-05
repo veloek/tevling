@@ -19,12 +19,12 @@
     </li>
 }
 
+@inject IBrowserTime BrowserTime
 @code {
     [Parameter]
     public Activity? Activity { get; set; }
 
-    private string? ActivityTime =>
-        Activity?.Details.StartDate.ToString("yyyy'-'MM'-'dd' 'HH':'mm':'ss", CultureInfo.InvariantCulture);
+    private string? ActivityTime;
 
     private string Stats
     {
@@ -35,7 +35,7 @@
                 if (Activity.Details.DistanceInMeters > 0)
                 {
                     float distanceInKm = Activity.Details.DistanceInMeters / 1000;
-                    return $"{distanceInKm.ToString("F1", CultureInfo.InvariantCulture)} km";
+                    return $"{distanceInKm.ToString("F1")} km";
                 }
 
                 TimeSpan elapsedTime = TimeSpan.FromSeconds(Activity.Details.ElapsedTimeInSeconds);
@@ -43,6 +43,15 @@
             }
 
             return string.Empty;
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (Activity != null)
+        {
+            DateTime browserTime = await BrowserTime.ConvertToLocal(Activity.Details.StartDate.UtcDateTime);
+            ActivityTime = browserTime.ToString("yyyy'-'MM'-'dd' 'HH':'mm':'ss");
         }
     }
 }
