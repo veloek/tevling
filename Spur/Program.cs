@@ -30,6 +30,7 @@ builder.Services.AddRazorComponents().AddInteractiveServerComponents();
 builder.Services.AddControllers();
 builder.Services.AddFeatureManagement();
 builder.Services.AddHealthChecks();
+builder.Services.AddLocalization();
 
 IConfigurationSection section = builder.Configuration.GetSection(nameof(StravaConfig));
 StravaConfig stravaConfig = section.Get<StravaConfig>() ?? new();
@@ -78,6 +79,10 @@ if (!app.Environment.IsDevelopment())
 
 app.UseStaticFiles();
 app.UseRouting();
+app.UseRequestLocalization(new RequestLocalizationOptions()
+    .AddSupportedCultures(new[] { "en", "no", "nb", "nn" })
+    .AddSupportedUICultures(new[] { "en", "no", "nb", "nn" })
+    .SetDefaultCulture("en"));
 
 app.UseAuthentication();
 app.UseAuthorization();
