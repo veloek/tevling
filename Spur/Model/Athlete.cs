@@ -10,6 +10,7 @@ public class Athlete
     public string RefreshToken { get; set; } = string.Empty;
     public DateTimeOffset AccessTokenExpiry { get; set; }
     public DateTimeOffset Created { get; set; }
+    public bool HasImportedActivities { get; set; }
 
     public ICollection<Activity>? Activities { get; set; }
     public ICollection<Challenge>? Challenges { get; set; }

@@ -14,6 +14,8 @@ public interface IAthleteService
 
     Task<Athlete> ToggleFollowingAsync(Athlete athlete, int followingId, CancellationToken ct = default);
 
+    Task<Athlete> SetHasImportedActivities(int athleteId, CancellationToken ct = default);
+
     Task<string> GetAccessTokenAsync(int athleteId, CancellationToken ct = default);
 
     IObservable<FeedUpdate<Athlete>> GetAthleteFeed();

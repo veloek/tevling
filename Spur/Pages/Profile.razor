@@ -1,10 +1,31 @@
 @page "/profile"
 
-<h1>@Athlete.Name</h1>
+<h1>Profile</h1>
 
-<button class="btn btn-primary" @onclick="Import" disabled="@Importing">
-    @(Importing ? "Importing..." : "Import activities (30d)")
-</button>
+<h5>Hello, @Athlete.Name!</h5>
+<p>
+    You joined Spur @Athlete.Created.ToString("d").
+    You're currently following @Athlete.Following?.Count <a href="/athletes">athletes</a> and
+    have @Athlete.Followers?.Count followers.
+</p>
+
+<h5>Import activities from Strava</h5>
+<p>
+    <button class="btn btn-primary" @onclick="Import" disabled="@(Importing || Athlete.HasImportedActivities)">
+        @if (Athlete.HasImportedActivities)
+        {
+            <text>Import complete</text>
+        }
+        else if (Importing)
+        {
+            <text>Importing...</text>
+        }
+        else
+        {
+            <text>Import activities (30d)</text>
+        }
+    </button>
+</p>
 
 @if (!string.IsNullOrEmpty(ImportResult))
 {
@@ -13,6 +34,7 @@
 
 @inject IAuthenticationService AuthenticationService
 @inject IActivityService ActivityService
+@inject IAthleteService AthleteService
 @code {
     private Athlete Athlete { get; set; } = default!;
     private bool Importing { get; set; }
@@ -25,11 +47,18 @@
 
     public async Task Import()
     {
+        if (Athlete.HasImportedActivities)
+        {
+            ImportResult = "Sorry, you can only import once.";
+            return;
+        }
+
         Importing = true;
         ImportResult = "Importing activities, please wait...";
         try
         {
             await ActivityService.ImportActivitiesForAthlete(Athlete.Id);
+            Athlete = await AthleteService.SetHasImportedActivities(Athlete.Id);
             ImportResult = "Import completed successfully";
         }
         catch (Exception ex)

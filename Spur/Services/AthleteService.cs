@@ -120,6 +120,21 @@ public class AthleteService : IAthleteService
         return athlete;
     }
 
+    public async Task<Athlete> SetHasImportedActivities(int athleteId, CancellationToken ct = default)
+    {
+        using DataContext dataContext = await _dataContextFactory.CreateDbContextAsync(ct);
+
+        Athlete athlete = await dataContext.Athletes
+            .FirstOrDefaultAsync(a => a.Id == athleteId, ct) ??
+            throw new Exception("Unknown athlete id: " + athleteId);
+
+        athlete.HasImportedActivities = true;
+
+        await dataContext.UpdateAthleteAsync(athlete, ct);
+
+        return athlete;
+    }
+
     public async Task<string> GetAccessTokenAsync(int athleteId, CancellationToken ct = default)
     {
         using DataContext dataContext = await _dataContextFactory.CreateDbContextAsync(ct);
