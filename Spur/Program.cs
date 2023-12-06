@@ -5,7 +5,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.FeatureManagement;
 using Serilog;
-using Serilog.Templates;
 using Spur;
 using Spur.Clients;
 using Spur.Data;
@@ -18,6 +17,14 @@ Log.Logger = new LoggerConfiguration()
 Log.Information("Starting Spur...");
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
+
+// Extra (optional) config file from mounted configmap when running in k8s
+string? appSettingsPath = builder.Configuration.GetValue<string>("SPUR_APPSETTINGS");
+if (!string.IsNullOrEmpty(appSettingsPath))
+{
+    Log.Information($"Adding optional config file with reloadOnChange: {appSettingsPath}");
+    builder.Configuration.AddJsonFile(appSettingsPath, optional: true, reloadOnChange: true);
+}
 
 builder.Host.UseSerilog((context, services, configuration) => configuration
     .ReadFrom.Configuration(context.Configuration)

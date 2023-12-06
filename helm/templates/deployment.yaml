@@ -20,6 +20,8 @@ spec:
       - env:
         - name: ASPNETCORE_HTTP_PORTS
           value: {{- $containerPort := 8080 }} {{ quote $containerPort }}
+        - name: SPUR_APPSETTINGS
+          value: {{ .Values.appSettingsPath }}
         envFrom:
         - secretRef:
             name: {{ include "spur.fullname" . }}
@@ -39,9 +41,14 @@ spec:
         volumeMounts:
         - mountPath: /app/storage
           name: data
+        - mountPath: {{ .Values.appSettingsPath | dir }}
+          name: config
       securityContext:
       {{- .Values.podSecurity | toYaml | nindent 8 }}
       volumes:
       - name: data
         persistentVolumeClaim:
           claimName: {{ include "spur.fullname" . }}-pvc
+      - name: config
+        configMap:
+          name: {{ include "spur.fullname" . }}

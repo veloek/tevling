@@ -50,3 +50,10 @@ strava:
   responseType: "code"
   approvalPrompt: "auto"
   scope: "read,activity:read"
+
+appSettingsPath: /etc/spur/appsettings.json
+
+featureManagement:
+  devController: false
+
+logLevel: Information
