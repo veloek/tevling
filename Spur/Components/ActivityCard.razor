@@ -50,7 +50,7 @@
     {
         if (Activity != null)
         {
-            DateTime browserTime = await BrowserTime.ConvertToLocal(Activity.Details.StartDate.UtcDateTime);
+            DateTimeOffset browserTime = await BrowserTime.ConvertToLocal(Activity.Details.StartDate);
             ActivityTime = browserTime.ToString("yyyy'-'MM'-'dd' 'HH':'mm':'ss");
         }
     }

@@ -15,12 +15,9 @@ public class BrowserTime : IBrowserTime, IAsyncDisposable
         _logger = logger;
     }
 
-    public async Task<DateTime> ConvertToLocal(DateTime dt, CancellationToken ct = default)
+    public async Task<DateTimeOffset> ConvertToLocal(DateTimeOffset dt, CancellationToken ct = default)
     {
-        if (_module == null)
-        {
-            _module = await _jsRuntime.InvokeAsync<IJSObjectReference>("import", ct, "./browser-time.js");
-        }
+        _module ??= await _jsRuntime.InvokeAsync<IJSObjectReference>("import", ct, "./browser-time.js");
 
         // This format must be supported by the Date constructor in Javascript.
         // It must also match what the script browser-time.js is returning.
@@ -42,7 +39,7 @@ public class BrowserTime : IBrowserTime, IAsyncDisposable
             throw new ArgumentException("Unable to convert DateTime: " + dt, nameof(dt));
         }
 
-        DateTime result = DateTime.ParseExact(output, format, CultureInfo.InvariantCulture);
+        DateTimeOffset result = DateTimeOffset.ParseExact(output, format, CultureInfo.InvariantCulture);
 
         return result;
     }

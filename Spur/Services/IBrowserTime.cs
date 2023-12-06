@@ -2,5 +2,5 @@ namespace Spur.Services;
 
 public interface IBrowserTime
 {
-    Task<DateTime> ConvertToLocal(DateTime dt, CancellationToken ct = default);
+    Task<DateTimeOffset> ConvertToLocal(DateTimeOffset dt, CancellationToken ct = default);
 }
