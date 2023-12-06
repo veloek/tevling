@@ -38,7 +38,7 @@ public class DevController : ControllerBase
             TotalElevationGain = 0.0f,
             Calories = 0.0f,
             Type = ActivityType.Run,
-            StartDate = DateTimeOffset.Now,
+            StartDate = DateTimeOffset.UtcNow,
             Manual = true,
         };
 
@@ -66,7 +66,7 @@ public class DevController : ControllerBase
                 TotalElevationGain = 0.0f,
                 Calories = 0.0f,
                 Type = ActivityType.Run,
-                StartDate = DateTimeOffset.Now,
+                StartDate = DateTimeOffset.UtcNow,
                 Manual = true,
             })
             .ToArray();
