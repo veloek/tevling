@@ -94,8 +94,7 @@ public class StravaController : ControllerBase
 
     private Task LogUnknownEvent(WebhookEvent @event)
     {
-        string json = JsonSerializer.Serialize(@event);
-        _logger.LogWarning("Received unknown event: {Json}", json);
+        _logger.LogWarning("Received unknown event: {@Event}", @event);
 
         return Task.CompletedTask;
     }
