@@ -1,4 +1,3 @@
-using System.Text.Json;
 using Microsoft.AspNetCore.Mvc;
 using Spur.Clients;
 using Spur.Services;
@@ -69,6 +68,8 @@ public class StravaController : ControllerBase
     {
         if (activity.SubscriptionId != _stravaConfig.SubscriptionId)
             throw new Exception("Invalid subscription ID");
+
+        _logger.LogDebug("Activity: {@Activity}", activity);
 
         try
         {
