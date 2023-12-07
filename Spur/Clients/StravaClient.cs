@@ -148,8 +148,11 @@ public class StravaClient : IStravaClient
         }
     }
 
-    public Task DeauthorizeAppAsync(CancellationToken ct = default)
+    public async Task DeauthorizeAppAsync(string accessToken, CancellationToken ct = default)
     {
-        return _httpClient.PostAsync(_stravaConfig.DeauthorizeUri, null, ct);
+        HttpRequestMessage request = new(HttpMethod.Post, _stravaConfig.DeauthorizeUri);
+        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+
+        await _httpClient.SendAsync(request, ct);
     }
 }

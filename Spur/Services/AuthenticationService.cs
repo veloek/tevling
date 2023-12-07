@@ -87,12 +87,15 @@ public class AuthenticationService : IAuthenticationService
         HttpContext httpContext = _httpContextAccessor.HttpContext
             ?? throw new InvalidOperationException("No active HttpContext");
 
-        string? athleteId = httpContext.User.Claims
+        string? athleteIdStr = httpContext.User.Claims
             .FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+
+        int athleteId = int.TryParse(athleteIdStr, out int parsed) ? parsed : default;
 
         if (deauthorizeApp)
         {
-            await _stravaClient.DeauthorizeAppAsync(ct);
+            string accessToken = await _athleteService.GetAccessTokenAsync(athleteId, ct);
+            await _stravaClient.DeauthorizeAppAsync(accessToken, ct);
         }
 
         await httpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
