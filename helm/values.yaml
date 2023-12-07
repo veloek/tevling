@@ -55,5 +55,6 @@ appSettingsPath: /etc/spur/appsettings.json
 
 featureManagement:
   devController: false
+  deauthorize: false
 
 logLevel: Information

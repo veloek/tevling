@@ -72,6 +72,8 @@ builder.Services.AddSingleton<IActivityService, ActivityService>();
 builder.Services.AddSingleton<IAthleteService, AthleteService>();
 builder.Services.AddSingleton<IChallengeService, ChallengeService>();
 
+builder.Services.AddHttpContextAccessor();
+
 builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
 builder.Services.AddScoped<IBrowserTime, BrowserTime>();
 

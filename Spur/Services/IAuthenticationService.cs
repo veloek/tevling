@@ -4,7 +4,7 @@ namespace Spur.Services;
 
 public interface IAuthenticationService
 {
-    Task LoginAsync(HttpContext httpContext, Athlete athlete,
-        CancellationToken ct = default);
+    Task LoginAsync(Athlete athlete, CancellationToken ct = default);
     Task<Athlete> GetCurrentAthleteAsync(CancellationToken ct = default);
+    Task LogoutAsync(bool deauthorizeApp = false, CancellationToken ct = default);
 }

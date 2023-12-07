@@ -1,4 +1,5 @@
 @page "/profile"
+@using Microsoft.FeatureManagement;
 
 <h1>Profile</h1>
 
@@ -27,6 +28,16 @@
     </button>
 </p>
 
+<h5>Sign out</h5>
+<p>If using a public/shared computer, please remember to sign out.<br />
+<a class="btn btn-secondary" href="/auth/logout">Sign out</a></p>
+
+@if (@FeatureGate) {
+    <h5>Delete account</h5>
+    <p class="text-danger">Delete user account and deauthorize application. NB! This cannot be undone!<br />
+    <a class="btn btn-danger" href="/auth/logout?deauthorize=true">Forget me</a></p>
+}
+
 @if (!string.IsNullOrEmpty(ImportResult))
 {
     <p>@ImportResult</p>
@@ -35,14 +46,21 @@
 @inject IAuthenticationService AuthenticationService
 @inject IActivityService ActivityService
 @inject IAthleteService AthleteService
+@inject IFeatureManager FeatureManager
 @code {
     private Athlete Athlete { get; set; } = default!;
     private bool Importing { get; set; }
-    private string? ImportResult;
+    private string? ImportResult { get; set; }
+    private bool FeatureGate { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
         Athlete = await AuthenticationService.GetCurrentAthleteAsync();
+
+        if (await FeatureManager.IsEnabledAsync(FeatureFlags.Deauthorize))
+        {
+            FeatureGate = true;
+        }
     }
 
     public async Task Import()

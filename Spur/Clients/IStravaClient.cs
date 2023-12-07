@@ -20,4 +20,6 @@ public interface IStravaClient
         int? page = null,
         int? pageSize = null,
         CancellationToken ct = default);
+
+    Task DeauthorizeAppAsync(CancellationToken ct = default);
 }

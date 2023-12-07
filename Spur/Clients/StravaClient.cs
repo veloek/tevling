@@ -147,4 +147,9 @@ public class StravaClient : IStravaClient
             throw;
         }
     }
+
+    public Task DeauthorizeAppAsync(CancellationToken ct = default)
+    {
+        return _httpClient.PostAsync(_stravaConfig.DeauthorizeUri, null, ct);
+    }
 }

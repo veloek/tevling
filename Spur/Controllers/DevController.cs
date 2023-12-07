@@ -7,7 +7,7 @@ namespace Spur.Controllers;
 
 [ApiController]
 [Route("dev")]
-[FeatureGate("DevController")]
+[FeatureGate(FeatureFlags.DevController)]
 public class DevController : ControllerBase
 {
     public DevController()
@@ -21,6 +21,13 @@ public class DevController : ControllerBase
     {
         string uri = QueryHelpers.AddQueryString(redirectUri, "code", "code");
         return Redirect(uri);
+    }
+
+    [HttpPost]
+    [Route("strava/deauthorize")]
+    public async Task<IActionResult> Deauthorize()
+    {
+        return Ok();
     }
 
     [HttpGet]

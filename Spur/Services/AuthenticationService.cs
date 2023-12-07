@@ -2,6 +2,7 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Components.Authorization;
+using Spur.Clients;
 using Spur.Model;
 
 namespace Spur.Services;
@@ -11,18 +12,24 @@ public class AuthenticationService : IAuthenticationService
     private readonly ILogger<AuthenticationService> _logger;
     private readonly AuthenticationStateProvider _authenticationStateProvider;
     private readonly IAthleteService _athleteService;
+    private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly IStravaClient _stravaClient;
 
     public AuthenticationService(
         ILogger<AuthenticationService> logger,
         AuthenticationStateProvider authenticationStateProvider,
-        IAthleteService athleteService)
+        IAthleteService athleteService,
+        IHttpContextAccessor httpContextAccessor,
+        IStravaClient stravaClient)
     {
         _logger = logger;
         _authenticationStateProvider = authenticationStateProvider;
         _athleteService = athleteService;
+        _httpContextAccessor = httpContextAccessor;
+        _stravaClient = stravaClient;
     }
 
-    public async Task LoginAsync(HttpContext httpContext, Athlete athlete, CancellationToken ct = default)
+    public async Task LoginAsync(Athlete athlete, CancellationToken ct = default)
     {
         List<Claim> claims = new()
         {
@@ -40,6 +47,9 @@ public class AuthenticationService : IAuthenticationService
             IsPersistent = true,
             RedirectUri = "/",
         };
+
+        HttpContext httpContext = _httpContextAccessor.HttpContext
+            ?? throw new InvalidOperationException("No active HttpContext");
 
         await httpContext.SignInAsync(
             CookieAuthenticationDefaults.AuthenticationScheme,
@@ -70,5 +80,23 @@ public class AuthenticationService : IAuthenticationService
         }
 
         return athlete;
+    }
+
+    public async Task LogoutAsync(bool deauthorizeApp = false, CancellationToken ct = default)
+    {
+        HttpContext httpContext = _httpContextAccessor.HttpContext
+            ?? throw new InvalidOperationException("No active HttpContext");
+
+        string? athleteId = httpContext.User.Claims
+            .FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+
+        if (deauthorizeApp)
+        {
+            await _stravaClient.DeauthorizeAppAsync(ct);
+        }
+
+        await httpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+
+        _logger.LogInformation("User ID {AthleteId} logged out at {DateTime}", athleteId, DateTime.Now);
     }
 }

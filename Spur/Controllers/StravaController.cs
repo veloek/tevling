@@ -109,7 +109,7 @@ public class StravaController : ControllerBase
     /// <exception cref="Exception"></exception>
     [HttpGet]
     [Route("authorize")]
-    public async Task<ActionResult> Authorize([FromQuery] string code, [FromQuery] string? returnUrl, CancellationToken ct)
+    public async Task<IActionResult> Authorize([FromQuery] string code, [FromQuery] string? returnUrl, CancellationToken ct)
     {
         TokenResponse tokenResponse = await _stravaClient.GetAccessTokenByAuthorizationCodeAsync(code, ct);
 
@@ -124,7 +124,7 @@ public class StravaController : ControllerBase
                 accessTokenExpiry: DateTimeOffset.FromUnixTimeSeconds(tokenResponse.ExpiresAt),
                 ct);
 
-            await _authenticationService.LoginAsync(HttpContext, athlete, ct);
+            await _authenticationService.LoginAsync(athlete, ct);
         }
         else
         {
