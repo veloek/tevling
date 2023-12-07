@@ -9,7 +9,8 @@
     have @Athlete.Followers?.Count followers.
 </p>
 
-<h5>Import activities from Strava</h5>
+<h4>Import activities from Strava</h4>
+<p>Import last 30 days of activities to get started! <em>(This can only be done once)</em></p>
 <p>
     <button class="btn btn-primary" @onclick="Import" disabled="@(Importing || Athlete.HasImportedActivities)">
         @if (Athlete.HasImportedActivities)
@@ -22,25 +23,24 @@
         }
         else
         {
-            <text>Import activities (30d)</text>
+            <text>Import activities</text>
         }
     </button>
 </p>
-
-<h5>Sign out</h5>
-<p>If using a public/shared computer, please remember to sign out.<br />
-<a class="btn btn-secondary" href="/auth/logout">Sign out</a></p>
-
-<FeatureGate FeatureFlag="FeatureFlag.Deauthorize">
-    <h5>Delete account</h5>
-    <p class="text-danger">Delete user account and deauthorize application. NB! This cannot be undone!<br />
-    <a class="btn btn-danger" href="/auth/logout?deauthorize=true">Forget me</a></p>
-</FeatureGate>
-
 @if (!string.IsNullOrEmpty(ImportResult))
 {
     <p>@ImportResult</p>
 }
+
+<h4>Sign out</h4>
+<p>If using a public/shared computer, please remember to sign out.</p>
+<p><a class="btn btn-secondary" href="/auth/logout">Sign out</a></p>
+
+<FeatureGate FeatureFlag="FeatureFlag.Deauthorize">
+    <h4>Delete account</h4>
+    <p class="text-danger">Delete user account and deauthorize application. NB! This cannot be undone!</p>
+    <p><a class="btn btn-danger" href="/auth/logout?deauthorize=true">Forget me</a></p>
+</FeatureGate>
 
 @inject IAuthenticationService AuthenticationService
 @inject IActivityService ActivityService
