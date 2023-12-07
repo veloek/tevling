@@ -7,6 +7,6 @@ namespace Spur;
 public static class FeatureFlags
 {
     // NB! These names should match those in appsettings.json.
-    public const string DevController = "DevController";
+    public const string DevTools = "DevTools";
     public const string Deauthorize = "Deauthorize";
 }

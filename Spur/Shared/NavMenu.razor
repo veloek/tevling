@@ -51,7 +51,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        if (await FeatureManager.IsEnabledAsync(FeatureFlags.DevController))
+        if (await FeatureManager.IsEnabledAsync(FeatureFlags.DevTools))
         {
             FeatureGate = true;
         }

@@ -54,7 +54,7 @@ strava:
 appSettingsPath: /etc/spur/appsettings.json
 
 featureManagement:
-  devController: false
+  devTools: false
   deauthorize: false
 
 logLevel: Information
