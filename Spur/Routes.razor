@@ -1,15 +1,43 @@
-@using Spur.Pages
+@using System.Reflection
+@using Microsoft.FeatureManagement
 
-<Router AppAssembly="@typeof(App).Assembly">
+<Router AppAssembly="@typeof(App).Assembly" NotFound="NotFound">
     <Found Context="routeData">
-        <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
-        <FocusOnNavigate RouteData="@routeData" Selector="h1" />
+        @{
+            FeatureGateAttribute? attribute = routeData.PageType.GetCustomAttribute<FeatureGateAttribute>();
+        }
+        @if (attribute == null || IsEnabled(attribute))
+        {
+            <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
+            <FocusOnNavigate RouteData="@routeData" Selector="h1" />
+        }
+        else
+        {
+            @NotFound
+        }
     </Found>
-    <NotFound>
+</Router>
+
+@inject IHttpContextAccessor HttpContextAccessor
+@code
+{
+    private bool IsEnabled(FeatureGateAttribute a)
+    {
+        if (HttpContextAccessor.HttpContext == null)
+            return false;
+
+        IFeatureManagerSnapshot fm = HttpContextAccessor.HttpContext.RequestServices.GetRequiredService<IFeatureManagerSnapshot>();
+        return (a.RequirementType != RequirementType.All)
+            ? a.Features.Any((string feature) => fm.IsEnabledAsync(feature).GetAwaiter().GetResult())
+            : a.Features.All((string feature) => fm.IsEnabledAsync(feature).GetAwaiter().GetResult());
+    }
+
+    private RenderFragment NotFound => __builder =>
+    {
         <PageTitle>Spur - Not found</PageTitle>
         <center>
             <h1>404</h1>
             <p role="alert">Sorry, there's nothing at this address.</p>
         </center>
-    </NotFound>
-</Router>
+    };
+}
