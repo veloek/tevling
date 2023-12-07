@@ -24,6 +24,10 @@ spec:
     name: spur
     jsonPointers:
     - /data
+  - kind: ConfigMap
+    name: spur
+    jsonPointers:
+    - /data
   syncPolicy:
     automated: {}
     syncOptions:
