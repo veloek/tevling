@@ -78,7 +78,7 @@ public class StravaController : ControllerBase
                 ("activity", "update") => _activityService.UpdateActivityAsync(activity.OwnerId, activity.ObjectId, ct),
                 ("activity", "delete") => _activityService.DeleteActivityAsync(activity.OwnerId, activity.ObjectId, ct),
                 // ("athlete", "create") => CreateAthlete(activity.OwnerId, activity.ObjectId, ct),
-                // ("athlete", "update") => UpdateAthlete(activity.OwnerId, activity.ObjectId, ct),
+                ("athlete", "update") when IsDeauthorizeEvent(activity) => _athleteService.DeleteAthleteAsync(activity.OwnerId, ct),
                 // ("athlete", "delete") => DeleteAthlete(activity.OwnerId, activity.ObjectId, ct),
                 _ => LogUnknownEvent(activity),
             });
@@ -88,6 +88,9 @@ public class StravaController : ControllerBase
             _logger.LogError(e, "Error handling activity: {Message}", e.Message);
         }
     }
+
+    private static bool IsDeauthorizeEvent(WebhookEvent @event)
+        => @event.Updates?.Contains(new("authorized", "false")) == true;
 
     private Task LogUnknownEvent(WebhookEvent @event)
     {

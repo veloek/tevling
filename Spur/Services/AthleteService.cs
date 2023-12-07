@@ -170,4 +170,15 @@ public class AthleteService : IAthleteService
     {
         return _athleteFeed.AsObservable();
     }
+
+    public async Task DeleteAthleteAsync(long stravaId, CancellationToken ct = default)
+    {
+        using DataContext dataContext = await _dataContextFactory.CreateDbContextAsync(ct);
+
+        Athlete athlete = await dataContext.Athletes
+            .FirstOrDefaultAsync(a => a.StravaId == stravaId, ct) ??
+            throw new Exception("Unknown Strava athlete id: " + stravaId);
+
+        await dataContext.RemoveAthleteAsync(athlete, ct);
+    }
 }

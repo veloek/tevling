@@ -19,4 +19,6 @@ public interface IAthleteService
     Task<string> GetAccessTokenAsync(int athleteId, CancellationToken ct = default);
 
     IObservable<FeedUpdate<Athlete>> GetAthleteFeed();
+
+    Task DeleteAthleteAsync(long stravaId, CancellationToken ct = default);
 }
