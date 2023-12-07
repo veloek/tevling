@@ -7,7 +7,7 @@ namespace Spur.Controllers;
 
 [ApiController]
 [Route("dev")]
-[FeatureGate(FeatureFlags.DevTools)]
+[FeatureGate(FeatureFlag.DevTools)]
 public class DevController : ControllerBase
 {
     public DevController()
