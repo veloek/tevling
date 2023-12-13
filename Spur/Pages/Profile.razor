@@ -2,15 +2,16 @@
 
 <h1>Profile</h1>
 
-<h5>Hello, @Athlete.Name!</h5>
+<h5 class="mt-3">Hello, @Athlete.Name!</h5>
 <p>
-    You joined Spur @Athlete.Created.ToString("d").
+    You joined Spur @CreatedTime.
     You're currently following @Athlete.Following?.Count <a href="/athletes">athletes</a> and
     have @Athlete.Followers?.Count followers.
 </p>
 
-<h4>Import activities from Strava</h4>
-<p>Import last 30 days of activities to get started! <em>(This can only be done once)</em></p>
+<h4 class="mt-4">Import activities from Strava</h4>
+<p>Import last 30 days of activities to get started!<br />
+<em style="font-size: 0.9rem;">(This can only be done once)</em></p>
 <p>
     <button class="btn btn-primary" @onclick="Import" disabled="@(Importing || Athlete.HasImportedActivities)">
         @if (Athlete.HasImportedActivities)
@@ -32,27 +33,37 @@
     <p>@ImportResult</p>
 }
 
-<h4>Sign out</h4>
+<h4 class="mt-4">Sign out</h4>
 <p>If using a public/shared computer, please remember to sign out.</p>
 <p><a class="btn btn-secondary" href="/auth/logout">Sign out</a></p>
 
 <FeatureGate FeatureFlag="FeatureFlag.Deauthorize">
+    <hr class="my-4" />
     <h4>Delete account</h4>
-    <p class="text-danger">Delete user account and deauthorize application. NB! This cannot be undone!</p>
+    <p class="text-danger">Delete user account and deauthorize application. All data will be removed.<br />
+    <em>NB! This cannot be undone!</em></p>
     <p><a class="btn btn-danger" href="/auth/logout?deauthorize=true">Forget me</a></p>
 </FeatureGate>
 
 @inject IAuthenticationService AuthenticationService
 @inject IActivityService ActivityService
 @inject IAthleteService AthleteService
+@inject IBrowserTime BrowserTime
 @code {
     private Athlete Athlete { get; set; } = default!;
+    private string? CreatedTime;
     private bool Importing { get; set; }
     private string? ImportResult { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
         Athlete = await AuthenticationService.GetCurrentAthleteAsync();
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        DateTimeOffset browserTime = await BrowserTime.ConvertToLocal(Athlete.Created);
+        CreatedTime = browserTime.ToString("yyyy'-'MM'-'dd");
     }
 
     public async Task Import()
