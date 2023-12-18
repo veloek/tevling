@@ -129,7 +129,7 @@
 
     private async Task DeleteChallenge()
     {
-        bool confirmed = await JSRuntime.InvokeAsync<bool>("confirm", "Are you sure?");
+        bool confirmed = await JSRuntime.InvokeAsync<bool>("confirm", "Are you sure you want to delete the challenge?");
         if (confirmed)
         {
             if (Challenge != null)
