@@ -40,34 +40,42 @@
                 step = 3;
             }
         }
-        else if (activity.Details.StartDate.IsSameMonthUtc())
+        else if (activity.Details.StartDate.IsLastWeekStartingOnMondayUtc())
         {
             if (step <= 3)
             {
-                <li class="list-group-item">This month</li>
+                <li class="list-group-item">Last week</li>
                 step = 4;
+            }
+        }
+        else if (activity.Details.StartDate.IsSameMonthUtc())
+        {
+            if (step <= 4)
+            {
+                <li class="list-group-item">This month</li>
+                step = 5;
             }
         }
         else if (activity.Details.StartDate.IsLastMonthUtc())
         {
-            if (step <= 4)
+            if (step <= 5)
             {
                 <li class="list-group-item">Last month</li>
-                step = 5;
+                step = 6;
             }
         }
         else if (activity.Details.StartDate.IsSameYearUtc())
         {
-            if (step <= 5)
+            if (step <= 6)
             {
                 <li class="list-group-item">This year</li>
-                step = 6;
+                step = 7;
             }
         }
-        else if (step <= 6)
+        else if (step <= 7)
         {
             <li class="list-group-item">Older</li>
-            step = 7;
+            step = 8;
         }
 
         <ActivityCard Activity="activity"></ActivityCard>
