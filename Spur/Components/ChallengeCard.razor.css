@@ -2,23 +2,21 @@
     width: 18rem;
     height: fit-content;
     position: relative;
+    cursor: pointer;
+    box-shadow: 0px 0px 5px -1px #c1c1c1;
+    transition: box-shadow .2s;
 }
 
-.challenge-card > .backside {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    opacity: 0;
-    transition: opacity 0.2s;
-    color: white;
-    background-color: rgba(0, 0, 0, 0.5);
-    border-radius: 0.25rem;
+.page[data-bs-theme="dark"] .challenge-card {
+    box-shadow: 0px 0px 5px -1px #666;
 }
 
-.challenge-card:hover > .backside {
-    opacity: 1;
+.challenge-card:hover {
+    box-shadow: 1px 1px 8px 0px #c1c1c1;
+}
+
+.page[data-bs-theme="dark"] .challenge-card:hover {
+    box-shadow: 1px 1px 8px 0px #666;
 }
 
 .challenge-title {

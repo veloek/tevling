@@ -1,12 +1,9 @@
 @if (Challenge != null)
 {
-    <div class="card challenge-card">
+    <div class="card challenge-card" @onclick="ToggleScoreBoard">
         @if (ShowScoreBoard && ScoreBoard != null)
         {
             <div class="card-header @HeaderStyle d-flex align-items-center cg-2">
-                <button class="btn btn-sm btn-secondary" @onclick="ToggleScoreBoard" style="margin-left: -0.5rem;">
-                    <span class="oi oi-action-undo" aria-hidden="true" />
-                </button>
                 <p class="challenge-title mb-0">@Challenge.Title</p>
             </div>
             <ul class="list-group list-group-flush list-group-numbered overflow-auto" style="max-height: 14rem">
@@ -30,6 +27,7 @@
                     <h5 class="card-title">@Challenge.Title</h5>
                     <p class="card-text">@Challenge.Description</p>
                 </div>
+
                 <div class="d-flex flex-wrap cg-1 rg-1">
                     @if (Challenge.ActivityTypes.Length > 0)
                     {
@@ -43,40 +41,32 @@
                         <span class="badge bg-primary">All activities</span>
                     }
                 </div>
+
                 <p class="card-text">@Challenge.Athletes?.Count participants</p>
-            </div>
-            <div class="backside d-flex flex-column rg-2 align-items-center justify-content-center">
-                <div class="d-flex cg-2">
-                    @if (Challenge.Athletes?.Count > 0)
-                    {
-                        <button class="btn btn-primary" @onclick="ToggleScoreBoard">
-                            <span class="oi oi-list" aria-hidden="true" />
-                            Stats
-                        </button>
-                    }
-                    @if (HasJoined == false)
-                    {
-                        <button class="btn btn-info" @onclick="JoinChallenge">
-                            <span class="oi oi-heart" aria-hidden="true" />
-                            Join
-                        </button>
-                    }
-                    else if (HasJoined == true)
-                    {
-                        <button class="btn btn-info" @onclick="LeaveChallenge">
-                            <span class="oi oi-heart" aria-hidden="true" />
-                            Leave
-                        </button>
-                    }
-                </div>
+
+                @if (HasJoined == false)
+                {
+                    <button class="btn btn-primary" @onclick="JoinChallenge" @onclick:stopPropagation="true">
+                        <span class="oi oi-heart" aria-hidden="true" />
+                        Join
+                    </button>
+                }
+                else if (HasJoined == true)
+                {
+                    <button class="btn btn-secondary" @onclick="LeaveChallenge" @onclick:stopPropagation="true">
+                        <span class="oi oi-account-logout" aria-hidden="true" />
+                        Leave
+                    </button>
+                }
+
                 @if (Challenge.CreatedById == AthleteId)
                 {
                     <div class="d-flex cg-2">
-                        <a class="btn btn-secondary" href="challenges/@Challenge.Id/edit">
+                        <a class="btn btn-sm btn-secondary flex-fill" href="challenges/@Challenge.Id/edit">
                             <span class="oi oi-pencil" aria-hidden="true" />
                             Edit
                         </a>
-                        <button class="btn btn-danger" @onclick="DeleteChallenge">
+                        <button class="btn btn-sm btn-danger flex-fill" @onclick="DeleteChallenge" @onclick:stopPropagation="true">
                             <span class="oi oi-trash" aria-hidden="true" />
                             Delete
                         </button>
