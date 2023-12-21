@@ -1,5 +1,3 @@
-using Spur.Model;
-
 namespace Spur.Services;
 
 public interface IAthleteService

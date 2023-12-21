@@ -1,5 +1,3 @@
-using Microsoft.AspNetCore.Components;
-
 namespace Spur.Shared;
 
 public partial class NavMenu : ComponentBase

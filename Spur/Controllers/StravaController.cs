@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
-using Spur.Clients;
-using Spur.Services;
 using Spur.Strava;
+using RouteAttribute = Microsoft.AspNetCore.Mvc.RouteAttribute;
 
 namespace Spur.Controllers;
 

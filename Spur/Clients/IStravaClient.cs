@@ -1,4 +1,5 @@
 using Spur.Strava;
+using Activity = Spur.Strava.Activity;
 
 namespace Spur.Clients;
 

@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
-using Spur.Services;
+using RouteAttribute = Microsoft.AspNetCore.Mvc.RouteAttribute;
 
 namespace Spur.Controllers;
 

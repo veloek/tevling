@@ -5,10 +5,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.FeatureManagement;
 using Serilog;
-using Spur;
-using Spur.Clients;
-using Spur.Data;
-using Spur.Services;
 
 Log.Logger = new LoggerConfiguration()
     .WriteTo.Console()

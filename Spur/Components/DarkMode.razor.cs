@@ -1,6 +1,3 @@
-using Microsoft.AspNetCore.Components;
-using Spur.Utils;
-
 namespace Spur.Components;
 
 public partial class DarkMode : ComponentBase

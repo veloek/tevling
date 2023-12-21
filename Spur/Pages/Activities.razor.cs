@@ -1,8 +1,3 @@
-using System.Reactive.Linq;
-using Microsoft.AspNetCore.Components;
-using Spur.Model;
-using Spur.Services;
-
 namespace Spur.Pages;
 
 public partial class Activities : ComponentBase

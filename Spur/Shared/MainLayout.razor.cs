@@ -1,8 +1,3 @@
-using Microsoft.AspNetCore.Components;
-using Spur.Model;
-using Spur.Services;
-using Spur.Utils;
-
 namespace Spur.Shared;
 
 public partial class MainLayout : LayoutComponentBase

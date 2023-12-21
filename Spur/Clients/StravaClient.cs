@@ -3,6 +3,7 @@ using System.Net.Http.Headers;
 using System.Text.Json;
 using System.Web;
 using Spur.Strava;
+using Activity = Spur.Strava.Activity;
 
 namespace Spur.Clients;
 

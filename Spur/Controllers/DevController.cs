@@ -2,6 +2,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.FeatureManagement.Mvc;
 using Spur.Strava;
+using Activity = Spur.Strava.Activity;
+using Athlete = Spur.Strava.Athlete;
+using RouteAttribute = Microsoft.AspNetCore.Mvc.RouteAttribute;
 
 namespace Spur.Controllers;
 

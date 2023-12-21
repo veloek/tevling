@@ -1,7 +1,4 @@
-using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
-using Spur.Model;
-using Spur.Services;
 
 namespace Spur.Components;
 

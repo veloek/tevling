@@ -1,0 +1,9 @@
+global using System.Reactive.Linq;
+global using Microsoft.AspNetCore.Components;
+global using Spur;
+global using Spur.Clients;
+global using Spur.Components;
+global using Spur.Data;
+global using Spur.Model;
+global using Spur.Services;
+global using Spur.Utils;

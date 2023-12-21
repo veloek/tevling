@@ -1,9 +1,5 @@
-using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using Microsoft.EntityFrameworkCore;
-using Spur.Clients;
-using Spur.Data;
-using Spur.Model;
 
 namespace Spur.Services;
 
