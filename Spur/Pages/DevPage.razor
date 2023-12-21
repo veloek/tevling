@@ -6,13 +6,3 @@
 <h1>Developer Tools</h1>
 
 <DevTools Athlete="Athlete" />
-
-@inject IAuthenticationService AuthenticationService
-@code {
-    private Athlete Athlete { get; set; } = default!;
-
-    protected override async Task OnInitializedAsync()
-    {
-        Athlete = await AuthenticationService.GetCurrentAthleteAsync();
-    }
-}

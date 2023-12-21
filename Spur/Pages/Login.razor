@@ -19,11 +19,3 @@
     </form>
     <Copyright />
 </section>
-
-@inject StravaConfig StravaConfig
-@code {
-    [SupplyParameterFromQuery(Name = "returnUrl")]
-    private string ReturnUrl { get; set; } = string.Empty;
-
-    private string RedirectUri => $"{StravaConfig.RedirectUri}?returnUrl={Uri.EscapeDataString(ReturnUrl)}";
-}

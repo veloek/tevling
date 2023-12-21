@@ -24,32 +24,3 @@
         </main>
     </div>
 }
-
-@inject IAuthenticationService AuthenticationService
-@inject Blazored.LocalStorage.ILocalStorageService LocalStorage
-@code {
-    private Athlete Athlete { get; set; } = default!;
-    private string? Theme { get; set; }
-    private bool ThemeSet { get; set; }
-
-    protected override async Task OnInitializedAsync()
-    {
-        Athlete = await AuthenticationService.GetCurrentAthleteAsync();
-    }
-
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender)
-        {
-            Theme = await LocalStorage.GetThemeAsync();
-            ThemeSet = true;
-            StateHasChanged();
-        }
-    }
-
-    private void OnThemeChange(string newTheme)
-    {
-        Theme = newTheme;
-        StateHasChanged();
-    }
-}

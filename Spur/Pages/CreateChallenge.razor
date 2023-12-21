@@ -5,23 +5,3 @@
 <h1>Create challenge</h1>
 
 <ChallengeForm SubmitLabel="Create" OnSubmitAsync="OnSubmit" OnCancelAsync="OnCancel" />
-
-@inject IChallengeService ChallengeService
-@inject IJSRuntime JSRuntime
-@code {
-    private async Task OnSubmit(ChallengeFormModel challenge)
-    {
-        await ChallengeService.CreateChallengeAsync(challenge);
-        await GoBack();
-    }
-
-    private Task OnCancel()
-    {
-        return GoBack();
-    }
-
-    private async Task GoBack()
-    {
-        await JSRuntime.InvokeVoidAsync("history.go", -1);
-    }
-}

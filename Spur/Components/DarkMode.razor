@@ -3,33 +3,3 @@
     <input @bind="IsDarkMode" class="form-check-input" type="checkbox" role="switch" />
     <span class="oi oi-moon" />
 </div>
-
-@inject Blazored.LocalStorage.ILocalStorageService LocalStorage
-@code
-{
-    [Parameter]
-    public Action<string>? OnChange { get; set; }
-
-    private bool _isDarkMode;
-    private bool IsDarkMode
-    {
-        get => _isDarkMode;
-        set
-        {
-            _isDarkMode = value;
-            string theme = _isDarkMode ? "dark" : "light";
-            _ = LocalStorage.SetThemeAsync(theme);
-            OnChange?.Invoke(theme);
-        }
-    }
-
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender)
-        {
-            string currentTheme = await LocalStorage.GetThemeAsync();
-            _isDarkMode = currentTheme == "dark";
-            StateHasChanged();
-        }
-    }
-}

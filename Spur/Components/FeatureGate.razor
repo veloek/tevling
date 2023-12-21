@@ -1,22 +1,4 @@
-@using Microsoft.FeatureManagement;
-
 @if (FeatureEnabled)
 {
     @ChildContent
-}
-
-@inject IFeatureManager FeatureManager
-@code
-{
-    [Parameter] public FeatureFlag? FeatureFlag { get; set; }
-    [Parameter] public RenderFragment? ChildContent { get; set; }
-    private bool FeatureEnabled { get; set; }
-
-    protected override async Task OnInitializedAsync()
-    {
-        if (FeatureFlag != null && await FeatureManager.IsEnabledAsync(FeatureFlag))
-        {
-            FeatureEnabled = true;
-        }
-    }
 }
