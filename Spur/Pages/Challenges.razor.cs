@@ -1,6 +1,6 @@
 namespace Spur.Pages;
 
-public partial class Challenges : ComponentBase
+public partial class Challenges : ComponentBase, IDisposable
 {
 
     [Inject]
@@ -119,5 +119,10 @@ public partial class Challenges : ComponentBase
             .ToArray();
 
         InvokeAsync(StateHasChanged);
+    }
+
+    public void Dispose()
+    {
+        _challengeFeedSubscription?.Dispose();
     }
 }

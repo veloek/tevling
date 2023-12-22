@@ -1,6 +1,6 @@
 namespace Spur.Pages;
 
-public partial class Activities : ComponentBase
+public partial class Activities : ComponentBase, IDisposable
 {
     [Inject]
     IActivityService ActivityService { get; set; } = null!;
@@ -122,5 +122,10 @@ public partial class Activities : ComponentBase
             .ToArray();
 
         InvokeAsync(StateHasChanged);
+    }
+
+    public void Dispose()
+    {
+        _activityFeedSubscription?.Dispose();
     }
 }

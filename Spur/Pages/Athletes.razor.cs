@@ -1,6 +1,6 @@
 namespace Spur.Pages;
 
-public partial class Athletes : ComponentBase
+public partial class Athletes : ComponentBase, IDisposable
 {
     [Inject]
     IAthleteService AthleteService { get; set; } = null!;
@@ -116,5 +116,10 @@ public partial class Athletes : ComponentBase
             .ToArray();
 
         InvokeAsync(StateHasChanged);
+    }
+
+    public void Dispose()
+    {
+        _athleteFeedSubscription?.Dispose();
     }
 }
