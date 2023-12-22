@@ -110,23 +110,25 @@ public class ActivityService : IActivityService
         _activityFeed.OnNext(new FeedUpdate<Activity> { Item = activity, Action = FeedAction.Delete });
     }
 
-    public async Task<Activity[]> GetActivitiesForAthleteAsync(int athleteId, int pageSize, int page = 0,
+    public async Task<Activity[]> GetActivitiesAsync(ActivityFilter filter, int pageSize, int page = 0,
         CancellationToken ct = default)
     {
         using DataContext dataContext = await _dataContextFactory.CreateDbContextAsync(ct);
 
         Athlete athlete = await dataContext.Athletes
-            .Include(a => a.Following)
-            .FirstOrDefaultAsync(a => a.Id == athleteId, ct)
-                ?? throw new Exception($"Unknown athlete ID {athleteId}");
+            .AsQueryable()
+            .If(filter.IncludeFollowing, q => q.Include(a => a.Following))
+            .FirstOrDefaultAsync(a => a.Id == filter.AthleteId, ct)
+                ?? throw new Exception($"Unknown athlete ID {filter.AthleteId}");
 
         Activity[] activities = await dataContext.Activities
-            .Include(a => a.Details) // TODO: Is this needed?
             .Include(a => a.Athlete)
             .ThenInclude(a => a!.Following)
             .Where(activity => activity.AthleteId == athlete.Id
-                            || athlete.Following!.Select(a => a.Id).Contains(activity.AthleteId))
+                            || (filter.IncludeFollowing
+                                && athlete.Following!.Select(a => a.Id).Contains(activity.AthleteId)))
             .OrderByDescending(activity => activity.Details.StartDate)
+            .ThenBy(activity => activity.Id) // Need stable sorting for paging
             .Skip(page * pageSize)
             .Take(pageSize)
             .ToArrayAsync(ct);

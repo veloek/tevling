@@ -16,6 +16,7 @@ public partial class Activities : ComponentBase, IDisposable
 
     private bool Importing { get; set; }
     private bool HasMore { get; set; } = true;
+    private bool Reloading { get; set; }
     private Activity[] ActivityList = [];
     private bool ShowOnlyMine
     {
@@ -23,12 +24,12 @@ public partial class Activities : ComponentBase, IDisposable
         set
         {
             _showOnlyMine = value;
-            UpdateActivities();
+            OnFilterChange();
         }
     }
     private bool _showOnlyMine;
     private Athlete _athlete { get; set; } = default!;
-    private List<Activity> _activities = new();
+    private List<Activity> _activities = [];
     private IDisposable? _activityFeedSubscription;
     private int _pageSize = 50;
     private int _page = 0;
@@ -45,28 +46,41 @@ public partial class Activities : ComponentBase, IDisposable
 
         _athlete = await AuthenticationService.GetCurrentAthleteAsync();
 
-        await FetchActivities(_athlete.Id);
-        SubscribeToActivityFeed(_athlete.Id);
+        await FetchActivities();
+        SubscribeToActivityFeed();
+    }
+
+    private void OnFilterChange()
+    {
+        _activities = [];
+        _page = -1;
+        HasMore = true;
+        Reloading = true;
+        UpdateActivities();
     }
 
     private async Task LoadMore(CancellationToken ct)
     {
         int prevCount = _activities.Count;
         _page++;
-        await FetchActivities(_athlete.Id);
+        await FetchActivities(ct);
         HasMore = _activities.Count > prevCount;
+        Reloading = false;
         StateHasChanged();
     }
 
-    private async Task FetchActivities(int athleteId)
+    private async Task FetchActivities(CancellationToken ct = default)
     {
-        Activity[] activities = await ActivityService.GetActivitiesForAthleteAsync(athleteId, _pageSize, _page);
+        ActivityFilter filter = new(
+            AthleteId: _athlete.Id,
+            IncludeFollowing: !ShowOnlyMine);
+        Activity[] activities = await ActivityService.GetActivitiesAsync(filter, _pageSize, _page, ct);
         AddActivities(activities);
     }
 
-    private void SubscribeToActivityFeed(int athleteId)
+    private void SubscribeToActivityFeed()
     {
-        _activityFeedSubscription = ActivityService.GetActivityFeedForAthlete(athleteId)
+        _activityFeedSubscription = ActivityService.GetActivityFeedForAthlete(_athlete.Id)
             .Catch<FeedUpdate<Activity>, Exception>(err =>
             {
                 Logger.LogError(err, "Error in activity feed");
@@ -116,6 +130,8 @@ public partial class Activities : ComponentBase, IDisposable
 
     private void UpdateActivities()
     {
+        // Even if activities from the DB are filtered and sorted, we need to
+        // filter and sort here as well due to added activities from the feed.
         ActivityList = _activities
             .Where(activity => !ShowOnlyMine || activity.AthleteId == _athlete.Id)
             .OrderByDescending(activity => activity.Details.StartDate)
