@@ -18,13 +18,13 @@ public partial class Athletes : ComponentBase, IDisposable
         set
         {
             _showOnlyFollowing = value;
-            UpdateAthletes();
+            OnFilterChange();
         }
     }
     private Athlete[] AthleteList { get; set; } = [];
     private Athlete Athlete { get; set; } = default!;
     private bool HasMore { get; set; } = true;
-    private List<Athlete> _athletes = new();
+    private List<Athlete> _athletes = [];
     private IDisposable? _athleteFeedSubscription;
     private int _pageSize = 10;
     private int _page = 0;
@@ -36,18 +36,28 @@ public partial class Athletes : ComponentBase, IDisposable
         SubscribeToAthleteFeed();
     }
 
+
+    private void OnFilterChange()
+    {
+        _athletes = [];
+        _page = -1;
+        HasMore = true;
+        UpdateAthletes();
+    }
+
     private async Task LoadMore(CancellationToken ct)
     {
         int prevCount = _athletes.Count;
         _page++;
-        await FetchAthletes();
+        await FetchAthletes(ct);
         HasMore = _athletes.Count > prevCount;
         StateHasChanged();
     }
 
-    private async Task FetchAthletes()
+    private async Task FetchAthletes(CancellationToken ct = default)
     {
-        Athlete[] athletes = await AthleteService.GetAthletesAsync(_pageSize, _page);
+        AthleteFilter filter = new(ShowOnlyFollowing ? Athlete.Id : null);
+        Athlete[] athletes = await AthleteService.GetAthletesAsync(filter, _pageSize, _page, ct);
         AddAthletes(athletes);
     }
 

@@ -4,7 +4,8 @@ public interface IAthleteService
 {
     Task<Athlete?> GetAthleteByIdAsync(int athleteId, CancellationToken ct = default);
 
-    Task<Athlete[]> GetAthletesAsync(int pageSize, int page = 0, CancellationToken ct = default);
+    Task<Athlete[]> GetAthletesAsync(AthleteFilter? filter, int pageSize, int page = 0,
+        CancellationToken ct = default);
 
     Task<Athlete> UpsertAthleteAsync(long stravaId, string name, string? imgUrl,
         string accessToken, string refreshToken, DateTimeOffset accessTokenExpiry,

@@ -21,7 +21,7 @@ public partial class DevTools : ComponentBase
 
     protected override async Task OnInitializedAsync()
     {
-        _athletes = await AthleteService.GetAthletesAsync(100);
+        _athletes = await AthleteService.GetAthletesAsync(null, 100);
     }
 
     private Task AddActivity()
@@ -48,7 +48,7 @@ public partial class DevTools : ComponentBase
     {
         int id = Random.Shared.Next(100, 1000);
         await AthleteService.UpsertAthleteAsync(Random.Shared.Next(10000, 100000), $"Athlete {id}", null, "", "", default);
-        _athletes = await AthleteService.GetAthletesAsync(100);
+        _athletes = await AthleteService.GetAthletesAsync(null, 100);
     }
 
     private Task AddOthersChallenge()

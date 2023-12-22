@@ -35,11 +35,15 @@ public class AthleteService : IAthleteService
         return athlete;
     }
 
-    public async Task<Athlete[]> GetAthletesAsync(int pageSize, int page = 0, CancellationToken ct = default)
+    public async Task<Athlete[]> GetAthletesAsync(AthleteFilter? filter, int pageSize, int page = 0,
+        CancellationToken ct = default)
     {
         using DataContext dataContext = await _dataContextFactory.CreateDbContextAsync(ct);
 
         Athlete[] athletes = await dataContext.Athletes
+            .Where(athlete => filter == null
+                || !filter.FollowedBy.HasValue
+                || athlete.Followers!.Any(f => f.Id == filter.FollowedBy.Value))
             .OrderBy(athlete => athlete.Name)
             .Skip(page * pageSize)
             .Take(pageSize)
