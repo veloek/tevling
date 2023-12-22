@@ -15,6 +15,7 @@ public partial class Activities : ComponentBase
     NavigationManager NavigationManager { get; set; } = null!;
 
     private bool Importing { get; set; }
+    private bool HasMore { get; set; } = true;
     private Activity[] ActivityList = [];
     private bool ShowOnlyMine
     {
@@ -48,12 +49,13 @@ public partial class Activities : ComponentBase
         SubscribeToActivityFeed(_athlete.Id);
     }
 
-    private async Task<bool> LoadMore(CancellationToken ct)
+    private async Task LoadMore(CancellationToken ct)
     {
         int prevCount = _activities.Count;
         _page++;
         await FetchActivities(_athlete.Id);
-        return _activities.Count > prevCount;
+        HasMore = _activities.Count > prevCount;
+        StateHasChanged();
     }
 
     private async Task FetchActivities(int athleteId)

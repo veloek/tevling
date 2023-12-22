@@ -15,6 +15,7 @@ public partial class Challenges : ComponentBase
     private Challenge[] ChallengeList { get; set; } = [];
     private List<Challenge> _challenges = new();
     private int AthleteId { get; set; }
+    private bool HasMore { get; set; } = true;
     private bool _showAllChallenges = true;
     private bool ShowAllChallenges
     {
@@ -42,12 +43,13 @@ public partial class Challenges : ComponentBase
         }
     }
 
-    private async Task<bool> LoadMore(CancellationToken ct)
+    private async Task LoadMore(CancellationToken ct)
     {
         int prevCount = _challenges.Count;
         _page++;
         await FetchChallenges(ct);
-        return _challenges.Count > prevCount;
+        HasMore = _challenges.Count > prevCount;
+        StateHasChanged();
     }
 
     private async Task FetchChallenges(CancellationToken ct = default)

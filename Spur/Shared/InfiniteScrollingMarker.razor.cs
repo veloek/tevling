@@ -9,26 +9,54 @@ public partial class InfiniteScrollingMarker : ComponentBase, IAsyncDisposable
 
     private CancellationTokenSource _cts = new();
     private ElementReference _markerRef;
+    private ElementReference MarkerRef {
+        get => _markerRef;
+        set
+        {
+            _markerRef = value;
+            OnRefChange();
+        }
+    }
     private bool _isLoading;
-    private bool _hasMore = true;
     private DotNetObjectReference<InfiniteScrollingMarker>? _objectReference;
     private IJSObjectReference? _module;
     private IJSObjectReference? _instance;
+    private int _initialized = 0; // cannot use bool because of Interlocked.Exchange
 
     [Parameter]
-    public Func<CancellationToken, Task<bool>>? LoadMore { get; set; }
+    public Func<CancellationToken, Task>? LoadMore { get; set; }
+
+    [Parameter]
+    public bool HasMore { get; set; }
 
     [Parameter]
     public RenderFragment? LoadingTemplate { get; set; }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (!firstRender)
-            return;
+        if (firstRender)
+        {
+            _module = await JSRuntime.InvokeAsync<IJSObjectReference>("import", "./infinite-scrolling-marker.js");
+            _objectReference = DotNetObjectReference.Create(this);
+        }
 
-        _module = await JSRuntime.InvokeAsync<IJSObjectReference>("import", "./infinite-scrolling-marker.js");
-        _objectReference = DotNetObjectReference.Create(this);
-        _instance = await _module.InvokeAsync<IJSObjectReference>("initialize", _markerRef, _objectReference);
+        // Multiple OnAfterRenderAsync calls may happen concurrently,
+        // so we have to make sure we only initialize once.
+        if (0 == Interlocked.Exchange(ref _initialized, 1))
+        {
+            if (_instance != null)
+            {
+                await _instance.InvokeVoidAsync("dispose");
+                await _instance.DisposeAsync();
+            }
+            _instance = await _module!.InvokeAsync<IJSObjectReference>("initialize", _markerRef, _objectReference);
+        }
+    }
+
+    private void OnRefChange()
+    {
+        // Re-initialize when the marker ref changes
+        _initialized = 0;
     }
 
     [JSInvokable]
@@ -46,7 +74,7 @@ public partial class InfiniteScrollingMarker : ComponentBase, IAsyncDisposable
 
             try
             {
-                _hasMore = await LoadMore.Invoke(_cts.Token);
+                await LoadMore.Invoke(_cts.Token);
             }
             catch (OperationCanceledException e) when (e.CancellationToken == _cts.Token)
             {

@@ -23,6 +23,7 @@ public partial class Athletes : ComponentBase
     }
     private Athlete[] AthleteList { get; set; } = [];
     private Athlete Athlete { get; set; } = default!;
+    private bool HasMore { get; set; } = true;
     private List<Athlete> _athletes = new();
     private IDisposable? _athleteFeedSubscription;
     private int _pageSize = 10;
@@ -35,12 +36,13 @@ public partial class Athletes : ComponentBase
         SubscribeToAthleteFeed();
     }
 
-    private async Task<bool> LoadMore(CancellationToken ct = default)
+    private async Task LoadMore(CancellationToken ct)
     {
         int prevCount = _athletes.Count;
         _page++;
         await FetchAthletes();
-        return _athletes.Count > prevCount;
+        HasMore = _athletes.Count > prevCount;
+        StateHasChanged();
     }
 
     private async Task FetchAthletes()
