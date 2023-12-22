@@ -1,21 +1,23 @@
+using System.Reactive.Subjects;
+
 namespace Spur.Pages;
 
 public partial class Challenges : ComponentBase, IDisposable
 {
-
     [Inject]
-    IAuthenticationService AuthenticationService { get; set; } = null!;
-
+    private ILogger<Challenges> Logger { get; set; } = null!;
     [Inject]
-    IChallengeService ChallengeService { get; set; } = null!;
-
+    private IAuthenticationService AuthenticationService { get; set; } = null!;
     [Inject]
-    ILogger<Challenges> Logger { get; set; } = null!;
+    private IChallengeService ChallengeService { get; set; } = null!;
 
     private Challenge[] ChallengeList { get; set; } = [];
-    private List<Challenge> _challenges = new();
+    private List<Challenge> _challenges = [];
     private int AthleteId { get; set; }
     private bool HasMore { get; set; } = true;
+    private readonly TimeSpan _filterTextThrottle = TimeSpan.FromMilliseconds(300);
+    private readonly Subject<string> _filterTextSubject = new();
+    private IDisposable? _filterTextsubscription;
     private bool _showAllChallenges = true;
     private bool ShowAllChallenges
     {
@@ -23,7 +25,27 @@ public partial class Challenges : ComponentBase, IDisposable
         set
         {
             _showAllChallenges = value;
-            UpdateChallenges();
+            OnFilterChange();
+        }
+    }
+    private bool _showOutdatedChallenges;
+    private bool ShowOutdatedChallenges
+    {
+        get => _showOutdatedChallenges;
+        set
+        {
+            _showOutdatedChallenges = value;
+            OnFilterChange();
+        }
+    }
+    private string _filterText = string.Empty;
+    private string FilterText
+    {
+        get => _filterText;
+        set
+        {
+            _filterText = value;
+            OnFilterChange();
         }
     }
 
@@ -41,6 +63,27 @@ public partial class Challenges : ComponentBase, IDisposable
             await FetchChallenges();
             SubscribeToChallengeFeed();
         }
+
+        _filterTextsubscription = _filterTextSubject
+            .Throttle(_filterTextThrottle)
+            .Subscribe(s =>
+            {
+                FilterText = s;
+                InvokeAsync(StateHasChanged);
+            });
+    }
+
+    private void SetFilterTextDebounced(ChangeEventArgs e)
+    {
+        _filterTextSubject.OnNext(e.Value!.ToString()!);
+    }
+
+    private void OnFilterChange()
+    {
+        _challenges = [];
+        _page = -1;
+        HasMore = true;
+        UpdateChallenges();
     }
 
     private async Task LoadMore(CancellationToken ct)
@@ -54,7 +97,11 @@ public partial class Challenges : ComponentBase, IDisposable
 
     private async Task FetchChallenges(CancellationToken ct = default)
     {
-        Challenge[] challenges = await ChallengeService.GetChallengesAsync(_pageSize, _page, ct);
+        ChallengeFilter filter = new(
+            SearchText: _filterText,
+            ByAthleteId: _showAllChallenges ? null : AthleteId,
+            IncludeOutdatedChallenges: _showOutdatedChallenges);
+        Challenge[] challenges = await ChallengeService.GetChallengesAsync(filter, _pageSize, _page, ct);
         AddChallenges(challenges);
     }
 
@@ -111,9 +158,13 @@ public partial class Challenges : ComponentBase, IDisposable
     private void UpdateChallenges()
     {
         ChallengeList = _challenges
-            .Where(c => ShowAllChallenges
-                || (c.Athletes?.Any(athlete => athlete.Id == AthleteId) == true
-                || c.CreatedById == AthleteId))
+            .Where(c => _showAllChallenges
+                || c.Athletes?.Any(athlete => athlete.Id == AthleteId) == true
+                || c.CreatedById == AthleteId)
+            .Where(c => _showOutdatedChallenges
+                || c.End.UtcDateTime.Date >= DateTimeOffset.UtcNow.Date)
+            .Where(c => string.IsNullOrWhiteSpace(_filterText)
+                || c.Title.Contains(_filterText, StringComparison.OrdinalIgnoreCase))
             .OrderByDescending(c => c.Start)
             .ThenBy(c => c.Title)
             .ToArray();
@@ -123,6 +174,7 @@ public partial class Challenges : ComponentBase, IDisposable
 
     public void Dispose()
     {
+        _filterTextsubscription?.Dispose();
         _challengeFeedSubscription?.Dispose();
     }
 }

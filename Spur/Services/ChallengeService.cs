@@ -29,14 +29,26 @@ public class ChallengeService : IChallengeService
         return challenge;
     }
 
-    public async Task<Challenge[]> GetChallengesAsync(int pageSize, int page = 0, CancellationToken ct = default)
+    public async Task<Challenge[]> GetChallengesAsync(ChallengeFilter filter, int pageSize, int page = 0, CancellationToken ct = default)
     {
         using DataContext dataContext = await _dataContextFactory.CreateDbContextAsync(ct);
 
         Challenge[] challenges = await dataContext.Challenges
             .Include(challenge => challenge.Athletes)
             .Include(challenge => challenge.CreatedBy)
+            .Where(challenge => !filter.ByAthleteId.HasValue
+                || challenge.Athletes!.Any(athlete => athlete.Id == filter.ByAthleteId.Value) == true
+                || challenge.CreatedById == filter.ByAthleteId.Value)
+            // TODO: Filter out outdated challenges when DB supports it
+            //       (Time to switch to PostgreSQL?)
+            // .Where(challenge => filter.IncludeOutdatedChallenges
+            //     || challenge.End.UtcDateTime.Date >= DateTimeOffset.UtcNow.Date)
+            .Where(c => string.IsNullOrWhiteSpace(filter.SearchText)
+                // TODO: Use EF.Functions.ILike when switching to PostgreSQL
+                //       to keep the search text case-insensitive
+                || EF.Functions.Like(c.Title, $"%{filter.SearchText}%"))
             .OrderByDescending(challenge => challenge.Start)
+            .ThenBy(challenge => challenge.Title)
             .Skip(pageSize * page)
             .Take(pageSize)
             .ToArrayAsync(ct);

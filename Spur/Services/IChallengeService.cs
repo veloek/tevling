@@ -4,7 +4,8 @@ public interface IChallengeService
 {
     Task<Challenge?> GetChallengeByIdAsync(int challengeId, CancellationToken ct = default);
 
-    Task<Challenge[]> GetChallengesAsync(int pageSize, int page = 0, CancellationToken ct = default);
+    Task<Challenge[]> GetChallengesAsync(ChallengeFilter filter, int pageSize, int page = 0,
+        CancellationToken ct = default);
 
     IObservable<FeedUpdate<Challenge>> GetChallengeFeed();
 
