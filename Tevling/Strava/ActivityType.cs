@@ -1,0 +1,45 @@
+using System.Text.Json.Serialization;
+
+namespace Tevling.Strava;
+
+[JsonConverter(typeof(JsonStringEnumConverter))]
+public enum ActivityType
+{
+    AlpineSki,
+    BackcountrySki,
+    Canoeing,
+    Crossfit,
+    EBikeRide,
+    Elliptical,
+    Golf,
+    Handcycle,
+    Hike,
+    IceSkate,
+    InlineSkate,
+    Kayaking,
+    Kitesurf,
+    NordicSki,
+    Ride,
+    RockClimbing,
+    RollerSki,
+    Rowing,
+    Run,
+    Sail,
+    Skateboard,
+    Snowboard,
+    Snowshoe,
+    Soccer,
+    StairStepper,
+    StandUpPaddling,
+    Surfing,
+    Swim,
+    Velomobile,
+    VirtualRide,
+    VirtualRun,
+    Walk,
+    WeightTraining,
+    Wheelchair,
+    Windsurf,
+    Workout,
+    Yoga,
+}

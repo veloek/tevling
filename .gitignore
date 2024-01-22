@@ -3,7 +3,7 @@ bin/
 obj/
 
 # Data storage
-Spur/storage/
+Tevling/storage/
 
 # Editor / IDE
 .vscode/

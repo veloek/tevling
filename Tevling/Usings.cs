@@ -1,0 +1,9 @@
+global using System.Reactive.Linq;
+global using Microsoft.AspNetCore.Components;
+global using Tevling;
+global using Tevling.Clients;
+global using Tevling.Components;
+global using Tevling.Data;
+global using Tevling.Model;
+global using Tevling.Services;
+global using Tevling.Utils;

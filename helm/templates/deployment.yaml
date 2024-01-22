@@ -1,32 +1,32 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "spur.fullname" . }}
-  namespace: {{ include "spur.fullname" . }}
+  name: {{ include "tevling.fullname" . }}
+  namespace: {{ include "tevling.fullname" . }}
   labels:
-  {{- include "spur.labels" . | nindent 4 }}
+  {{- include "tevling.labels" . | nindent 4 }}
 spec:
   replicas: {{ .Values.replicas }}
   revisionHistoryLimit: {{ .Values.revisionHistoryLimit }}
   selector:
     matchLabels:
-    {{- include "spur.selectorLabels" . | nindent 6 }}
+    {{- include "tevling.selectorLabels" . | nindent 6 }}
   template:
     metadata:
       labels:
-      {{- include "spur.selectorLabels" . | nindent 8 }}
+      {{- include "tevling.selectorLabels" . | nindent 8 }}
     spec:
       containers:
       - env:
         - name: ASPNETCORE_HTTP_PORTS
           value: {{- $containerPort := 8080 }} {{ quote $containerPort }}
-        - name: SPUR_APPSETTINGS
+        - name: TEVLING_APPSETTINGS
           value: {{ .Values.appSettingsPath }}
         envFrom:
         - secretRef:
-            name: {{ include "spur.fullname" . }}
+            name: {{ include "tevling.fullname" . }}
         image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
-        name: spur
+        name: tevling
         securityContext:
         {{- .Values.securityContext | toYaml | nindent 10 }}
         ports:
@@ -48,7 +48,7 @@ spec:
       volumes:
       - name: data
         persistentVolumeClaim:
-          claimName: {{ include "spur.fullname" . }}-pvc
+          claimName: {{ include "tevling.fullname" . }}-pvc
       - name: config
         configMap:
-          name: {{ include "spur.fullname" . }}
+          name: {{ include "tevling.fullname" . }}

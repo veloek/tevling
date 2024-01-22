@@ -1,0 +1,26 @@
+@inherits LayoutComponentBase
+
+<PageTitle>Tevling</PageTitle>
+
+@if (ThemeSet)
+{
+    <div class="page" data-bs-theme="@Theme">
+        <div class="sidebar d-flex flex-column">
+            <NavMenu />
+        </div>
+
+        <main>
+            <div class="top-row px-4">
+                <h4>@Athlete.Name</h4>
+                <DarkMode OnChange="OnThemeChange" />
+                <a href="/profile">
+                    <Avatar Url="@Athlete.ImgUrl" Size="30" />
+                </a>
+            </div>
+
+            <article class="content px-4">
+                @Body
+            </article>
+        </main>
+    </div>
+}

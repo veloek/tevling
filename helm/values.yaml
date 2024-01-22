@@ -13,12 +13,12 @@ service:
     targetPort: http
 
 ingress:
-  host: spur.vtek.no
+  host: tevling.vtek.no
   backend:
     port: http
 
 image:
-  repository: veloek/spur
+  repository: veloek/tevling
   tag: latest
 
 resources:
@@ -51,7 +51,7 @@ strava:
   approvalPrompt: "auto"
   scope: "read,activity:read"
 
-appSettingsPath: /etc/spur/appsettings.json
+appSettingsPath: /etc/tevling/appsettings.json
 
 featureManagement:
   devTools: false

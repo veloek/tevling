@@ -1,4 +1,4 @@
-# Spur
+# Tevling
 
 Use activities from Strava to challenge your fellow athletes in a friendly competition.
 
@@ -6,14 +6,14 @@ Simply sign in with your Strava account and your activities will be automaticall
 
 ## User handling and authentication
 
-Spur uses Strava as it's identity provider, requiring only email and name of the contestant.
+Tevling uses Strava as it's identity provider, requiring only email and name of the contestant.
 
-Parts of activity information necessary to take part in challenges are stored in Spur's database.
+Parts of activity information necessary to take part in challenges are stored in Tevling's database.
 
 ## Strava integration
 
-The user will be asked to allow Spur access to workout data from Strava. Once access is granted,
-all new workout data will be pushed from Strava to Spur through a webhook subscription.
+The user will be asked to allow Tevling access to workout data from Strava. Once access is granted,
+all new workout data will be pushed from Strava to Tevling through a webhook subscription.
 
 ## Installation
 
@@ -22,7 +22,7 @@ The app is published as a Docker container and can be run standalone or in a kub
 ### Docker
 
 ```
-docker run --volume /tmp/spur:/app/storage -p 8080:8080 veloek/spur \
+docker run --volume /tmp/tevling:/app/storage -p 8080:8080 veloek/tevling \
   --env STRAVACONFIG__CLIENTID=${STRAVA_CLIENTID} \
   --env STRAVACONFIG__CLIENTSECRET=${STRAVA_CLIENTSECRET} \
   --env STRAVACONFIG__REDIRECTURI=${STRAVA_REDIRECTURI} \
@@ -35,7 +35,7 @@ docker run --volume /tmp/spur:/app/storage -p 8080:8080 veloek/spur \
 A Helm chart is available in the `helm` directory. To install, clone the repo and run:
 
 ```
-helm upgrade spur --install --namespace spur --create-namespace helm \
+helm upgrade tevling --install --namespace tevling --create-namespace helm \
     --set-string strava.clientId=${STRAVA_CLIENTID} \
     --set-string strava.clientSecret=${STRAVA_CLIENTSECRET} \
     --set-string strava.redirectUri=${STRAVA_REDIRECTURI} \
@@ -55,7 +55,7 @@ Debugging should work out of the box in Visual Studio or VS Code (with C# extens
 build (and run) the app only the .NET 8 SDK is required. Use `dotnet watch` to detect changes.
 
 ```
-dotnet run --project Spur/Spur.csproj
+dotnet run --project Tevling/Tevling.csproj
 ```
 
 Bug reports and PRs are very welcome!

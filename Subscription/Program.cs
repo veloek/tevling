@@ -4,7 +4,7 @@ using System.IO;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
-using Spur;
+using Tevling;
 
 namespace Subscription
 {
@@ -20,7 +20,7 @@ namespace Subscription
                 return;
             }
 
-            var path = Path.Combine(Directory.GetCurrentDirectory(), "../Spur/appsettings");
+            var path = Path.Combine(Directory.GetCurrentDirectory(), "../Tevling/appsettings");
             var config = new ConfigurationBuilder()
                 .AddJsonFile(path + ".json")
                 .AddJsonFile(path + ".Development.json", true)

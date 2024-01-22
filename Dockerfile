@@ -4,11 +4,11 @@ ARG TARGETARCH
 WORKDIR /app
 
 # Copy csproj and restore as distinct layers
-COPY Spur/Spur.csproj ./
+COPY Tevling/Tevling.csproj ./
 RUN dotnet restore -a $TARGETARCH
 
 # Copy everything else and build
-COPY Spur ./
+COPY Tevling ./
 RUN dotnet publish --no-restore -a $TARGETARCH -o out
 
 # Build runtime image
@@ -24,4 +24,4 @@ ENV ASPNETCORE_HTTP_PORTS=8080
 EXPOSE 8080
 
 USER $APP_UID
-ENTRYPOINT ["./Spur"]
+ENTRYPOINT ["./Tevling"]

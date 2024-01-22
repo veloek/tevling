@@ -3,7 +3,7 @@ name: Docker Image CI
 on:
   push:
     branches: [ "main" ]
-    paths: [ "Spur/**" ]
+    paths: [ "Tevling/**" ]
 
 env:
   DOCKER_REPO: ${{ secrets.DOCKER_REPO }}
@@ -22,4 +22,4 @@ jobs:
       run: docker buildx create --use --bootstrap
 
     - name: Docker build and push
-      run: docker buildx build . --push --file Dockerfile --tag $DOCKER_REPO/spur:$GITHUB_SHA --tag $DOCKER_REPO/spur:latest --platform linux/arm64,linux/arm,linux/amd64
+      run: docker buildx build . --push --file Dockerfile --tag $DOCKER_REPO/tevling:$GITHUB_SHA --tag $DOCKER_REPO/tevling:latest --platform linux/arm64,linux/arm,linux/amd64

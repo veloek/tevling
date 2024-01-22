@@ -1,0 +1,46 @@
+.tevling-login {
+    min-width: 300px;
+    margin: auto;
+    text-align: center;
+}
+
+@media (min-width: 641px) {
+    .tevling-login {
+        padding-top: 50px;
+    }
+}
+
+.login-title {
+    font-size: 32px;
+}
+
+.login-subtitle {
+    font-style: italic;
+    font-size: 14px;
+}
+
+.tevling-logo {
+    margin: 2rem 0;
+}
+
+.login-button-container {
+    display: flex;
+    justify-content: center;
+    align-items: end;
+    column-gap: 1rem;
+}
+
+button.strava-login {
+    background-image: url('../strava.png');
+    background-position: center;
+    background-size: 90%;
+    background-repeat: no-repeat;
+    border: solid black 1px;
+    text-indent: -9999px;
+    width: 100px;
+}
+
+::deep .copyright {
+    font-size: 10px;
+    margin-top: 2rem;
+}

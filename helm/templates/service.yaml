@@ -1,13 +1,13 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "spur.fullname" . }}
-  namespace: {{ include "spur.fullname" . }}
+  name: {{ include "tevling.fullname" . }}
+  namespace: {{ include "tevling.fullname" . }}
   labels:
-  {{- include "spur.labels" . | nindent 4 }}
+  {{- include "tevling.labels" . | nindent 4 }}
 spec:
   type: {{ .Values.service.type }}
   selector:
-  {{- include "spur.selectorLabels" . | nindent 4 }}
+  {{- include "tevling.selectorLabels" . | nindent 4 }}
   ports:
 	{{- .Values.service.ports | toYaml | nindent 2 -}}
