@@ -9,13 +9,15 @@ metadata:
     nginx.ingress.kubernetes.io/rewrite-target: /
 spec:
   rules:
-  - host: {{ .Values.ingress.host }}
+  {{- range $ingress := .Values.ingress }}
+  - host: {{ $ingress.host }}
     http:
       paths:
       - backend:
           service:
-            name: {{ include "tevling.fullname" . }}
+            name: {{ include "tevling.fullname" $ }}
             port:
-              name: {{ .Values.ingress.backend.port }}
+              name: {{ $ingress.backend.port }}
         path: /
         pathType: Prefix
+  {{- end }}

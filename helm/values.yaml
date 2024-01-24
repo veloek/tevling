@@ -13,7 +13,10 @@ service:
     targetPort: http
 
 ingress:
-  host: tevling.vtek.no
+- host: tevling.com
+  backend:
+    port: http
+- host: tevling.no
   backend:
     port: http
 
