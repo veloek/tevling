@@ -21,7 +21,7 @@ ingress:
     port: http
 
 image:
-  repository: veloek/tevling
+  repository: ghcr.io/veloek/tevling
   tag: latest
 
 resources:

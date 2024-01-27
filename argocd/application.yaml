@@ -4,7 +4,7 @@ metadata:
   name: tevling
   namespace: argocd
   annotations:
-    argocd-image-updater.argoproj.io/image-list: tevling=veloek/tevling:latest
+    argocd-image-updater.argoproj.io/image-list: tevling=ghcr.io/veloek/tevling:latest
     argocd-image-updater.argoproj.io/tevling.update-strategy: digest
 spec:
   project: default
