@@ -23,19 +23,26 @@ public class ChallengeService : IChallengeService
 
         Challenge? challenge = await dataContext.Challenges
             .Include(c => c.Athletes)
+            .Include(c => c.InvitedAthletes)
             .Include(c => c.CreatedBy)
+            .AsSplitQuery()
             .FirstOrDefaultAsync(c => c.Id == challengeId, ct);
 
         return challenge;
     }
 
-    public async Task<Challenge[]> GetChallengesAsync(ChallengeFilter filter, int pageSize, int page = 0, CancellationToken ct = default)
+    public async Task<Challenge[]> GetChallengesAsync(int currentAthleteId, ChallengeFilter filter, int pageSize, int page = 0, CancellationToken ct = default)
     {
         using DataContext dataContext = await _dataContextFactory.CreateDbContextAsync(ct);
 
         Challenge[] challenges = await dataContext.Challenges
             .Include(challenge => challenge.Athletes)
+            .Include(challenge => challenge.InvitedAthletes)
             .Include(challenge => challenge.CreatedBy)
+            .AsSplitQuery()
+            .Where(challenge => !challenge.IsPrivate
+                || challenge.InvitedAthletes!.Any(a => a.Id == currentAthleteId)
+                || challenge.CreatedById == currentAthleteId)
             .Where(challenge => !filter.ByAthleteId.HasValue
                 || challenge.Athletes!.Any(athlete => athlete.Id == filter.ByAthleteId.Value) == true
                 || challenge.CreatedById == filter.ByAthleteId.Value)
@@ -67,6 +74,14 @@ public class ChallengeService : IChallengeService
 
         _logger.LogInformation("Adding new challenge: {Title}", newChallenge.Title);
 
+        if (newChallenge.InvitedAthletes != null)
+        {
+            foreach (Athlete athlete in newChallenge.InvitedAthletes)
+            {
+                await dataContext.Entry(athlete).ReloadAsync(ct);
+            }
+        }
+
         Challenge challenge = await dataContext.AddChallengeAsync(new Challenge()
         {
             Title = newChallenge.Title,
@@ -75,8 +90,10 @@ public class ChallengeService : IChallengeService
             End = newChallenge.End,
             Measurement = newChallenge.Measurement,
             ActivityTypes = newChallenge.ActivityTypes,
+            IsPrivate = newChallenge.IsPrivate,
             Created = DateTimeOffset.Now,
             CreatedById = newChallenge.CreatedBy,
+            InvitedAthletes = newChallenge.InvitedAthletes,
         }, ct);
 
         await dataContext.Entry(challenge).Collection(c => c.Athletes!).LoadAsync(ct);
@@ -106,8 +123,35 @@ public class ChallengeService : IChallengeService
         challenge.End = editChallenge.End;
         challenge.Measurement = editChallenge.Measurement;
         challenge.ActivityTypes = editChallenge.ActivityTypes;
+        challenge.IsPrivate = editChallenge.IsPrivate;
 
         challenge = await dataContext.UpdateChallengeAsync(challenge, CancellationToken.None);
+
+        _challengeFeed.OnNext(new FeedUpdate<Challenge> { Item = challenge, Action = FeedAction.Update });
+
+        return challenge;
+    }
+
+    public async Task<Challenge> InviteAthleteAsync(int athleteId, int challengeId, CancellationToken ct = default)
+    {
+        using DataContext dataContext = await _dataContextFactory.CreateDbContextAsync(ct);
+
+        Challenge challenge = await dataContext.Challenges
+            .Include(c => c.Athletes)
+            .Include(c => c.CreatedBy)
+            .Include(c => c.InvitedAthletes)
+            .AsTracking()
+            .FirstOrDefaultAsync(c => c.Id == challengeId, ct)
+                ?? throw new Exception($"Challenge ID {challengeId} not found");
+
+        Athlete athlete = await dataContext.Athletes
+            .AsTracking()
+            .FirstOrDefaultAsync(a => a.Id == athleteId, ct)
+                ?? throw new Exception($"Athlete ID {athleteId} not found");
+
+        challenge.InvitedAthletes!.Add(athlete);
+
+        await dataContext.UpdateChallengeAsync(challenge, ct);
 
         _challengeFeed.OnNext(new FeedUpdate<Challenge> { Item = challenge, Action = FeedAction.Update });
 
@@ -169,7 +213,7 @@ public class ChallengeService : IChallengeService
         using DataContext dataContext = await _dataContextFactory.CreateDbContextAsync(ct);
 
         Challenge challenge = await dataContext.Challenges
-            .Include(c => c.Athletes)
+            .Include(c => c.Athletes) // TODO: Is this necessary?
             .FirstOrDefaultAsync(c => c.Id == challengeId, ct)
                 ?? throw new Exception($"Unknown challenge ID {challengeId}");
 

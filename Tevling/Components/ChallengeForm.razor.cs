@@ -5,6 +5,9 @@ public partial class ChallengeForm : ComponentBase
     [Inject]
     IAuthenticationService AuthenticationService { get; set; } = null!;
 
+    [Inject]
+    IAthleteService AthleteService { get; set; } = null!;
+
     [Parameter]
     public string SubmitLabel { get; set; } = "Submit";
 
@@ -31,6 +34,8 @@ public partial class ChallengeForm : ComponentBase
 
     private Athlete Athlete { get; set; } = default!;
 
+    private const int MaximumSuggestions = 10;
+
     protected override async Task OnInitializedAsync()
     {
         Athlete = await AuthenticationService.GetCurrentAthleteAsync();
@@ -50,7 +55,9 @@ public partial class ChallengeForm : ComponentBase
             Challenge.End = EditChallenge.End;
             Challenge.Measurement = EditChallenge.Measurement;
             Challenge.ActivityTypes = EditChallenge.ActivityTypes;
+            Challenge.IsPrivate = EditChallenge.IsPrivate;
             Challenge.CreatedBy = EditChallenge.CreatedById;
+            Challenge.InvitedAthletes = EditChallenge.InvitedAthletes?.ToList();
         }
         else
         {
@@ -61,6 +68,14 @@ public partial class ChallengeForm : ComponentBase
                     CreatedBy = Athlete.Id,
                 };
         }
+    }
+
+    private async Task<IEnumerable<Athlete>> SearchAthletes(string searchText)
+    {
+        AthleteFilter filter = new() { SearchText = searchText, NotIn = Challenge.InvitedAthletes?.Select(a => a.Id) };
+        Athlete[] result = await AthleteService.GetAthletesAsync(filter, MaximumSuggestions, 0);
+
+        return result;
     }
 
     private async Task SubmitForm()

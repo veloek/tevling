@@ -44,6 +44,17 @@ public class AthleteService : IAthleteService
             .Where(athlete => filter == null
                 || !filter.FollowedBy.HasValue
                 || athlete.Followers!.Any(f => f.Id == filter.FollowedBy.Value))
+            .Where(athlete => filter == null
+                || string.IsNullOrWhiteSpace(filter.SearchText)
+                // TODO: Use EF.Functions.ILike when switching to PostgreSQL
+                //       to keep the search text case-insensitive
+                || EF.Functions.Like(athlete.Name, $"%{filter.SearchText}%"))
+            .Where(athlete => filter == null
+                || filter.In == null
+                || filter.In.Contains(athlete.Id))
+            .Where(athlete => filter == null
+                || filter.NotIn == null
+                || !filter.NotIn.Contains(athlete.Id))
             .OrderBy(athlete => athlete.Name)
             .Skip(page * pageSize)
             .Take(pageSize)

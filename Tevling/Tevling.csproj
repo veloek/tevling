@@ -19,6 +19,7 @@
     </PackageReference>
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="8.0.0" />
     <PackageReference Include="Microsoft.FeatureManagement.AspNetCore" Version="3.1.1" />
+    <PackageReference Include="PSC.Blazor.Components.AutoComplete" Version="6.0.28" />
     <PackageReference Include="Serilog.AspNetCore" Version="8.0.0" />
     <PackageReference Include="Serilog.Expressions" Version="4.0.0" />
     <PackageReference Include="System.Linq.Async" Version="6.0.1" />

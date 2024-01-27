@@ -101,7 +101,7 @@ public partial class Challenges : ComponentBase, IDisposable
             SearchText: _filterText,
             ByAthleteId: _showAllChallenges ? null : AthleteId,
             IncludeOutdatedChallenges: _showOutdatedChallenges);
-        Challenge[] challenges = await ChallengeService.GetChallengesAsync(filter, _pageSize, _page, ct);
+        Challenge[] challenges = await ChallengeService.GetChallengesAsync(AthleteId, filter, _pageSize, _page, ct);
         AddChallenges(challenges);
     }
 

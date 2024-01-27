@@ -54,6 +54,10 @@ public class DataContext : DbContext
         modelBuilder.Entity<Challenge>()
             .Property(c => c.End)
             .HasConversion(new DateTimeOffsetToBinaryConverter());
+
+        modelBuilder.Entity<Challenge>()
+            .HasMany(a => a.InvitedAthletes)
+            .WithMany();
     }
 
     public Task InitAsync()

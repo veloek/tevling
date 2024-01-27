@@ -30,18 +30,44 @@
         </InputRadioGroup>
     </div>
     <div class="form-row mb-2">
-        <label>Activities:
-            <InputSelect @bind-Value="@Challenge.ActivityTypes" class="form-control" multiple style="height: 15rem;">
-                @foreach (var activityType in Enum.GetValues<Strava.ActivityType>())
-                {
-                    <option value="@activityType">@ActivityTypeExt.ToString(activityType)</option>
-                }
-            </InputSelect>
-        </label>
-        <p class="d-flex flex-wrap mt-2 cg-1 rg-1">
-            @foreach (Strava.ActivityType type in Challenge.ActivityTypes)
+        <label>Private challenge <input @bind="Challenge.IsPrivate" class="form-check-input" type="checkbox" /></label>
+    </div>
+    <div class="form-row mb-2">
+        <div class="d-flex cg-3">
+            <div>
+                <label>Activities:
+                    <InputSelect @bind-Value="@Challenge.ActivityTypes" class="form-control" multiple style="height: 15rem;">
+                        @foreach (var activityType in Enum.GetValues<Strava.ActivityType>())
+                        {
+                            <option value="@activityType">@ActivityTypeExt.ToString(activityType)</option>
+                        }
+                    </InputSelect>
+                </label>
+
+            </div>
+            @if (Challenge.IsPrivate)
             {
-                <span class="badge rounded-pill bg-primary">@ActivityTypeExt.ToString(type)</span>
+                <div>
+                    Athletes:
+                    <Autocomplete SearchMethod="SearchAthletes" @bind-Values="Challenge.InvitedAthletes" MaximumSuggestions="MaximumSuggestions" EnableDropDown="true" placeholder="Search for athlete...">
+                        <SelectedTemplate Context="athlete">@athlete.Name.Split(" ").First()</SelectedTemplate>
+                        <ResultTemplate Context="athlete">@athlete.Name</ResultTemplate>
+                        <NotFoundTemplate Context="athlete">No Athletes Found</NotFoundTemplate>
+                    </Autocomplete>
+                </div>
+            }
+        </div>
+        <p class="d-flex flex-wrap mt-2 cg-1 rg-1">
+            @if (Challenge.ActivityTypes.Length > 0)
+            {
+                @foreach (Strava.ActivityType type in Challenge.ActivityTypes)
+                {
+                    <span class="badge rounded-pill bg-primary">@ActivityTypeExt.ToString(type)</span>
+                }
+            }
+            else
+            {
+                <span class="badge bg-primary">All activities</span>
             }
         </p>
     </div>
