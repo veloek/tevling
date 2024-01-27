@@ -6,8 +6,8 @@ on:
     paths: [ "Tevling/**" ]
 
 env:
-  DOCKER_REPO: ${{ secrets.DOCKER_REPO }}
-  DOCKER_TOKEN: ${{ secrets.DOCKER_TOKEN }}
+  CR_NAMESPACE: ${{ secrets.CR_NAMESPACE }}
+  CR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 jobs:
   build:
@@ -16,10 +16,10 @@ jobs:
     - uses: actions/checkout@v3
 
     - name: Docker login
-      run: docker login -u $DOCKER_REPO -p $DOCKER_TOKEN
+      run: docker login ghcr.io -u $CR_NAMESPACE -p $CR_TOKEN
 
     - name: Docker buildx setup
       run: docker buildx create --use --bootstrap
 
     - name: Docker build and push
-      run: docker buildx build . --push --file Dockerfile --tag $DOCKER_REPO/tevling:$GITHUB_SHA --tag $DOCKER_REPO/tevling:latest --platform linux/arm64,linux/arm,linux/amd64
+      run: docker buildx build . --push --file Dockerfile --tag ghcr.io/$CR_NAMESPACE/tevling:$GITHUB_SHA --tag ghcr.io/$CR_NAMESPACE/tevling:latest --platform linux/arm64,linux/arm,linux/amd64
