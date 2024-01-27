@@ -1,3 +1,5 @@
+[![Docker Image CI](https://github.com/veloek/tevling/actions/workflows/docker-image.yml/badge.svg)](https://github.com/veloek/tevling/actions/workflows/docker-image.yml)
+
 # Tevling
 
 Use activities from Strava to challenge your fellow athletes in a friendly competition.
