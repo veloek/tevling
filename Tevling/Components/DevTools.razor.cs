@@ -71,4 +71,51 @@ public partial class DevTools : ComponentBase
             CreatedBy = randomAthleteId,
         });
     }
+
+    private Task AddOthersPrivateChallenge()
+    {
+
+        int randomAthleteId;
+        do
+        {
+            randomAthleteId = _athletes[Random.Shared.Next(0, _athletes.Length)].Id;
+        } while (randomAthleteId == Athlete?.Id);
+
+        return ChallengeService.CreateChallengeAsync(new ChallengeFormModel
+        {
+            Title = $"Private Challenge {Random.Shared.Next(1000, 10000)}",
+            Description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+            Start = DateTimeOffset.Now,
+            End = DateTimeOffset.Now.AddMonths(1),
+            Measurement = ChallengeMeasurement.Distance,
+            ActivityTypes = [Strava.ActivityType.Run],
+            IsPrivate = true,
+            CreatedBy = randomAthleteId,
+        });
+    }
+
+    private Task AddOthersPrivateChallengeInvited()
+    {
+        int randomAthleteId;
+        do
+        {
+            randomAthleteId = _athletes[Random.Shared.Next(0, _athletes.Length)].Id;
+        } while (randomAthleteId == Athlete?.Id);
+
+        if (Athlete is null)
+            throw new ArgumentException(nameof(Athlete));
+
+        return ChallengeService.CreateChallengeAsync(new ChallengeFormModel
+        {
+            Title = $"Private Challenge {Random.Shared.Next(1000, 10000)}",
+            Description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+            Start = DateTimeOffset.Now,
+            End = DateTimeOffset.Now.AddMonths(1),
+            Measurement = ChallengeMeasurement.Distance,
+            ActivityTypes = [Strava.ActivityType.Run],
+            IsPrivate = true,
+            CreatedBy = randomAthleteId,
+            InvitedAthletes = [new Athlete() { Id = Athlete.Id }],
+        });
+    }
 }
