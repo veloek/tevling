@@ -11,12 +11,14 @@
 }
 
 .login-title {
-    font-size: 32px;
+    font-size: 58px;
+    font-weight: bold;
+    text-transform: uppercase full-width;
 }
 
 .login-subtitle {
     font-style: italic;
-    font-size: 14px;
+    font-size: 20px;
 }
 
 .tevling-logo {
