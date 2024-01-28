@@ -166,7 +166,7 @@ public class ActivityService : IActivityService
         string accessToken = await _athleteService.GetAccessTokenAsync(athleteId, ct);
         DateTimeOffset startTime = DateTimeOffset.Now - TimeSpan.FromDays(30);
         int page = 1;
-        int pageSize = 10;
+        int pageSize = 30;
         Strava.Activity[] activities;
 
         _logger.LogInformation("Importing activities for athlete {AthleteId} starting from {StartTime}", athleteId, startTime);
