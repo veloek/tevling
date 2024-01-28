@@ -110,7 +110,7 @@ public class ActivityService : IActivityService
         _activityFeed.OnNext(new FeedUpdate<Activity> { Item = activity, Action = FeedAction.Delete });
     }
 
-    public async Task<Activity[]> GetActivitiesAsync(ActivityFilter filter, int pageSize, int page = 0,
+    public async Task<Activity[]> GetActivitiesAsync(ActivityFilter filter, Paging? paging = null,
         CancellationToken ct = default)
     {
         using DataContext dataContext = await _dataContextFactory.CreateDbContextAsync(ct);
@@ -129,8 +129,8 @@ public class ActivityService : IActivityService
                                 && athlete.Following!.Select(a => a.Id).Contains(activity.AthleteId)))
             .OrderByDescending(activity => activity.Details.StartDate)
             .ThenBy(activity => activity.Id) // Need stable sorting for paging
-            .Skip(page * pageSize)
-            .Take(pageSize)
+            .If(paging != null, x => x.Skip(paging!.Value.Page * paging!.Value.PageSize), x => (IQueryable<Activity>)x)
+            .If(paging != null, x => x.Take(paging!.Value.PageSize))
             .ToArrayAsync(ct);
 
         return activities;

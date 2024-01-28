@@ -31,7 +31,8 @@ public class ChallengeService : IChallengeService
         return challenge;
     }
 
-    public async Task<Challenge[]> GetChallengesAsync(int currentAthleteId, ChallengeFilter filter, int pageSize, int page = 0, CancellationToken ct = default)
+    public async Task<Challenge[]> GetChallengesAsync(int currentAthleteId, ChallengeFilter filter, Paging? paging = null,
+        CancellationToken ct = default)
     {
         using DataContext dataContext = await _dataContextFactory.CreateDbContextAsync(ct);
 
@@ -56,8 +57,9 @@ public class ChallengeService : IChallengeService
                 || EF.Functions.Like(c.Title, $"%{filter.SearchText}%"))
             .OrderByDescending(challenge => challenge.Start)
             .ThenBy(challenge => challenge.Title)
-            .Skip(pageSize * page)
-            .Take(pageSize)
+            .ThenBy(challenge => challenge.Id)
+            .If(paging != null, x => x.Skip(paging!.Value.Page * paging!.Value.PageSize), x => (IQueryable<Challenge>)x)
+            .If(paging != null, x => x.Take(paging!.Value.PageSize))
             .ToArrayAsync(ct);
 
         return challenges;

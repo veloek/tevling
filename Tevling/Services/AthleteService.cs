@@ -35,7 +35,7 @@ public class AthleteService : IAthleteService
         return athlete;
     }
 
-    public async Task<Athlete[]> GetAthletesAsync(AthleteFilter? filter, int pageSize, int page = 0,
+    public async Task<Athlete[]> GetAthletesAsync(AthleteFilter? filter = null, Paging? paging = null,
         CancellationToken ct = default)
     {
         using DataContext dataContext = await _dataContextFactory.CreateDbContextAsync(ct);
@@ -56,8 +56,9 @@ public class AthleteService : IAthleteService
                 || filter.NotIn == null
                 || !filter.NotIn.Contains(athlete.Id))
             .OrderBy(athlete => athlete.Name)
-            .Skip(page * pageSize)
-            .Take(pageSize)
+            .ThenBy(athlete => athlete.Id)
+            .If(paging != null, x => x.Skip(paging!.Value.Page * paging!.Value.PageSize), x => (IQueryable<Athlete>)x)
+            .If(paging != null, x => x.Take(paging!.Value.PageSize))
             .ToArrayAsync(ct);
 
         return athletes;

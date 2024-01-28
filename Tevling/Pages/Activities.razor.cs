@@ -74,7 +74,7 @@ public partial class Activities : ComponentBase, IDisposable
         ActivityFilter filter = new(
             AthleteId: _athlete.Id,
             IncludeFollowing: !ShowOnlyMine);
-        Activity[] activities = await ActivityService.GetActivitiesAsync(filter, _pageSize, _page, ct);
+        Activity[] activities = await ActivityService.GetActivitiesAsync(filter, new(_pageSize, _page), ct);
         AddActivities(activities);
     }
 

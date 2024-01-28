@@ -57,7 +57,7 @@ public partial class Athletes : ComponentBase, IDisposable
     private async Task FetchAthletes(CancellationToken ct = default)
     {
         AthleteFilter filter = new(ShowOnlyFollowing ? Athlete.Id : null);
-        Athlete[] athletes = await AthleteService.GetAthletesAsync(filter, _pageSize, _page, ct);
+        Athlete[] athletes = await AthleteService.GetAthletesAsync(filter, new(_pageSize, _page), ct);
         AddAthletes(athletes);
     }
 

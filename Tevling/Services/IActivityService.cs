@@ -11,7 +11,7 @@ public interface IActivityService
     Task DeleteActivityAsync(long stravaAthleteId, long stravaActivityId,
         CancellationToken ct = default);
 
-    Task<Activity[]> GetActivitiesAsync(ActivityFilter filter, int pageSize, int page = 0,
+    Task<Activity[]> GetActivitiesAsync(ActivityFilter filter, Paging? paging = null,
         CancellationToken ct = default);
 
     IObservable<FeedUpdate<Activity>> GetActivityFeedForAthlete(int athleteId);
