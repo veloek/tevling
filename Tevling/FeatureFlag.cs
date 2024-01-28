@@ -8,7 +8,6 @@ public sealed class FeatureFlag
 {
     // NB! These names should match those in appsettings.json.
     public const string DevTools = "DevTools";
-    public const string Deauthorize = "Deauthorize";
 
     private readonly string _featureFlag;
 
