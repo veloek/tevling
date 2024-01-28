@@ -16,5 +16,5 @@ public interface IActivityService
 
     IObservable<FeedUpdate<Activity>> GetActivityFeedForAthlete(int athleteId);
 
-    Task ImportActivitiesForAthlete(int athleteId, CancellationToken ct = default);
+    Task ImportActivitiesForAthlete(int athleteId, DateTimeOffset from, CancellationToken ct = default);
 }

@@ -118,4 +118,14 @@ public partial class DevTools : ComponentBase
             InvitedAthletes = [new Athlete() { Id = Athlete.Id }],
         });
     }
+
+    private async Task ImportAllAthletesActivities()
+    {
+        DateTimeOffset from = DateTimeOffset.Now - TimeSpan.FromDays(7);
+        Athlete[] athletes = await AthleteService.GetAthletesAsync();
+        foreach (Athlete athlete in athletes)
+        {
+            await ActivityService.ImportActivitiesForAthlete(athlete.Id, from);
+        }
+    }
 }
