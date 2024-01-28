@@ -8,6 +8,7 @@ public sealed class FeatureFlag
 {
     // NB! These names should match those in appsettings.json.
     public const string DevTools = "DevTools";
+    public const string DevToolsMenuItem = "DevToolsMenuItem";
 
     private readonly string _featureFlag;
 
