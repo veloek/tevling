@@ -55,3 +55,13 @@
         display: block;
     }
 }
+
+.strava-icon {
+    background-image: url('../api_logo_pwrdBy_strava_horiz_gray.png');
+    background-position: center;
+    background-size: 100%;
+    background-repeat: no-repeat;
+    width: 169px;
+    height: 32px;
+    align-self: center;
+}

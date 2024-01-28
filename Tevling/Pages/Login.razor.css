@@ -25,21 +25,24 @@
     margin: 2rem 0;
 }
 
-.login-button-container {
-    display: flex;
-    justify-content: center;
-    align-items: end;
-    column-gap: 1rem;
+button.strava-login {
+    border: none;
+    background-color: inherit;
+    background-image: url('../btn_strava_connectwith_orange@2x.png');
+    background-position: center;
+    background-size: 100%;
+    background-repeat: no-repeat;
+    text-indent: -9999px;
+    width: 193px;
+    height: 48px;
 }
 
-button.strava-login {
-    background-image: url('../strava.png');
-    background-position: center;
-    background-size: 90%;
-    background-repeat: no-repeat;
-    border: solid black 1px;
-    text-indent: -9999px;
-    width: 100px;
+button.strava-login:hover {
+    filter: drop-shadow(0px 0px 5px #c1c1c1);
+}
+
+button.strava-login:active {
+    filter: none !important;
 }
 
 ::deep .copyright {
