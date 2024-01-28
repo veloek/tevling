@@ -58,6 +58,5 @@ appSettingsPath: /etc/tevling/appsettings.json
 
 featureManagement:
   devTools: false
-  deauthorize: false
 
 logLevel: Information
