@@ -4,4 +4,5 @@ public enum ChallengeMeasurement
 {
     Distance,
     Time,
+    Elevation,
 }

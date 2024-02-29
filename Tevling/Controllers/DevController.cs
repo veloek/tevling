@@ -45,7 +45,7 @@ public class DevController : ControllerBase
             Distance = 1234,
             MovingTime = 631,
             ElapsedTime = 963,
-            TotalElevationGain = 0.0f,
+            TotalElevationGain = 124.0f,
             Calories = 0.0f,
             Type = ActivityType.Run,
             StartDate = DateTimeOffset.UtcNow,

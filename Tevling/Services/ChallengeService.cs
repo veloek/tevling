@@ -280,16 +280,24 @@ public class ChallengeService : IChallengeService
             .Select(a => new
             {
                 a.Athlete,
-                Sum = result.Challenge.Measurement == ChallengeMeasurement.Distance
-                    ? a.Activities.Select(x => x.Details.DistanceInMeters).Sum()
-                    : a.Activities.Select(x => x.Details.ElapsedTimeInSeconds).Sum(),
+                Sum = result.Challenge.Measurement switch
+                {
+                    ChallengeMeasurement.Distance => a.Activities.Select(x => x.Details.DistanceInMeters).Sum(),
+                    ChallengeMeasurement.Time => a.Activities.Select(x => x.Details.ElapsedTimeInSeconds).Sum(),
+                    ChallengeMeasurement.Elevation => a.Activities.Select(x => x.Details.TotalElevationGain).Sum(),
+                    _ => 0
+                }
             })
             .OrderByDescending(s => s.Sum)
             .Select(s =>
             {
-                string score = result.Challenge.Measurement == ChallengeMeasurement.Distance
-                    ? $"{(s.Sum / 1000):0.##} km"
-                    : TimeSpan.FromSeconds(s.Sum).ToString("g");
+                string score = result.Challenge.Measurement switch
+                {
+                    ChallengeMeasurement.Distance => $"{(s.Sum / 1000):0.##} km",
+                    ChallengeMeasurement.Time => TimeSpan.FromSeconds(s.Sum).ToString("g"),
+                    ChallengeMeasurement.Elevation => $"{s.Sum:0.##} m",
+                    _ => s.Sum.ToString()
+                };
 
                 return new AthleteScore(s.Athlete, score);
             })
