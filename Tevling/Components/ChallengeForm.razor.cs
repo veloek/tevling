@@ -72,7 +72,11 @@ public partial class ChallengeForm : ComponentBase
 
     private async Task<IEnumerable<Athlete>> SearchAthletes(string searchText)
     {
-        AthleteFilter filter = new() { SearchText = searchText, NotIn = Challenge.InvitedAthletes?.Select(a => a.Id) };
+        AthleteFilter filter = new()
+        {
+            SearchText = searchText,
+            NotIn = Challenge.InvitedAthletes?.Select(a => a.Id).Append(Athlete.Id)
+        };
         Athlete[] result = await AthleteService.GetAthletesAsync(filter, new Paging(MaximumSuggestions));
 
         return result;

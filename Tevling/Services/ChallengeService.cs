@@ -113,11 +113,26 @@ public class ChallengeService : IChallengeService
         Challenge challenge = await dataContext.Challenges
             .Include(c => c.Athletes)
             .Include(c => c.CreatedBy)
+            .Include(c => c.InvitedAthletes)
+            .AsSplitQuery()
             .AsTracking()
             .FirstOrDefaultAsync(c => c.Id == challengeId, ct)
                 ?? throw new Exception($"Unknown challenge ID {challengeId}");
 
         _logger.LogInformation("Updating challenge ID {ChallengeId}", challengeId);
+
+        if (editChallenge.InvitedAthletes != null)
+        {
+            bool stillInvited(Athlete a) => editChallenge.InvitedAthletes.Any(i => i.Id == a.Id);
+
+            IEnumerable<Athlete> newInvites = editChallenge.InvitedAthletes
+                .Where(i => !challenge.InvitedAthletes!.Any(ii => ii.Id == i.Id));
+
+            challenge.InvitedAthletes = challenge.InvitedAthletes!
+                .Where(stillInvited)
+                .Concat(newInvites)
+                .ToList();
+        }
 
         challenge.Title = editChallenge.Title;
         challenge.Description = editChallenge.Description;
