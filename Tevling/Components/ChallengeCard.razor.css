@@ -24,3 +24,7 @@
     text-wrap: nowrap;
     text-overflow: ellipsis;
 }
+
+.score {
+    text-wrap: nowrap;
+}
