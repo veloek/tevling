@@ -30,4 +30,9 @@ public partial class DarkMode : ComponentBase
             StateHasChanged();
         }
     }
+
+    private void ToggleDarkMode()
+    {
+        IsDarkMode = !IsDarkMode;
+    }
 }

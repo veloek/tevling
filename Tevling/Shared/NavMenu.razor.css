@@ -1,67 +1,89 @@
 .navbar-toggler {
-    background-color: rgba(255, 255, 255, 0.1);
+  border: none;
+  font-size: 3rem;
+  color: #dee2e6;
+  transition: transform 0.3s ease;
+}
+
+.navbar-toggler:focus {
+  box-shadow: none;
+}
+
+.navbar-toggler:hover {
+  transform: scale(1.1);
 }
 
 .navbar-brand {
-    font-size: 1.1rem;
+  font-size: 1.1rem;
 }
 
-.oi {
-    width: 2rem;
-    font-size: 1.1rem;
-    vertical-align: text-top;
-    top: -2px;
+.logo {
+  height: 4rem;
+  width: 11rem;
+}
+
+.user-info {
+  color: #d7d7d7;
+  font-weight: 300;
+  font-size: smaller;
+  letter-spacing: 0.2rem;
+}
+
+.divider {
+  color: #737373;
 }
 
 .nav-item {
-    font-size: 0.9rem;
-    padding-bottom: 0.5rem;
+  padding-bottom: 0.5rem;
+  letter-spacing: 0.2rem;
+  font-variant: all-small-caps;
+  font-weight: 300;
+  font-size: large;
 }
 
-    .nav-item:first-of-type {
-        padding-top: 1rem;
-    }
-
-    .nav-item:last-of-type {
-        padding-bottom: 1rem;
-    }
-
-    .nav-item ::deep a {
-        color: #d7d7d7;
-        border-radius: 4px;
-        height: 3rem;
-        display: flex;
-        align-items: center;
-        line-height: 3rem;
-    }
+.nav-item ::deep a {
+  color: #d7d7d7;
+  border-radius: 4px;
+  height: 3rem;
+  display: flex;
+  align-items: center;
+  line-height: 3rem;
+}
 
 .nav-item ::deep a.active {
-    background-color: rgba(255,255,255,0.25);
-    color: white;
+  background-color: black;
+  border-radius: 0.8rem;
+  color: white;
 }
 
 .nav-item ::deep a:hover {
-    background-color: rgba(255,255,255,0.1);
-    color: white;
+  background-color: black;
+  border-radius: 0.8rem;
+  color: white;
 }
 
 @media (min-width: 641px) {
-    .navbar-toggler {
-        display: none;
-    }
+  .navbar-toggler {
+    display: none;
+  }
 
-    .collapse {
-        /* Never collapse the sidebar for wide screens */
-        display: block;
-    }
+  .collapse {
+    /* Never collapse the sidebar for wide screens */
+    display: block;
+  }
+
+  .top-row {
+    padding-right: 1.5rem;
+    padding-left: 1.5rem;
+  }
 }
 
 .strava-icon {
-    background-image: url('../api_logo_pwrdBy_strava_horiz_gray.png');
-    background-position: center;
-    background-size: 100%;
-    background-repeat: no-repeat;
-    width: 169px;
-    height: 32px;
-    align-self: center;
+  background-image: url("../api_logo_pwrdBy_strava_horiz_gray.png");
+  background-position: center;
+  background-size: 100%;
+  background-repeat: no-repeat;
+  width: 169px;
+  height: 32px;
+  align-self: center;
 }
