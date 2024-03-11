@@ -128,4 +128,22 @@ public partial class DevTools : ComponentBase
             await ActivityService.ImportActivitiesForAthlete(athlete.Id, from);
         }
     }
+
+    private async Task AddChallenge()
+    {
+        if (Athlete is null)
+            throw new ArgumentException(nameof(Athlete));
+
+        await ChallengeService.CreateChallengeAsync(new ChallengeFormModel
+        {
+            Title = $"Challenge {Random.Shared.Next(1000, 10000)}",
+            Description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+            Start = DateTimeOffset.Now,
+            End = DateTimeOffset.Now.AddMonths(1),
+            Measurement = ChallengeMeasurement.Distance,
+            ActivityTypes = [Strava.ActivityType.Run],
+            IsPrivate = false,
+            CreatedBy = Athlete.Id
+        });
+    }
 }

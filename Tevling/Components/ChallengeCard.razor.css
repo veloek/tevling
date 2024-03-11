@@ -1,30 +1,91 @@
 .challenge-card {
-    width: 18rem;
-    height: fit-content;
-    position: relative;
-    cursor: pointer;
-    box-shadow: 0px 0px 5px -1px #c1c1c1;
-    transition: box-shadow .2s;
-}
-
-.page[data-bs-theme="dark"] .challenge-card {
-    box-shadow: 0px 0px 5px -1px #666;
+  width: 18rem;
+  cursor: pointer;
+  box-shadow: 0px 4px 4px 0 rgba(0, 0, 0, 0.25);
+  transition: box-shadow 0.2s, max-height 1s ease-in-out;
+  padding: 1rem;
+  border-radius: 1.5rem;
+  min-height: 20rem;
+  max-height: 20rem;
+  overflow: hidden;
 }
 
 .challenge-card:hover {
-    box-shadow: 1px 1px 8px 0px #c1c1c1;
+  max-height: 50rem;
+}
+
+.page[data-bs-theme="dark"] .challenge-card {
+  background-color: #121417;
+  box-shadow: 0px 4px 4px 0 rgba(0, 0, 0, 0.25);
 }
 
 .page[data-bs-theme="dark"] .challenge-card:hover {
-    box-shadow: 1px 1px 8px 0px #666;
+  box-shadow: 0px 4px 20px 10px rgba(0, 0, 0, 0.25);
 }
 
-.challenge-title {
-    overflow: hidden;
-    text-wrap: nowrap;
-    text-overflow: ellipsis;
+.page[data-bs-theme="light"] .challenge-card {
+  background-color: white;
 }
 
+.page[data-bs-theme="light"] .challenge-card:hover {
+  box-shadow: 0px 4px 20px 10px rgba(0, 0, 0, 0.1);
+}
+
+.challenge-description {
+  font-weight: 300;
+  font-size: smaller;
+  max-height: 4rem;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.challenge-card:hover .challenge-description {
+  overflow: visible;
+  max-height: max-content;
+  display: block;
+}
+
+.dropdown-toggle {
+  height: 1.2rem;
+  width: 2rem;
+  border: none;
+}
+
+button {
+  padding: 0;
+  border-radius: 0.8rem;
+}
+
+button.btn-secondary {
+  background-color: white;
+  color: black;
+  border: 1px solid black;
+}
+
+button i {
+  font-size: x-large;
+}
+
+button span {
+  vertical-align: text-bottom;
+}
+
+.challenge-properties span {
+  font-weight: 300;
+}
+
+.challenge-title,
 .score {
-    text-wrap: nowrap;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.list-group-item {
+  background-color: transparent;
+  font-weight: 300;
+  font-size: smaller;
 }

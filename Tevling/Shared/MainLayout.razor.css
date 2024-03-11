@@ -7,6 +7,10 @@
   color: var(--bs-body-color);
 }
 
+.page[data-bs-theme="light"] {
+  background-color: #eff6fe;
+}
+
 main {
   flex: 1;
 }

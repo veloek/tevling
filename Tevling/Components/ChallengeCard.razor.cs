@@ -22,10 +22,17 @@ public partial class ChallengeCard : ComponentBase
     private bool? HasJoined =>
         Challenge?.Athletes?.Any(a => a.Id == AthleteId);
 
-    private string HeaderStyle =>
-        HasJoined == true || Challenge?.CreatedById == AthleteId
-            ? "border-primary"
-            : "border-light";
+
+    private string GetIconForMeasurement()
+    {
+        return Challenge?.Measurement switch
+        {
+            ChallengeMeasurement.Distance => "bi-arrow-right", // Replace with the actual icon class for Distance
+            ChallengeMeasurement.Time => "bi-stopwatch-fill", // Replace with the actual icon class for Time
+            ChallengeMeasurement.Elevation => "bi-arrow-up", // Replace with the actual icon class for Elevation
+            _ => "bi-question-circle", // A default icon for unknown cases
+        };
+    }
 
     private async Task ToggleScoreBoard()
     {
