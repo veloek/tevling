@@ -91,7 +91,7 @@ public class ChallengeService : IChallengeService
             Start = newChallenge.Start,
             End = newChallenge.End,
             Measurement = newChallenge.Measurement,
-            ActivityTypes = newChallenge.ActivityTypes,
+            ActivityTypes = newChallenge.ActivityTypes.ToList(),
             IsPrivate = newChallenge.IsPrivate,
             Created = DateTimeOffset.Now,
             CreatedById = newChallenge.CreatedBy,
@@ -139,7 +139,7 @@ public class ChallengeService : IChallengeService
         challenge.Start = editChallenge.Start;
         challenge.End = editChallenge.End;
         challenge.Measurement = editChallenge.Measurement;
-        challenge.ActivityTypes = editChallenge.ActivityTypes;
+        challenge.ActivityTypes = editChallenge.ActivityTypes.ToList();
         challenge.IsPrivate = editChallenge.IsPrivate;
 
         challenge = await dataContext.UpdateChallengeAsync(challenge, CancellationToken.None);
@@ -274,7 +274,7 @@ public class ChallengeService : IChallengeService
                 Activities = a.Activities!
                     .Where(a => a.Details.StartDate >= result.Challenge.Start
                             && a.Details.StartDate < result.Challenge.End
-                            && (result.Challenge.ActivityTypes.Length == 0
+                            && (result.Challenge.ActivityTypes.Count == 0
                             || result.Challenge.ActivityTypes.Contains(a.Details.Type)))
             })
             .Select(a => new

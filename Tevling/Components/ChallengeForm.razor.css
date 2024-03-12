@@ -1,0 +1,28 @@
+label {
+  font-weight: 300;
+}
+
+a.selected-activity-type {
+  font-size: smaller;
+  padding-top: 0;
+  padding-bottom: 0;
+  align-items: center;
+  display: flex;
+  width: fit-content;
+}
+
+a.selected-activity-type i {
+  font-size: large;
+}
+
+.activity-types-selection {
+  max-width: 30rem;
+}
+
+.selected-athlete {
+  font-weight: 300;
+}
+
+.selected-athlete i {
+  font-size: large;
+}

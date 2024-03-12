@@ -1,3 +1,7 @@
+using Tevling.Strava;
+using Athlete = Tevling.Model.Athlete;
+using Tevling.Shared;
+
 namespace Tevling.Components;
 
 public partial class ChallengeForm : ComponentBase
@@ -36,6 +40,15 @@ public partial class ChallengeForm : ComponentBase
 
     private const int MaximumSuggestions = 10;
 
+    private DropdownSearch<ActivityType>? dropdownSearchRefActivityTypes;
+    private DropdownSearch<Athlete>? dropdownSearchRefAthletes;
+
+    private static IEnumerable<ActivityType> ActivityTypes => Enum.GetValues(typeof(ActivityType)).Cast<ActivityType>();
+    private static Func<ActivityType, string> ActivityTypeDisplayFunc => 
+        activityType => string.Concat(activityType.ToString().Select((x, i) => i > 0 && char.IsUpper(x) ? " " + x : x.ToString()));
+    
+    private static Func<Athlete, string> AthletesDisplayFunc => athlete => athlete.Name;
+
     protected override async Task OnInitializedAsync()
     {
         Athlete = await AuthenticationService.GetCurrentAthleteAsync();
@@ -54,19 +67,19 @@ public partial class ChallengeForm : ComponentBase
             Challenge.Start = EditChallenge.Start;
             Challenge.End = EditChallenge.End;
             Challenge.Measurement = EditChallenge.Measurement;
-            Challenge.ActivityTypes = EditChallenge.ActivityTypes;
+            Challenge.ActivityTypes = EditChallenge.ActivityTypes.ToList();
             Challenge.IsPrivate = EditChallenge.IsPrivate;
             Challenge.CreatedBy = EditChallenge.CreatedById;
-            Challenge.InvitedAthletes = EditChallenge.InvitedAthletes?.ToList();
+            Challenge.InvitedAthletes =EditChallenge.InvitedAthletes?.ToList() ?? [];
         }
         else
         {
             Challenge = new()
-                {
-                    Start = DateTimeOffset.Now,
-                    End = DateTimeOffset.Now.AddMonths(1),
-                    CreatedBy = Athlete.Id,
-                };
+            {
+                Start = DateTimeOffset.Now,
+                End = DateTimeOffset.Now.AddMonths(1),
+                CreatedBy = Athlete.Id,
+            };
         }
     }
 
@@ -80,6 +93,23 @@ public partial class ChallengeForm : ComponentBase
         Athlete[] result = await AthleteService.GetAthletesAsync(filter, new Paging(MaximumSuggestions));
 
         return result;
+    }
+
+    private async Task DeselectActivityType(ActivityType item)
+    {
+        if (dropdownSearchRefActivityTypes is null) return;
+        Challenge.ActivityTypes.Remove(item);
+
+        await dropdownSearchRefActivityTypes.DeselectItemAsync(item);
+    }
+
+
+    private async Task DeselectAthlete(Athlete item)
+    {
+        if (dropdownSearchRefAthletes is null) return;
+        Challenge.InvitedAthletes?.Remove(item);
+
+        await dropdownSearchRefAthletes.DeselectItemAsync(item);
     }
 
     private async Task SubmitForm()

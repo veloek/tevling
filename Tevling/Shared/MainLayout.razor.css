@@ -31,3 +31,18 @@ main {
     top: 0;
   }
 }
+
+@media (max-width: 640px) {
+  .sidebar {
+    position: -webkit-sticky; /* For Safari */
+    position: sticky;
+    top: 0;
+    width: 100%;
+    height: auto; /* Adjust based on your content */
+    z-index: 1000; /* Ensure sidebar is above other content */
+  }
+
+  main {
+    padding-top: 60px; /* Adjust this value based on the actual height of your sidebar */
+  }
+}
