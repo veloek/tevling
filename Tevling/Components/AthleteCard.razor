@@ -1,0 +1,33 @@
+ @if(Athlete is not null)
+ {
+    <div class="athlete-card p-3 d-flex flex-row align-items-center justify-content-between flex-wrap">
+        <div class="d-flex align-items-center flex-row column-gap-2">
+            @if(Athlete.ImgUrl is not null)
+            {
+                <Avatar Url="@Athlete.ImgUrl" Size="30" />
+            }
+            <span class="athlete-name">@Athlete.Name</span>
+        </div>
+        
+        @if(IsFollowing)
+        {
+            <div class="unfollow-button" @onclick="() => FollowingStatusChanged.InvokeAsync()">
+                <i class="bi bi-heart-fill" aria-hidden="true" />
+                <span class="unfollow-button-text">
+                    Following
+                </span>
+            </div>
+        } else {
+            <div class="follow-button" @onclick="() => FollowingStatusChanged.InvokeAsync()">
+                <i class="bi bi-heart" aria-hidden="true" />
+                <span class="follow-button-text">
+                    Follow
+                </span>
+            </div>
+        }
+        <div class="d-flex flex-row align-items-end strava-link column-gap-1" >
+            <a target="_blank" href="https://www.strava.com/activities/@Athlete.StravaId">View on Strava</a>
+            <i class="bi pb-1 bi-box-arrow-up-right" aria-hidden="true" />
+        </div>
+    </div>
+}

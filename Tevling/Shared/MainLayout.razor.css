@@ -30,19 +30,25 @@ main {
     position: sticky;
     top: 0;
   }
+
+  .content {
+    padding-left: 5rem;
+    padding-right: 5rem;
+  }
 }
 
 @media (max-width: 640px) {
   .sidebar {
-    position: -webkit-sticky; /* For Safari */
+    position: -webkit-sticky;
     position: sticky;
     top: 0;
     width: 100%;
-    height: auto; /* Adjust based on your content */
-    z-index: 1000; /* Ensure sidebar is above other content */
+    height: auto;
+    z-index: 1000;
   }
 
-  main {
-    padding-top: 60px; /* Adjust this value based on the actual height of your sidebar */
+  .content {
+    padding-left: 1rem;
+    padding-right: 1rem;
   }
 }

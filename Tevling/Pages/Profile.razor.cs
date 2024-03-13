@@ -27,7 +27,7 @@ public partial class Profile : ComponentBase
     protected override async Task OnParametersSetAsync()
     {
         DateTimeOffset browserTime = await BrowserTime.ConvertToLocal(Athlete.Created);
-        CreatedTime = browserTime.ToString("yyyy'-'MM'-'dd");
+        CreatedTime = browserTime.ToString("dd'.'MM'.'yyyy");
     }
 
     public async Task Import()

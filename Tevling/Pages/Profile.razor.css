@@ -1,0 +1,31 @@
+.title {
+  letter-spacing: 0.2rem;
+  font-variant: all-small-caps;
+  font-size: xxx-large;
+}
+
+.profile {
+  font-weight: 300;
+}
+.member-since {
+  font-size: smaller;
+}
+
+.profile-actions span {
+  font-weight: 300;
+}
+
+.profile-actions a,
+button {
+  width: fit-content;
+}
+
+.profile-info {
+  margin-right: 13rem;
+}
+
+@media (max-width: 1500px) {
+  .profile-info {
+    margin-right: 3rem;
+  }
+}

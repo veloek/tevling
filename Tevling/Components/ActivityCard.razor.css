@@ -8,6 +8,12 @@
   column-gap: 1em;
 }
 
+@media (max-width: 500px) {
+  .activity-card {
+    width: 22rem;
+  }
+}
+
 .activity-card-content {
   width: 100%;
 }
