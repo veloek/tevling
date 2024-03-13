@@ -71,10 +71,10 @@ public partial class DropdownSearch<T> : ComponentBase {
             {
                 IsSearchFocused = false;
                 SearchTerm = string.Empty;
-                await FilterItems();
                 StateHasChanged();
+                await FilterItems();
             });
-        }, null, 100, Timeout.Infinite); 
+        }, null, 200, Timeout.Infinite); 
     }
 
     private async Task SelectItemAsync(T item)

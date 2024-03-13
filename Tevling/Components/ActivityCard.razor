@@ -1,20 +1,27 @@
 @if (Activity is not null)
 {
-    <li class="list-group-item">
-        <div class="activity-card">
-            <Avatar Url="@Activity.Athlete?.ImgUrl" Size="50" />
-            <div class="activity-card-content">
-                <div class="activity-card-header">
-                    <h5 class="athlete-name">@Activity.Athlete?.Name</h5>
-                    <p class="activity-time">@ActivityTime</p>
+    <div class="activity-card px-4 py-3 mb-2">
+        <div class="activity-card-content d-flex flex-column">
+            <div class="activity-card-header d-flex flex-row align-items-center justify-content-between">
+                <div class="d-flex align-items-center flex-row column-gap-2">
+                    <Avatar Url="@Activity.Athlete?.ImgUrl" Size="40" />
+                    <span class="athlete-name">@Activity.Athlete?.Name</span>
+                    <span class="activity-time">@ActivityTime</span>
                 </div>
-                <div class="activity-card-body">
-                    <h4 class="activity-title">
-                        @Activity.Details.Name - @Stats - <a target="_blank" href="https://www.strava.com/activities/@Activity.StravaId">View on Strava</a> <span class="oi oi-external-link" style="font-size: 0.6rem;" />
-                    </h4>
-                    <p class="activity-description">@Activity.Details.Description</p>
+                <div class="d-flex flex-row align-items-end strava-link column-gap-1">
+                    <a target="_blank" href="https://www.strava.com/activities/@Activity.StravaId">View on Strava</a>
+                    <i class="bi bi-box-arrow-up-right pb-1" aria-hidden="true" />
                 </div>
             </div>
+            <div class="activity-card-body ms-5 d-flex flex-column row-gap-2">
+                    <span class="activity-name">@Activity.Details.Name</span>
+                    <span class="activity-description">@Activity.Details.Description</span>
+                    <div class="d-flex flex-row column-gap-4">
+                        <span>@Time</span>
+                        <span>@Stats</span>
+                    </div>
+            </div>
         </div>
-    </li>
+    </div>
+
 }
