@@ -3,3 +3,7 @@
   font-variant: all-small-caps;
   font-size: xxx-large;
 }
+
+label {
+  font-weight: 300;
+}

@@ -1,0 +1,36 @@
+@page "/dashboard"
+
+<PageTitle>Tevling - Dashboard</PageTitle>
+
+<h1 class="mb-5">@GetGreeting()</h1>
+
+<div class="d-flex flex-column active-challenges mb-5">
+    <h3 class="mb-4">Your active challenges</h3>
+    @if(ActiveChallenges.Count() == 0)
+    {
+        <span>You have no active challenges, how about joining one? 😌 </span>
+    } 
+    else {
+        @foreach (var challenge in ActiveChallenges) {
+            <div class="joined-challenge-card d-flex flex-row justify-content-between">
+                <span>@challenge.Key.Title</span>
+                <span>@challenge.Value.Item1</span>
+                <span>@challenge.Value.Item2</span>
+            </div>
+        }
+    }
+</div>
+
+<div class="d-flex flex-column suggested-athletes mb-5">
+    <h3 class="mb-4">Know these athletes?</h3>
+    @if (SuggestedAthletes.Count() == 0)
+    {
+        <span>Follow more athletes to see suggested athletes 🔮</span>
+    } 
+    else 
+    {
+        @foreach (var athlete in SuggestedAthletes) {
+            <AthleteCard Athlete="@athlete" />
+        }
+    }
+</div>

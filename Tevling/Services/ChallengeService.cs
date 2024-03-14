@@ -41,9 +41,9 @@ public class ChallengeService : IChallengeService
             .Include(challenge => challenge.InvitedAthletes)
             .Include(challenge => challenge.CreatedBy)
             .AsSplitQuery()
-            .Where(challenge => !challenge.IsPrivate
+            .Where(challenge => filter.OnlyJoinedChallenges ? challenge.Athletes!.Any(a => a.Id == currentAthleteId) : (!challenge.IsPrivate
                 || challenge.InvitedAthletes!.Any(a => a.Id == currentAthleteId)
-                || challenge.CreatedById == currentAthleteId)
+                || challenge.CreatedById == currentAthleteId))
             .Where(challenge => !filter.ByAthleteId.HasValue
                 || challenge.Athletes!.Any(athlete => athlete.Id == filter.ByAthleteId.Value) == true
                 || challenge.CreatedById == filter.ByAthleteId.Value)

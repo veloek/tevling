@@ -4,14 +4,18 @@
   font-size: xxx-large;
 }
 
-.profile {
-  font-weight: 300;
-}
 .member-since {
   font-size: smaller;
+  font-weight: 300;
 }
 
-.profile-actions span {
+.profile-name {
+  font-size: larger;
+}
+
+.profile-actions span,
+.followers span,
+.following span {
   font-weight: 300;
 }
 
