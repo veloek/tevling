@@ -54,9 +54,13 @@
   border: none;
 }
 
-button {
+button:not(.delete-challenge-modal-button) {
   padding: 0;
   border-radius: 0.8rem;
+}
+
+.delete-challenge-modal-button {
+  width: 10rem;
 }
 
 button.btn-secondary {

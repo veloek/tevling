@@ -1,0 +1,25 @@
+.modal-content {
+  border: none;
+}
+
+.modal-header {
+  border: none;
+}
+
+.modal-body {
+  border: none;
+  font-weight: 300;
+}
+
+.modal-footer {
+  border: none;
+  padding: 1rem;
+}
+
+.page[data-bs-theme="dark"] .modal-content {
+  background-color: #222;
+}
+
+.page[data-bs-theme="light"] .modal-content {
+  background-color: white;
+}

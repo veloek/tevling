@@ -33,3 +33,18 @@ button {
     margin-right: 3rem;
   }
 }
+
+.delete-account-modal-button {
+  width: 10rem;
+}
+
+.delete-account-modal-icon {
+  font-size: 6rem;
+}
+
+a.btn-secondary,
+button.btn-secondary {
+  background-color: white;
+  color: black;
+  border: 1px solid black;
+}

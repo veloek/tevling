@@ -81,8 +81,23 @@
             <h4 class="mt-4">Delete account</h4>
             <span class="text-danger">Delete user account and deauthorize application. All data will be
                 removed.<br />NB! This cannot be undone! </span>
-            <a class="btn btn-danger mt-1" href="/auth/logout?deauthorize=true"> <i class="bi bi-trash-fill me-1"
-                    aria-hidden="true" />Forget me</a>
+            <a class="btn btn-danger mt-1" data-bs-toggle="modal" data-bs-target="#deleteAccount">
+                <i class="bi bi-trash-fill me-1"aria-hidden="true" />Forget me</a>
         </div>
     </div>
 </div>
+
+
+<Modal Id="deleteAccount" Size="sm">
+    <HeaderContent>
+        <span>Delete account</span>
+    </HeaderContent>
+    <BodyContent>
+        <i class="bi bi-trash delete-account-modal-icon" aria-hidden="true" />
+        <span class="text-center delete-account-modal-text">Are you sure you want to delete your Tevling account?</span>
+    </BodyContent>
+    <FooterContent>
+        <a class="btn btn-danger mt-1 delete-account-modal-button" href="/auth/logout?deauthorize=true">Delete account</a>
+        <button class="btn btn-secondary mt-1 delete-account-modal-button" data-bs-dismiss="modal">Cancel</button>
+    </FooterContent>
+</Modal>

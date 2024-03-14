@@ -33,7 +33,7 @@
                             <button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" @onclick:stopPropagation="true"></button>
                             <ul class="dropdown-menu">
                                 <li><a class="dropdown-item" href="challenges/@Challenge.Id/edit">Edit</a></li>
-                                <li><a class="dropdown-item" @onclick="DeleteChallenge" @onclick:stopPropagation="true">Delete</a></li>
+                                <li><a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#deleteChallenge">Delete</a></li>
                             </ul>
                         }
 
@@ -80,3 +80,16 @@
         }
     </div>
 }
+
+<Modal Id="deleteChallenge" Size="sm">
+    <HeaderContent>
+        <span class="text-center">Delete challenge</span>
+    </HeaderContent>
+    <BodyContent>
+        <span class="text-center">Are you sure you want to delete @Challenge?.Title?</span>
+    </BodyContent>
+    <FooterContent>
+        <button class="btn btn-danger mt-1 delete-challenge-modal-button" @onclick="DeleteChallenge">Delete challenge</button>
+        <button class="btn btn-secondary mt-1 delete-challenge-modal-button" data-bs-dismiss="modal">Cancel</button>
+    </FooterContent>
+</Modal>
