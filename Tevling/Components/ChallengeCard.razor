@@ -1,13 +1,29 @@
 @if (Challenge != null)
 {
     <div class="challenge-card d-flex flex-column" @onclick="ToggleScoreBoard">
-    @if (ShowScoreBoard && ScoreBoard != null)
-        {
-            <div class="card-header d-flex align-items-center cg-2">
+    <div class="d-flex flex-column justify-content-between">
+        <div>
+            <div class="d-flex justify-content-between">
                 <h5>@Challenge.Title</h5>
+
+                @if (Challenge.CreatedById == AthleteId)
+                    {
+                        <button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown"
+                            aria-expanded="false" @onclick:stopPropagation="true"></button>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="challenges/@Challenge.Id/edit">Edit</a></li>
+                            <li><a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#deleteChallenge">Delete</a>
+                            </li>
+                        </ul>
+                    }
+                </div>
             </div>
+        </div>
+
+        @if (ShowScoreBoard && ScoreBoard != null)
+        {
             <ul class="list-group list-group-flush list-group-numbered overflow-auto" style="max-height: 14rem">
-        @foreach (AthleteScore score in ScoreBoard.Scores)
+                @foreach (AthleteScore score in ScoreBoard.Scores)
                 {
                     <li class="list-group-item d-flex justify-content-between">
                         <span>@score.Name</span>
@@ -23,34 +39,56 @@
         }
         else
         {
-            <div class="card-header d-flex flex-column justify-content-between">
-                <div>
-                    <div class="d-flex justify-content-between">
-                        <h5>@Challenge.Title</h5>
-
-                        @if (Challenge.CreatedById == AthleteId)
-                        {
-                            <button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" @onclick:stopPropagation="true"></button>
-                            <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="challenges/@Challenge.Id/edit">Edit</a></li>
-                                <li><a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#deleteChallenge">Delete</a></li>
-                            </ul>
-                        }
-
-                        </div>
+            @if (Challenge.End <= DateTimeOffset.Now)
+            {
+                @if (Challenge.Winner is null)
+                {
+                    <div class="d-flex flex-column my-auto align-items-center">
+                        <span>The challenge has ended! </span>
+                        <span>Congrats to all participants 👏</span>
+                        <span>Now it's time to draw a winner 🏆</span>
                     </div>
-                    <p class="challenge-description">@Challenge.Description</p>
-                </div>
-        
+                    @if (Challenge.CreatedById == AthleteId)
+                    {
+                        <button class="btn btn-primary mt-auto" data-bs-toggle="modal" data-bs-target="#drawWinner"
+                            @onclick:stopPropagation="true">
+                            <i class="bi bi-stars me-2" aria-hidden="true" />
+                            <span>Draw winner</span>
+                        </button>
+                    }
+                    else
+                    {
+                        <span class="mb-3 text-center">
+                            Ask @(Challenge.CreatedBy == null ? "the creator of the challenge" : Challenge.CreatedBy.Name) to do the draw!
+                        </span>
+                    }
+                }
+                else
+                {
+                    <span class="my-auto text-center">The challenge has ended, with @Challenge.Winner.Name as the winner! 🏆</span>
+                }
+            }
+            else
+            {
+                <p class="challenge-description">@Challenge.Description</p>
+
                 <div class="challenge-properties d-flex flex-column justify-content-between mb-3">
-                    <span><i class="bi bi-calendar-week me-1" aria-hidden="true" /> @Challenge.Start.ToString("MMM d") -
-                        @Challenge.End.ToString("MMM d")</span>
-                    <span><i class="bi @GetIconForMeasurement() me-1" aria-hidden="true" /> @Challenge.Measurement</span>
-                    <span><i class="bi bi-people-fill me-1" aria-hidden="true" /> @Challenge.Athletes?.Count @(Challenge.Athletes?.Count == 1 ? "participant" : "participants")</span>
+                    <span>
+                        <i class="bi bi-calendar-week me-1" aria-hidden="true" /> 
+                        @Challenge.Start.ToString("MMM d") - @Challenge.End.ToString("MMM d")
+                    </span>
+                    <span>
+                        <i class="bi @GetIconForMeasurement() me-1" aria-hidden="true" />
+                            @Challenge.Measurement
+                    </span>
+                    <span>
+                        <i class="bi bi-people-fill me-1" aria-hidden="true" /> 
+                        @Challenge.Athletes?.Count @(Challenge.Athletes?.Count == 1 ? "participant" : "participants")
+                    </span>
                 </div>
 
                 <div class="d-flex flex-wrap cg-1 rg-1 mb-4">
-                    @if (Challenge.ActivityTypes.Count > 0)
+                 @if (Challenge.ActivityTypes.Count > 0)
                     {
                         foreach (Strava.ActivityType type in Challenge.ActivityTypes)
                         {
@@ -66,30 +104,85 @@
                 @if (HasJoined == false)
                 {
                     <button class="btn btn-primary mt-auto" @onclick="JoinChallenge" @onclick:stopPropagation="true">
-                        <i class="bi bi-box-arrow-in-right me-2" aria-hidden="true" /> 
+                        <i class="bi bi-box-arrow-in-right me-2" aria-hidden="true" />
                         <span>Join</span>
                     </button>
                 }
                 else if (HasJoined == true)
                 {
                     <button class="btn btn-secondary mt-auto" @onclick="LeaveChallenge" @onclick:stopPropagation="true">
-                        <i class="bi bi-box-arrow-left me-2" aria-hidden="true" /> 
+                        <i class="bi bi-box-arrow-left me-2" aria-hidden="true" />
                         <span>Leave</span>
                     </button>
                 }
+            }
         }
     </div>
-}
 
-<Modal Id="deleteChallenge" Size="sm">
-    <HeaderContent>
-        <span class="text-center">Delete challenge</span>
-    </HeaderContent>
-    <BodyContent>
-        <span class="text-center">Are you sure you want to delete @Challenge?.Title?</span>
-    </BodyContent>
-    <FooterContent>
-        <button class="btn btn-danger mt-1 delete-challenge-modal-button" @onclick="DeleteChallenge">Delete challenge</button>
-        <button class="btn btn-secondary mt-1 delete-challenge-modal-button" data-bs-dismiss="modal">Cancel</button>
-    </FooterContent>
-</Modal>
+
+    <Modal Id="deleteChallenge" Size="sm">
+        <HeaderContent>
+            <span class="text-center">Delete challenge</span>
+        </HeaderContent>
+        <BodyContent>
+            <span class="text-center">Are you sure you want to delete @Challenge.Title?</span>
+        </BodyContent>
+        <FooterContent>
+            <button class="btn btn-danger mt-1 modal-button" @onclick="DeleteChallenge">Delete challenge</button>
+            <button class="btn btn-secondary mt-1 modal-button" data-bs-dismiss="modal">Cancel</button>
+        </FooterContent>
+    </Modal>
+
+    <Modal Id="drawWinner">
+        <HeaderContent>
+            <span>Draw winner</span>
+        </HeaderContent>
+        <BodyContent>
+            @if(DrawingWinner)
+            {
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <span class="text-center mt-3">Spinning the wheel...</span>
+            }
+            else 
+            {
+                @if (Winner is null)
+                {
+                    <h5 class="mb-3">Draw winner for @Challenge.Title?</h5>
+                    <span class="text-center">
+                        The winner will be drawn based on their contribution.
+                        Each unit of contribution equals a 'lottery ticket',
+                        ensuring all participants have a chance to win, regardless of their total contribution.
+                    </span>
+                }
+                else
+                {
+                    <h5 class="mb-3">The winner for @Challenge.Title is...</h5>
+                    <div class="d-flex flex-row align-items-center column-gap-1 mb-3">
+                        <Avatar Url="@Winner.ImgUrl" Size="30" />
+                        <span>@Winner.Name</span>
+                    </div>
+                    <span>Great job! Congratulations on the victory! 🎉</span>
+                }
+            }
+        </BodyContent>
+        <FooterContent>
+            @if (!DrawingWinner)
+            {
+                @if (Winner is null)
+                {
+                    <div class="d-flex flex-row column-gap-4">
+                        <button class="btn btn-primary mt-1 modal-button" @onclick="DrawWinner">Spin the lottery</button>
+                        <button class="btn btn-secondary mt-1 modal-button" data-bs-dismiss="modal">Cancel</button>
+                    </div>
+                }
+                else
+                {
+                    <button class="btn btn-secondary mt-1 modal-button" data-bs-dismiss="modal">Close</button>
+                }
+            }
+
+        </FooterContent>
+    </Modal>
+}

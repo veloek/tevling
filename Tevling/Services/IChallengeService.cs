@@ -21,4 +21,5 @@ public interface IChallengeService
     Task DeleteChallengeAsync(int challengeId, CancellationToken ct = default);
 
     Task<ScoreBoard> GetScoreBoardAsync(int challengeId, CancellationToken ct = default);
+    Task<Athlete?> DrawChallengeWinnerAsync(int challengeId, CancellationToken ct = default);
 }

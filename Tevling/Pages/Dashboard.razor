@@ -13,10 +13,27 @@
     } 
     else {
         @foreach (var challenge in ActiveChallenges) {
-            <div class="joined-challenge-card d-flex flex-row justify-content-between">
-                <span>@challenge.Key.Title</span>
-                <span>@challenge.Value.Item1</span>
-                <span>@challenge.Value.Item2</span>
+            <div class="joined-challenge-card d-flex flex-row mt-2 column-gap-2">
+                <span class="challenge-title">@challenge.Key.Title</span>
+                <span class="challenge-placement">@challenge.Value.Item1</span>
+                <span class="challenge-score">@challenge.Value.Item2</span>
+            </div>
+        }
+    }
+</div>
+
+<div class="d-flex flex-column recent-outdated-challenges mb-5">
+    <h3 class="mb-4">Your recently completed challenges</h3>
+    @if(ActiveChallenges.Count() == 0)
+    {
+        <span>You have no completed challenges, how about joining one? 😌 </span>
+    } 
+    else {
+        @foreach (var challenge in RecentOutdatedChallenges) {
+            <div class="joined-challenge-card d-flex flex-row mt-2">
+                <span class="challenge-title">@challenge.Key.Title</span>
+                <span class="challenge-placement">@challenge.Value.Item1</span>
+                <span class="challenge-score">@challenge.Value.Item2</span>
             </div>
         }
     }

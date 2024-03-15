@@ -38,6 +38,7 @@ public class ChallengeService : IChallengeService
 
         Challenge[] challenges = await dataContext.Challenges
             .Include(challenge => challenge.Athletes)
+            .Include(challenge => challenge.Winner)
             .Include(challenge => challenge.InvitedAthletes)
             .Include(challenge => challenge.CreatedBy)
             .AsSplitQuery()
@@ -305,4 +306,71 @@ public class ChallengeService : IChallengeService
 
         return new ScoreBoard(scores);
     }
+
+    public async Task<Athlete?> DrawChallengeWinnerAsync(int challengeId, CancellationToken ct = default)
+    {
+        using DataContext dataContext = await _dataContextFactory.CreateDbContextAsync(ct);
+
+        Challenge? challenge = await dataContext.Challenges
+            .Include(c => c.Athletes)
+            .ThenInclude(a => a.Activities)
+            .AsTracking()
+            .AsSplitQuery()
+            .FirstOrDefaultAsync(c => c.Id == challengeId, ct);
+
+        if (challenge == null) return null; 
+
+        List<(Athlete Athlete, int Tickets)> tickets = [];
+
+        foreach (Athlete athlete in challenge.Athletes)
+        {
+            int athleteTickets = 0;
+            if (athlete.Activities == null) continue;
+            IEnumerable<Activity> challengeActivities = athlete.Activities.Where(a => challenge.ActivityTypes.Contains(a.Details.Type) && 
+                                                                a.Details.StartDate >= challenge.Start && 
+                                                                a.Details.StartDate <= challenge.End);
+
+            foreach (Activity? activity in challengeActivities)
+            {
+                switch (challenge.Measurement)
+                {
+                    case ChallengeMeasurement.Distance:
+                        athleteTickets += (int)(activity.Details.DistanceInMeters / 1000); // 1 km = 1 ticket
+                        break;
+                    case ChallengeMeasurement.Elevation:
+                        athleteTickets += (int)activity.Details.TotalElevationGain; // 1 m = 1 ticket
+                        break;
+                    case ChallengeMeasurement.Time:
+                        athleteTickets += (int)(activity.Details.ElapsedTimeInSeconds / 1800); // 30 min = 1 ticket
+                        break;
+                }
+            }
+
+            if (athleteTickets > 0)
+            {
+                tickets.Add((athlete, athleteTickets));
+            }
+        }
+
+        int totalTickets = tickets.Sum(t => t.Tickets);
+        int randomNumber = new Random().Next(1, totalTickets + 1);
+
+        int currentMax = 0;
+        foreach ((Athlete Athlete, int Tickets) in tickets)
+        {
+            currentMax += Tickets;
+            if (randomNumber <= currentMax)
+            {   
+                challenge.WinnerId = Athlete.Id;
+                await dataContext.UpdateChallengeAsync(challenge, CancellationToken.None);
+
+                _challengeFeed.OnNext(new FeedUpdate<Challenge> { Item = challenge, Action = FeedAction.Update });
+
+                return Athlete;
+            }
+        }
+
+        return null; 
+    }
+
 }

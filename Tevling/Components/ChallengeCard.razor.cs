@@ -22,15 +22,18 @@ public partial class ChallengeCard : ComponentBase
     private bool? HasJoined =>
         Challenge?.Athletes?.Any(a => a.Id == AthleteId);
 
+    private Athlete? Winner {get; set; }
+    private bool DrawingWinner { get; set;}
+
 
     private string GetIconForMeasurement()
     {
         return Challenge?.Measurement switch
         {
-            ChallengeMeasurement.Distance => "bi-arrow-right", // Replace with the actual icon class for Distance
-            ChallengeMeasurement.Time => "bi-stopwatch-fill", // Replace with the actual icon class for Time
-            ChallengeMeasurement.Elevation => "bi-arrow-up", // Replace with the actual icon class for Elevation
-            _ => "bi-question-circle", // A default icon for unknown cases
+            ChallengeMeasurement.Distance => "bi-arrow-right", 
+            ChallengeMeasurement.Time => "bi-stopwatch-fill", 
+            ChallengeMeasurement.Elevation => "bi-arrow-up", 
+            _ => "bi-question-circle", 
         };
     }
 
@@ -60,13 +63,20 @@ public partial class ChallengeCard : ComponentBase
 
     private async Task DeleteChallenge()
     {
-        bool confirmed = await JSRuntime.InvokeAsync<bool>("confirm", "Are you sure you want to delete the challenge?");
-        if (confirmed)
+        if (Challenge != null)
         {
-            if (Challenge != null)
-            {
-                await ChallengeService.DeleteChallengeAsync(Challenge.Id);
-            }
+            await ChallengeService.DeleteChallengeAsync(Challenge.Id);
+        }
+    }
+
+    private async Task DrawWinner() 
+    {
+        if (Challenge is not null) 
+        {
+            DrawingWinner = true;
+            await Task.Delay(TimeSpan.FromSeconds(3));
+            Winner = await ChallengeService.DrawChallengeWinnerAsync(Challenge.Id);
+            DrawingWinner = false;
         }
     }
 }

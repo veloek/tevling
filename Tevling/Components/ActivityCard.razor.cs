@@ -21,6 +21,15 @@ public partial class ActivityCard : ComponentBase
                     float distanceInKm = Activity.Details.DistanceInMeters / 1000;
                     return $"Distance: {distanceInKm:F1} km";
                 }
+                if (Activity.Details.TotalElevationGain > 0)
+                {
+                    return $"Elevation: {Activity.Details.TotalElevationGain} m";
+                }
+                if (Activity.Details.Calories > 0)
+                {
+                    return $"Calories: {Activity.Details.Calories} kcal";
+                }
+
             }
 
             return string.Empty;
@@ -29,7 +38,7 @@ public partial class ActivityCard : ComponentBase
 
     private string Time {
         get {
-            if (Activity is not null)
+            if (Activity is not null && Activity.Details.ElapsedTimeInSeconds > 0)
             {
                 TimeSpan timeSpan = TimeSpan.FromSeconds(Activity.Details.ElapsedTimeInSeconds);
                 string formattedTime = "";

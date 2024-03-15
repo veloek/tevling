@@ -10,13 +10,36 @@
 
 @media (max-width: 500px) {
   .athlete-card {
-    max-width: fit-content;
+    max-width: 22rem;
   }
+
+  .athlete-name {
+    max-width: 7rem;
+  }
+
+  .strava-link {
+    max-width: 4rem;
+  }
+
+  .unfollow-button,
+  .follow-button {
+    max-width: 6rem;
+  }
+}
+
+.athlete-name {
+  width: 15rem;
 }
 
 .strava-link {
   font-size: smaller;
   font-weight: 300;
+  width: 7rem;
+}
+
+.unfollow-button,
+.follow-button {
+  width: 8rem;
 }
 
 .page[data-bs-theme="dark"] .athlete-card {

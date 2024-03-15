@@ -10,7 +10,7 @@ h1 {
   box-shadow: 0px 4px 4px 0 rgba(0, 0, 0, 0.25);
   padding: 1rem;
   border-radius: 1rem;
-  width: 25rem;
+  width: 26rem;
 }
 
 .active-challenges > span,
@@ -20,8 +20,36 @@ h1 {
 
 @media (max-width: 500px) {
   .joined-challenge-card {
-    width: 22.5rem;
+    max-width: 21rem;
   }
+
+  .joined-challenge-card .challenge-title {
+    word-wrap: break-word;
+    text-wrap: pretty;
+    max-width: 10rem;
+  }
+
+  .joined-challenge-card .challenge-placement {
+    max-width: 4rem;
+  }
+
+  .joined-challenge-card .challenge-score {
+    max-width: 5rem;
+  }
+}
+
+.joined-challenge-card .challenge-title {
+  word-wrap: break-word;
+  text-wrap: pretty;
+  width: 16rem;
+}
+
+.joined-challenge-card .challenge-placement {
+  width: 5rem;
+}
+
+.joined-challenge-card .challenge-score {
+  width: 5rem;
 }
 
 .page[data-bs-theme="dark"] .joined-challenge-card {

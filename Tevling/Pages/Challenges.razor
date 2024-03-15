@@ -5,7 +5,7 @@
 <h1 class="title mb-5">Challenges</h1>
 
 <div class="d-flex flex-row mb-3 column-gap-5 flex-wrap-reverse">
-    <div class="challenges me-5">
+    <div class="challenges">
         <div class="d-flex column-gap-5 mb-5 align-items-end flex-wrap">
             <div class="challenge-search">
                 <label>Search <br><InputText @bind-Value="@FilterText" @oninput="SetFilterTextDebounced" /></label>
@@ -15,7 +15,7 @@
             </div>
         </div>
 
-        <div class="d-flex flex-wrap column-gap-4 rg-3 mb-3">
+        <div class="d-flex flex-wrap column-gap-4 rg-3 mb-3 challenge-list">
             @foreach (var challenge in ChallengeList)
             {
                 <ChallengeCard AthleteId="@AthleteId" Challenge="@challenge" />

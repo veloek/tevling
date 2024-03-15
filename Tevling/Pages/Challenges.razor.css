@@ -10,11 +10,22 @@
 
 .challenges {
   max-width: 58rem;
+  margin-right: 5rem;
 }
 
 @media (max-width: 1500px) {
   .challenges {
     max-width: 38rem;
+  }
+}
+
+@media (max-width: 500px) {
+  .challenges {
+    margin-right: 0;
+  }
+
+  .challenge-list {
+    justify-content: center;
   }
 }
 

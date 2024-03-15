@@ -1,7 +1,7 @@
  @if(Athlete is not null)
  {
-    <div class="athlete-card p-3 d-flex flex-row align-items-center justify-content-between flex-wrap">
-        <div class="d-flex align-items-center flex-row column-gap-2">
+    <div class="athlete-card p-3 d-flex flex-row align-items-center flex-wrap">
+        <div class="d-flex align-items-center flex-row column-gap-2 athlete-name">
             @if(Athlete.ImgUrl is not null)
             {
                 <Avatar Url="@Athlete.ImgUrl" Size="30" />

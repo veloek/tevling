@@ -48,6 +48,9 @@ public class DataContext : DbContext
             .HasOne(c => c.CreatedBy);
 
         modelBuilder.Entity<Challenge>()
+            .HasOne(c => c.Winner);
+
+        modelBuilder.Entity<Challenge>()
             .Property(c => c.Start)
             .HasConversion(new DateTimeOffsetToBinaryConverter());
 

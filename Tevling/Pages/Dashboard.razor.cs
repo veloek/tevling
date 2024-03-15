@@ -13,7 +13,8 @@ public partial class Dashboard : ComponentBase {
 
 
     private Athlete? Athlete { get; set; }
-    private Dictionary<Challenge, (string, string)> ActiveChallenges { get; set; }  = new();
+    private Dictionary<Challenge, (string, string)> ActiveChallenges { get; set; }  = [];
+    private Dictionary<Challenge, (string, string)> RecentOutdatedChallenges { get; set; } = [];
     private IEnumerable<Athlete> SuggestedAthletes {get; set; } = [];
     
     protected override async Task OnInitializedAsync()
@@ -24,6 +25,7 @@ public partial class Dashboard : ComponentBase {
         {
             int athleteId = Athlete.Id;
             await FetchActiveChallenges();
+            await FetchRecentOutdatedChallenges();
             await FetchSuggestedAthletes();
         }
     }
@@ -50,6 +52,8 @@ public partial class Dashboard : ComponentBase {
         Challenge[] challenges = await ChallengeService.GetChallengesAsync(Athlete.Id, filter, null, ct);
 
         foreach (Challenge challenge in challenges) {
+            if (challenge.End <= DateTime.Now) continue;
+
             ScoreBoard scoreBoard = await ChallengeService.GetScoreBoardAsync(challenge.Id, ct);
             if (scoreBoard is null) continue;
 
@@ -69,6 +73,40 @@ public partial class Dashboard : ComponentBase {
             ActiveChallenges[challenge] = (placementString, score.Score);
         }
     }
+
+    private async Task FetchRecentOutdatedChallenges(CancellationToken ct = default)
+    {
+        if (Athlete is null) return;
+        ChallengeFilter filter = new(
+            SearchText: string.Empty,
+            ByAthleteId: null,
+            OnlyJoinedChallenges: true,
+            IncludeOutdatedChallenges: true);
+        
+        Challenge[] challenges = await ChallengeService.GetChallengesAsync(Athlete.Id, filter, null, ct);
+        challenges = [.. challenges.Where(challenge => challenge.End <= DateTime.Now).OrderByDescending(challenge => challenge.End)];
+        
+        foreach (Challenge challenge in challenges) {
+            ScoreBoard scoreBoard = await ChallengeService.GetScoreBoardAsync(challenge.Id, ct);
+            if (scoreBoard is null) continue;
+
+            AthleteScore? score = scoreBoard.Scores.FirstOrDefault(x => x.Name == Athlete.Name);
+            if (score is null) continue;
+
+            int placement = scoreBoard.Scores.ToList().IndexOf(score) + 1;
+            if (placement is 0) continue;
+
+            string placementString = placement switch {
+                1 => "1st 🥇",
+                2 => "2nd 🥈",
+                3 => "3rd 🥉",
+                _ => $"{placement}th"
+            };
+
+            RecentOutdatedChallenges[challenge] = (placementString, score.Score);
+        }
+    }
+
 
     private async Task FetchSuggestedAthletes(CancellationToken ct = default)
     {
