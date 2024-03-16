@@ -2,11 +2,9 @@ namespace Tevling.Components;
 
 public partial class ActivityCard : ComponentBase
 {
-    [Inject]
-    IBrowserTime BrowserTime { get; set; } = null!;
+    [Inject] private IBrowserTime BrowserTime { get; set; } = null!;
 
-    [Parameter]
-    public Activity? Activity { get; set; }
+    [Parameter] public Activity? Activity { get; set; }
 
     private string? ActivityTime;
 
@@ -14,47 +12,40 @@ public partial class ActivityCard : ComponentBase
     {
         get
         {
-            if (Activity is not null)
+            if (Activity is null) return string.Empty;
+            if (Activity.Details.DistanceInMeters > 0)
             {
-                if (Activity.Details.DistanceInMeters > 0)
-                {
-                    float distanceInKm = Activity.Details.DistanceInMeters / 1000;
-                    return $"Distance: {distanceInKm:F1} km";
-                }
-                if (Activity.Details.TotalElevationGain > 0)
-                {
-                    return $"Elevation: {Activity.Details.TotalElevationGain} m";
-                }
-                if (Activity.Details.Calories > 0)
-                {
-                    return $"Calories: {Activity.Details.Calories} kcal";
-                }
-
+                float distanceInKm = Activity.Details.DistanceInMeters / 1000;
+                return $"Distance: {distanceInKm:F1} km";
             }
 
-            return string.Empty;
+            if (Activity.Details.TotalElevationGain > 0)
+            {
+                return $"Elevation: {Activity.Details.TotalElevationGain} m";
+            }
+
+            return Activity.Details.Calories > 0 ? $"Calories: {Activity.Details.Calories} kcal" : string.Empty;
         }
     }
 
-    private string Time {
-        get {
-            if (Activity is not null && Activity.Details.ElapsedTimeInSeconds > 0)
-            {
-                TimeSpan timeSpan = TimeSpan.FromSeconds(Activity.Details.ElapsedTimeInSeconds);
-                string formattedTime = "";
-                
-                if (timeSpan.Hours > 0)
-                    formattedTime += string.Format("{0}h ", timeSpan.Hours);
-                    
-                if (timeSpan.Minutes > 0 || timeSpan.Hours > 0) // Include minutes if there are any hours
-                    formattedTime += string.Format("{0}m ", timeSpan.Minutes);
-                    
-                formattedTime += string.Format("{0}s", timeSpan.Seconds);
-                
-                return $"Time: {formattedTime}";
-            }
+    private string Time
+    {
+        get
+        {
+            if (Activity is null || Activity.Details.ElapsedTimeInSeconds <= 0) return string.Empty;
 
-            return string.Empty;
+            TimeSpan timeSpan = TimeSpan.FromSeconds(Activity.Details.ElapsedTimeInSeconds);
+            string formattedTime = "";
+
+            if (timeSpan.Hours > 0)
+                formattedTime += $"{timeSpan.Hours}h ";
+
+            if (timeSpan.Minutes > 0 || timeSpan.Hours > 0) // Include minutes if there are any hours
+                formattedTime += $"{timeSpan.Minutes}m ";
+
+            formattedTime += $"{timeSpan.Seconds}s";
+
+            return $"Time: {formattedTime}";
         }
     }
 

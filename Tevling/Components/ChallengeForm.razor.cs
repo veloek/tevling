@@ -1,52 +1,29 @@
+using Tevling.Shared;
 using Tevling.Strava;
 using Athlete = Tevling.Model.Athlete;
-using Tevling.Shared;
 
 namespace Tevling.Components;
 
 public partial class ChallengeForm : ComponentBase
 {
-    [Inject]
-    IAuthenticationService AuthenticationService { get; set; } = null!;
+    [Inject] private IAuthenticationService AuthenticationService { get; set; } = null!;
+    [Inject] private IAthleteService AthleteService { get; set; } = null!;
 
-    [Inject]
-    IAthleteService AthleteService { get; set; } = null!;
+    [Parameter] public string SubmitLabel { get; set; } = "Submit";
+    [Parameter] public string CancelLabel { get; set; } = "Cancel";
+    [Parameter] public Action<ChallengeFormModel>? OnSubmit { get; set; }
+    [Parameter] public Func<ChallengeFormModel, Task>? OnSubmitAsync { get; set; }
+    [Parameter] public Action? OnCancel { get; set; }
+    [Parameter] public Func<Task>? OnCancelAsync { get; set; }
+    [Parameter] public Challenge? EditChallenge { get; set; }
 
-    [Parameter]
-    public string SubmitLabel { get; set; } = "Submit";
-
-    [Parameter]
-    public string CancelLabel { get; set; } = "Cancel";
-
-    [Parameter]
-    public Action<ChallengeFormModel>? OnSubmit { get; set; }
-
-    [Parameter]
-    public Func<ChallengeFormModel, Task>? OnSubmitAsync { get; set; }
-
-    [Parameter]
-    public Action? OnCancel { get; set; }
-
-    [Parameter]
-    public Func<Task>? OnCancelAsync { get; set; }
-
-    [Parameter]
-    public Challenge? EditChallenge { get; set; }
-
-    [SupplyParameterFromForm]
-    public ChallengeFormModel Challenge { get; set; } = new();
-
-    private Athlete Athlete { get; set; } = default!;
+    [SupplyParameterFromForm] public ChallengeFormModel Challenge { get; set; } = new();
 
     private const int MaximumSuggestions = 10;
-
-    private DropdownSearch<ActivityType>? dropdownSearchRefActivityTypes;
-    private DropdownSearch<Athlete>? dropdownSearchRefAthletes;
-
+    private DropdownSearch<ActivityType>? _dropdownSearchRefActivityTypes;
+    private DropdownSearch<Athlete>? _dropdownSearchRefAthletes;
+    private Athlete Athlete { get; set; } = default!;
     private static IEnumerable<ActivityType> ActivityTypes => Enum.GetValues(typeof(ActivityType)).Cast<ActivityType>();
-    private static Func<ActivityType, string> ActivityTypeDisplayFunc => 
-        activityType => string.Concat(activityType.ToString().Select((x, i) => i > 0 && char.IsUpper(x) ? " " + x : x.ToString()));
-    
     private static Func<Athlete, string> AthletesDisplayFunc => athlete => athlete.Name;
 
     protected override async Task OnInitializedAsync()
@@ -58,10 +35,8 @@ public partial class ChallengeForm : ComponentBase
     {
         if (EditChallenge != null)
         {
-            if (EditChallenge.Athletes is null)
-            {
-                throw new Exception("Athletes not initialized");
-            }
+            if (EditChallenge.Athletes is null) throw new Exception("Athletes not initialized");
+
             Challenge.Title = EditChallenge.Title;
             Challenge.Description = EditChallenge.Description;
             Challenge.Start = EditChallenge.Start;
@@ -70,15 +45,16 @@ public partial class ChallengeForm : ComponentBase
             Challenge.ActivityTypes = EditChallenge.ActivityTypes.ToList();
             Challenge.IsPrivate = EditChallenge.IsPrivate;
             Challenge.CreatedBy = EditChallenge.CreatedById;
-            Challenge.InvitedAthletes =EditChallenge.InvitedAthletes?.ToList() ?? [];
+            Challenge.InvitedAthletes = EditChallenge.InvitedAthletes?.ToList() ?? []
+            ;
         }
         else
         {
-            Challenge = new()
+            Challenge = new ChallengeFormModel
             {
                 Start = DateTimeOffset.Now,
                 End = DateTimeOffset.Now.AddMonths(1),
-                CreatedBy = Athlete.Id,
+                CreatedBy = Athlete.Id
             };
         }
     }
@@ -88,8 +64,9 @@ public partial class ChallengeForm : ComponentBase
         AthleteFilter filter = new()
         {
             SearchText = searchText,
-            NotIn = Challenge.InvitedAthletes?.Select(a => a.Id).Append(Athlete.Id)
+            NotIn = Challenge.InvitedAthletes.Select(a => a.Id).Append(Athlete.Id)
         };
+
         Athlete[] result = await AthleteService.GetAthletesAsync(filter, new Paging(MaximumSuggestions));
 
         return result;
@@ -97,38 +74,30 @@ public partial class ChallengeForm : ComponentBase
 
     private async Task DeselectActivityType(ActivityType item)
     {
-        if (dropdownSearchRefActivityTypes is null) return;
-        Challenge.ActivityTypes.Remove(item);
+        if (_dropdownSearchRefActivityTypes is null) return;
 
-        await dropdownSearchRefActivityTypes.DeselectItemAsync(item);
+        await _dropdownSearchRefActivityTypes.DeselectItemAsync(item);
     }
 
 
     private async Task DeselectAthlete(Athlete item)
     {
-        if (dropdownSearchRefAthletes is null) return;
-        Challenge.InvitedAthletes?.Remove(item);
+        if (_dropdownSearchRefAthletes is null) return;
 
-        await dropdownSearchRefAthletes.DeselectItemAsync(item);
+        await _dropdownSearchRefAthletes.DeselectItemAsync(item);
     }
 
     private async Task SubmitForm()
     {
         OnSubmit?.Invoke(Challenge);
 
-        if (OnSubmitAsync != null)
-        {
-            await OnSubmitAsync(Challenge);
-        }
+        if (OnSubmitAsync != null) await OnSubmitAsync(Challenge);
     }
 
     private async Task Cancel()
     {
         OnCancel?.Invoke();
 
-        if (OnCancelAsync != null)
-        {
-            await OnCancelAsync();
-        }
+        if (OnCancelAsync != null) await OnCancelAsync();
     }
 }

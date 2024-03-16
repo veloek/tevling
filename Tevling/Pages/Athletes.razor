@@ -5,15 +5,16 @@
 <h1 class="title mb-5">Athletes</h1>
 
 <label class="mb-5">
-    <input class="form-check-input me-1" type="checkbox" @bind-value="ShowOnlyFollowing" />
+    <input class="form-check-input me-1" type="checkbox" @bind-value="ShowOnlyFollowing"/>
     Show only following
 </label>
 
 <div class="athletes d-flex flex-column row-gap-3">
-    @foreach (var athlete in AthleteList) {
-        <AthleteCard Athlete="@athlete" 
-            IsFollowing="@Athlete.IsFollowing(athlete.Id)" 
-            FollowingStatusChanged="() => ToggleFollowing(athlete.Id)" />
+    @foreach (var athlete in AthleteList)
+    {
+        <AthleteCard Athlete="@athlete"
+                     IsFollowing="@Athlete.IsFollowing(athlete.Id)"
+                     FollowingStatusChanged="() => ToggleFollowing(athlete.Id)"/>
     }
 </div>
 

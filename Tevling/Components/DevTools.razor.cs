@@ -2,22 +2,14 @@ namespace Tevling.Components;
 
 public partial class DevTools : ComponentBase
 {
-    [Inject]
-    IActivityService ActivityService { get; set; } = null!;
+    [Inject] private IActivityService ActivityService { get; set; } = null!;
+    [Inject] private IAthleteService AthleteService { get; set; } = null!;
+    [Inject] private IChallengeService ChallengeService { get; set; } = null!;
 
-    [Inject]
-    IAthleteService AthleteService { get; set; } = null!;
-
-    [Inject]
-    IChallengeService ChallengeService { get; set; } = null!;
-
-    [Parameter]
-    public Athlete? Athlete { get; set; }
-
-    private bool NoOtherAthletes =>
-        _athletes.Length == 1;
+    [Parameter] public Athlete? Athlete { get; set; }
 
     private Athlete[] _athletes = [];
+    private bool NoOtherAthletes => _athletes.Length == 1;
 
     protected override async Task OnInitializedAsync()
     {
@@ -34,7 +26,6 @@ public partial class DevTools : ComponentBase
 
     private Task AddOthersActivity()
     {
-
         long randomAthleteStravaId;
         do
         {
@@ -47,13 +38,13 @@ public partial class DevTools : ComponentBase
     private async Task AddAthlete()
     {
         int id = Random.Shared.Next(100, 1000);
-        await AthleteService.UpsertAthleteAsync(Random.Shared.Next(10000, 100000), $"Athlete {id}", null, "", "", default);
+        await AthleteService.UpsertAthleteAsync(Random.Shared.Next(10000, 100000), $"Athlete {id}", null, "", "",
+            default);
         _athletes = await AthleteService.GetAthletesAsync();
     }
 
     private Task AddOthersChallenge()
     {
-
         int randomAthleteId;
         do
         {
@@ -63,18 +54,18 @@ public partial class DevTools : ComponentBase
         return ChallengeService.CreateChallengeAsync(new ChallengeFormModel
         {
             Title = $"Challenge {Random.Shared.Next(1000, 10000)}",
-            Description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+            Description =
+                "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
             Start = DateTimeOffset.Now,
             End = DateTimeOffset.Now.AddMonths(1),
             Measurement = ChallengeMeasurement.Distance,
             ActivityTypes = [Strava.ActivityType.Run],
-            CreatedBy = randomAthleteId,
+            CreatedBy = randomAthleteId
         });
     }
 
     private Task AddOthersPrivateChallenge()
     {
-
         int randomAthleteId;
         do
         {
@@ -84,13 +75,14 @@ public partial class DevTools : ComponentBase
         return ChallengeService.CreateChallengeAsync(new ChallengeFormModel
         {
             Title = $"Private Challenge {Random.Shared.Next(1000, 10000)}",
-            Description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+            Description =
+                "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
             Start = DateTimeOffset.Now,
             End = DateTimeOffset.Now.AddMonths(1),
             Measurement = ChallengeMeasurement.Distance,
-            ActivityTypes = [Strava.ActivityType.Run],
+            ActivityTypes =  [Strava.ActivityType.Run],
             IsPrivate = true,
-            CreatedBy = randomAthleteId,
+            CreatedBy = randomAthleteId
         });
     }
 
@@ -108,7 +100,8 @@ public partial class DevTools : ComponentBase
         return ChallengeService.CreateChallengeAsync(new ChallengeFormModel
         {
             Title = $"Private Challenge {Random.Shared.Next(1000, 10000)}",
-            Description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+            Description =
+                "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
             Start = DateTimeOffset.Now,
             End = DateTimeOffset.Now.AddMonths(1),
             Measurement = ChallengeMeasurement.Distance,
@@ -123,10 +116,7 @@ public partial class DevTools : ComponentBase
     {
         DateTimeOffset from = DateTimeOffset.Now - TimeSpan.FromDays(7);
         Athlete[] athletes = await AthleteService.GetAthletesAsync();
-        foreach (Athlete athlete in athletes)
-        {
-            await ActivityService.ImportActivitiesForAthlete(athlete.Id, from);
-        }
+        foreach (Athlete athlete in athletes) await ActivityService.ImportActivitiesForAthlete(athlete.Id, from);
     }
 
     private async Task AddChallenge()
@@ -137,7 +127,8 @@ public partial class DevTools : ComponentBase
         await ChallengeService.CreateChallengeAsync(new ChallengeFormModel
         {
             Title = $"Challenge {Random.Shared.Next(1000, 10000)}",
-            Description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+            Description =
+                "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
             Start = DateTimeOffset.Now,
             End = DateTimeOffset.Now.AddMonths(1),
             Measurement = ChallengeMeasurement.Distance,

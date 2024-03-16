@@ -3,16 +3,18 @@
 
 <PageTitle>Tevling - Dashboard</PageTitle>
 
-<h1 class="mb-5">@GetGreeting()</h1>
+<h1 class="mb-5">@Greeting</h1>
 
 <div class="d-flex flex-column active-challenges mb-5">
     <h3 class="mb-4">Your active challenges</h3>
-    @if(ActiveChallenges.Count() == 0)
+    @if (!ActiveChallenges.Any())
     {
         <span>You have no active challenges, how about joining one? 😌 </span>
-    } 
-    else {
-        @foreach (var challenge in ActiveChallenges) {
+    }
+    else
+    {
+        @foreach (var challenge in ActiveChallenges)
+        {
             <div class="joined-challenge-card d-flex flex-row mt-2 column-gap-2">
                 <span class="challenge-title">@challenge.Key.Title</span>
                 <span class="challenge-placement">@challenge.Value.Item1</span>
@@ -24,12 +26,14 @@
 
 <div class="d-flex flex-column recent-outdated-challenges mb-5">
     <h3 class="mb-4">Your recently completed challenges</h3>
-    @if(ActiveChallenges.Count() == 0)
+    @if (!ActiveChallenges.Any())
     {
         <span>You have no completed challenges, how about joining one? 😌 </span>
-    } 
-    else {
-        @foreach (var challenge in RecentOutdatedChallenges) {
+    }
+    else
+    {
+        @foreach (var challenge in RecentOutdatedChallenges)
+        {
             <div class="joined-challenge-card d-flex flex-row mt-2">
                 <span class="challenge-title">@challenge.Key.Title</span>
                 <span class="challenge-placement">@challenge.Value.Item1</span>
@@ -41,14 +45,15 @@
 
 <div class="d-flex flex-column suggested-athletes mb-5">
     <h3 class="mb-4">Know these athletes?</h3>
-    @if (SuggestedAthletes.Count() == 0)
+    @if (!SuggestedAthletes.Any())
     {
         <span>Follow more athletes to see suggested athletes 🔮</span>
-    } 
-    else 
+    }
+    else
     {
-        @foreach (var athlete in SuggestedAthletes) {
-            <AthleteCard Athlete="@athlete" />
+        @foreach (var athlete in SuggestedAthletes)
+        {
+            <AthleteCard Athlete="@athlete"/>
         }
     }
 </div>

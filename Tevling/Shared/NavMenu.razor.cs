@@ -2,15 +2,10 @@ namespace Tevling.Shared;
 
 public partial class NavMenu : ComponentBase
 {
-    [Inject]
-    IAuthenticationService AuthenticationService { get; set; } = null!;
+    [Inject] private IAuthenticationService AuthenticationService { get; set; } = null!;
 
-    [Inject]
-    Blazored.LocalStorage.ILocalStorageService LocalStorage { get; set; } = null!;
-
-    [Parameter]
-    public Action<string>? OnThemeChange { get; set; }
-
+    [Parameter] public Action<string>? OnThemeChange { get; set; }
+    
     private bool collapseNavMenu = true;
     private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
     private Athlete Athlete { get; set; } = default!;

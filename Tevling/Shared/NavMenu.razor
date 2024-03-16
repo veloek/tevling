@@ -1,7 +1,7 @@
 <div class="top-row navbar navbar-dark">
     <div class="container-fluid">
-        <a href="activities">
-            <img src="../tevling_logo.svg" alt="Tevling Logo" class="logo" />
+        <a href="dashboard">
+            <img src="../tevling_logo.svg" alt="Tevling Logo" class="logo"/>
         </a>
         <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
             <i class="bi bi-list" aria-hidden="true"></i>
@@ -13,27 +13,27 @@
     <nav class="d-flex flex-column" style="height: 100%;">
         <div class="nav-item">
             <NavLink class="nav-link" href="dashboard">
-                <i class="bi bi-columns-gap nav-icon me-2" aria-hidden="true" /> Dashboard
+                <i class="bi bi-columns-gap nav-icon me-2" aria-hidden="true"></i> Dashboard
             </NavLink>
         </div>
         <div class="nav-item">
             <NavLink class="nav-link" href="activities">
-                <i class="bi bi-person-arms-up me-2" aria-hidden="true" /> Activities
+                <i class="bi bi-person-arms-up me-2" aria-hidden="true"></i> Activities
             </NavLink>
         </div>
         <div class="nav-item">
             <NavLink class="nav-link" href="challenges">
-                <i class="bi bi-trophy-fill me-2" aria-hidden="true" /> Challenges
+                <i class="bi bi-trophy-fill me-2" aria-hidden="true"></i> Challenges
             </NavLink>
         </div>
         <div class="nav-item">
             <NavLink class="nav-link" href="athletes">
-                <i class="bi bi-people-fill me-2" aria-hidden="true" /> Athletes
+                <i class="bi bi-people-fill me-2" aria-hidden="true"></i> Athletes
             </NavLink>
         </div>
         <div class="nav-item">
             <NavLink class="nav-link" href="profile">
-                <i class="bi bi-person-circle me-2" aria-hidden="true" /> Profile
+                <i class="bi bi-person-circle me-2" aria-hidden="true"></i> Profile
             </NavLink>
         </div>
         <div class="px-2">
@@ -41,23 +41,23 @@
         </div>
         <div class="nav-item">
             <NavLink class="nav-link" href="about">
-                <i class="bi bi-info-lg me-2" aria-hidden="true" /> About
+                <i class="bi bi-info-lg me-2" aria-hidden="true"></i> About
             </NavLink>
         </div>
         <FeatureGate FeatureFlag="FeatureFlag.DevToolsMenuItem">
             <div class="nav-item">
                 <NavLink class="nav-link" href="dev">
-                    <i class="bi bi-mouse me-2" aria-hidden="true" /> Dev
+                    <i class="bi bi-mouse me-2" aria-hidden="true"></i> Dev
                 </NavLink>
             </div>
         </FeatureGate>
         <div class="user-info d-flex flex-row align-items-center mt-auto mb-4 ms-2 px-1 pt-4 ">
             <a href="/profile" class="me-2 d-flex align-items-center">
-                <Avatar Url="@Athlete.ImgUrl" Size="35" />
+                <Avatar Url="@Athlete.ImgUrl" Size="35"/>
             </a>
             @Athlete.Name
         </div>
-        <DarkMode OnChange="OnThemeChange!" />
+        <DarkMode OnChange="OnThemeChange!"/>
         <div class="strava-icon mt-4"></div>
     </nav>
 </div>

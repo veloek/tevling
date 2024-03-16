@@ -7,14 +7,16 @@
 <section class="tevling-login">
     <h1 class="login-title">Tevling</h1>
     <p class="login-subtitle">«Bring it on»</p>
-    <div class="tevling-logo"><img src="arm-wrestling.png" width="256" /></div>
+    <div class="tevling-logo">
+        <img src="arm-wrestling.png" width="256" alt="logo"/>
+    </div>
     <form action="@StravaConfig.AuthorizeUri" method="get">
         <button class="strava-login" type="submit">Connect with Strava</button>
-        <input type="hidden" name="client_id" value="@StravaConfig.ClientId" />
-        <input type="hidden" name="redirect_uri" value="@RedirectUri" />
-        <input type="hidden" name="response_type" value="@StravaConfig.ResponseType" />
-        <input type="hidden" name="approval_prompt" value="@StravaConfig.ApprovalPrompt" />
-        <input type="hidden" name="scope" value="@StravaConfig.Scope" />
+        <input type="hidden" name="client_id" value="@StravaConfig.ClientId"/>
+        <input type="hidden" name="redirect_uri" value="@RedirectUri"/>
+        <input type="hidden" name="response_type" value="@StravaConfig.ResponseType"/>
+        <input type="hidden" name="approval_prompt" value="@StravaConfig.ApprovalPrompt"/>
+        <input type="hidden" name="scope" value="@StravaConfig.Scope"/>
     </form>
-    <Copyright />
+    <Copyright/>
 </section>

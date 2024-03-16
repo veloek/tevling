@@ -4,22 +4,15 @@ namespace Tevling.Pages;
 
 public partial class EditChallenge : ComponentBase
 {
+    [Inject] private IAuthenticationService AuthenticationService { get; set; } = null!;
+    [Inject] private IChallengeService ChallengeService { get; set; } = null!;
+    [Inject] private IJSRuntime JSRuntime { get; set; } = null!;
 
-    [Inject]
-    IAuthenticationService AuthenticationService { get; set; } = null!;
+    [Parameter] public int Id { get; set; }
 
-    [Inject]
-    IChallengeService ChallengeService { get; set; } = null!;
-
-    [Inject]
-    IJSRuntime JSRuntime { get; set; } = null!;
-
-    [Parameter]
-    public int Id { get; set; }
-
-    private Challenge? Challenge { get; set; }
     private Athlete _athlete = default!;
     private Challenge[] _challenges = [];
+    private Challenge? Challenge { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
@@ -30,10 +23,7 @@ public partial class EditChallenge : ComponentBase
     {
         Challenge? challenge = await ChallengeService.GetChallengeByIdAsync(Id);
 
-        if (challenge?.CreatedById == _athlete.Id)
-        {
-            Challenge = challenge;
-        }
+        if (challenge?.CreatedById == _athlete.Id) Challenge = challenge;
     }
 
     private async Task OnSubmit(ChallengeFormModel challenge)

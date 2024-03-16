@@ -2,15 +2,12 @@ namespace Tevling.Shared;
 
 public partial class MainLayout : LayoutComponentBase
 {
-    [Inject]
-    IAuthenticationService AuthenticationService { get; set; } = null!;
+    [Inject] private IAuthenticationService AuthenticationService { get; set; } = null!;
+    [Inject] private Blazored.LocalStorage.ILocalStorageService LocalStorage { get; set; } = null!;
 
-    [Inject]
-    Blazored.LocalStorage.ILocalStorageService LocalStorage { get; set; } = null!;
-
-    private Athlete Athlete { get; set; } = default!;
     private string? Theme { get; set; }
     private bool ThemeSet { get; set; }
+    private Athlete Athlete { get; set; } = default!;
 
     protected override async Task OnInitializedAsync()
     {

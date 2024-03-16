@@ -8,17 +8,17 @@
     <div class="challenges">
         <div class="d-flex column-gap-5 mb-5 align-items-end flex-wrap">
             <div class="challenge-search">
-                <label>Search <br><InputText @bind-Value="@FilterText" @oninput="SetFilterTextDebounced" /></label>
+                <label>Search <br><InputText @bind-Value="@FilterText" @oninput="SetFilterTextDebounced"/></label>
             </div>
             <div>
-                <a class="btn btn-primary mt-4" href="challenges/create"><i class="bi bi-plus-lg me-2" /> Create challenge</a>
+                <a class="btn btn-primary mt-4" href="challenges/create"><i class="bi bi-plus-lg me-2"></i> Create challenge</a>
             </div>
         </div>
 
         <div class="d-flex flex-wrap column-gap-4 rg-3 mb-3 challenge-list">
             @foreach (var challenge in ChallengeList)
             {
-                <ChallengeCard AthleteId="@AthleteId" Challenge="@challenge" />
+                <ChallengeCard AthleteId="@AthleteId" Challenge="@challenge"/>
             }
         </div>
 
@@ -29,9 +29,9 @@
 
     <div class="d-flex flex-column rg-3 challenge-filters mb-4">
         <h2>Filters</h2>
-            <div class="d-flex flex-column row-gap-1">
-                <label><input @bind="ShowAllChallenges" class="form-check-input me-2" type="checkbox" />Show all challenges</label>
-                <label><input @bind="ShowOutdatedChallenges" class="form-check-input me-2" type="checkbox" />Show outdated challenges </label>
-            </div>
-    </div>   
+        <div class="d-flex flex-column row-gap-1">
+            <label><input @bind="ShowAllChallenges" class="form-check-input me-2" type="checkbox"/>Show all challenges</label>
+            <label><input @bind="ShowOutdatedChallenges" class="form-check-input me-2" type="checkbox"/>Show outdated challenges </label>
+        </div>
+    </div>
 </div>

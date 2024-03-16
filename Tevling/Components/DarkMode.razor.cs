@@ -1,12 +1,11 @@
+using Blazored.LocalStorage;
+
 namespace Tevling.Components;
 
 public partial class DarkMode : ComponentBase
 {
-    [Inject]
-    Blazored.LocalStorage.ILocalStorageService LocalStorage { get; set; } = null!;
-
-    [Parameter]
-    public Action<string>? OnChange { get; set; }
+    [Inject] private ILocalStorageService LocalStorage { get; set; } = null!;
+    [Parameter] public Action<string>? OnChange { get; set; }
 
     private bool _isDarkMode;
     private bool IsDarkMode

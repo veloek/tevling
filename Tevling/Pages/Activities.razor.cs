@@ -2,22 +2,21 @@ namespace Tevling.Pages;
 
 public partial class Activities : ComponentBase, IDisposable
 {
-    [Inject]
-    IActivityService ActivityService { get; set; } = null!;
+    [Inject] private IActivityService ActivityService { get; set; } = null!;
+    [Inject] private IAuthenticationService AuthenticationService { get; set; } = null!;
+    [Inject] private ILogger<Activities> Logger { get; set; } = null!;
+    [Inject] private NavigationManager NavigationManager { get; set; } = null!;
 
-    [Inject]
-    IAuthenticationService AuthenticationService { get; set; } = null!;
-
-    [Inject]
-    ILogger<Activities> Logger { get; set; } = null!;
-
-    [Inject]
-    NavigationManager NavigationManager { get; set; } = null!;
-
+    private const int PageSize = 50;
+    private List<Activity> _activities = [];
+    private IDisposable? _activityFeedSubscription;
+    private int _page;
+    private bool _showOnlyMine;
+    private Activity[] ActivityList = [];
     private bool Importing { get; set; }
     private bool HasMore { get; set; } = true;
     private bool Reloading { get; set; }
-    private Activity[] ActivityList = [];
+
     private bool ShowOnlyMine
     {
         get => _showOnlyMine;
@@ -27,24 +26,17 @@ public partial class Activities : ComponentBase, IDisposable
             OnFilterChange();
         }
     }
-    private bool _showOnlyMine;
-    private Athlete _athlete { get; set; } = default!;
-    private List<Activity> _activities = [];
-    private IDisposable? _activityFeedSubscription;
-    private int _pageSize = 50;
-    private int _page = 0;
+
+    private Athlete Athlete { get; set; } = default!;
+
+    public void Dispose()
+    {
+        _activityFeedSubscription?.Dispose();
+    }
 
     protected override async Task OnInitializedAsync()
     {
-        // Redirect from / to /activities making this the default page
-        string relativePath = NavigationManager.ToBaseRelativePath(NavigationManager.Uri);
-
-        if (!relativePath.StartsWith("activities"))
-        {
-            NavigationManager.NavigateTo("activities", replace: true);
-        }
-
-        _athlete = await AuthenticationService.GetCurrentAthleteAsync();
+        Athlete = await AuthenticationService.GetCurrentAthleteAsync();
 
         await FetchActivities();
         SubscribeToActivityFeed();
@@ -72,15 +64,15 @@ public partial class Activities : ComponentBase, IDisposable
     private async Task FetchActivities(CancellationToken ct = default)
     {
         ActivityFilter filter = new(
-            AthleteId: _athlete.Id,
-            IncludeFollowing: !ShowOnlyMine);
-        Activity[] activities = await ActivityService.GetActivitiesAsync(filter, new(_pageSize, _page), ct);
+            Athlete.Id,
+            !ShowOnlyMine);
+        Activity[] activities = await ActivityService.GetActivitiesAsync(filter, new Paging(PageSize, _page), ct);
         AddActivities(activities);
     }
 
     private void SubscribeToActivityFeed()
     {
-        _activityFeedSubscription = ActivityService.GetActivityFeedForAthlete(_athlete.Id)
+        _activityFeedSubscription = ActivityService.GetActivityFeedForAthlete(Athlete.Id)
             .Catch<FeedUpdate<Activity>, Exception>(err =>
             {
                 Logger.LogError(err, "Error in activity feed");
@@ -133,15 +125,10 @@ public partial class Activities : ComponentBase, IDisposable
         // Even if activities from the DB are filtered and sorted, we need to
         // filter and sort here as well due to added activities from the feed.
         ActivityList = _activities
-            .Where(activity => !ShowOnlyMine || activity.AthleteId == _athlete.Id)
+            .Where(activity => !ShowOnlyMine || activity.AthleteId == Athlete.Id)
             .OrderByDescending(activity => activity.Details.StartDate)
             .ToArray();
 
         InvokeAsync(StateHasChanged);
-    }
-
-    public void Dispose()
-    {
-        _activityFeedSubscription?.Dispose();
     }
 }

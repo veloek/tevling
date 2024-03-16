@@ -18,6 +18,6 @@ public class Challenge
     public Athlete? CreatedBy { get; set; }
     public int? WinnerId { get; set; }
     public Athlete? Winner { get; set; }
-    public ICollection<Athlete> Athletes { get; set; } = [];
+    public ICollection<Athlete>? Athletes { get; set; }
     public ICollection<Athlete>? InvitedAthletes { get; set; }
 }

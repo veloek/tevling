@@ -1,18 +1,21 @@
 @if (Challenge != null)
 {
     <div class="challenge-card d-flex flex-column" @onclick="ToggleScoreBoard">
-    <div class="d-flex flex-column justify-content-between">
-        <div>
-            <div class="d-flex justify-content-between">
-                <h5>@Challenge.Title</h5>
-
-                @if (Challenge.CreatedById == AthleteId)
+        <div class="d-flex flex-column justify-content-between">
+            <div>
+                <div class="d-flex justify-content-between">
+                    <h5>@Challenge.Title</h5>
+                    @if (Challenge.CreatedById == AthleteId)
                     {
                         <button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown"
-                            aria-expanded="false" @onclick:stopPropagation="true"></button>
+                                aria-expanded="false" @onclick:stopPropagation="true">
+                        </button>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="challenges/@Challenge.Id/edit">Edit</a></li>
-                            <li><a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#deleteChallenge">Delete</a>
+                            <li>
+                                <a class="dropdown-item" href="challenges/@Challenge.Id/edit">Edit</a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#deleteChallenge">Delete</a>
                             </li>
                         </ul>
                     }
@@ -30,7 +33,6 @@
                         <span class="score">@score.Score</span>
                     </li>
                 }
-
                 @if (ScoreBoard.Scores.Count == 0)
                 {
                     <li class="list-group-item">YOU! (if you join)</li>
@@ -39,7 +41,7 @@
         }
         else
         {
-            @if (Challenge.End <= DateTimeOffset.Now)
+            @if (Challenge.End <= CurrentBrowserTime)
             {
                 @if (Challenge.Winner is null)
                 {
@@ -51,8 +53,8 @@
                     @if (Challenge.CreatedById == AthleteId)
                     {
                         <button class="btn btn-primary mt-auto" data-bs-toggle="modal" data-bs-target="#drawWinner"
-                            @onclick:stopPropagation="true">
-                            <i class="bi bi-stars me-2" aria-hidden="true" />
+                                @onclick:stopPropagation="true">
+                            <i class="bi bi-stars me-2" aria-hidden="true"></i>
                             <span>Draw winner</span>
                         </button>
                     }
@@ -74,21 +76,21 @@
 
                 <div class="challenge-properties d-flex flex-column justify-content-between mb-3">
                     <span>
-                        <i class="bi bi-calendar-week me-1" aria-hidden="true" /> 
+                        <i class="bi bi-calendar-week me-1" aria-hidden="true"></i>
                         @Challenge.Start.ToString("MMM d") - @Challenge.End.ToString("MMM d")
                     </span>
                     <span>
-                        <i class="bi @GetIconForMeasurement() me-1" aria-hidden="true" />
-                            @Challenge.Measurement
+                        <i class="bi @MeasurementIcon me-1" aria-hidden="true"></i>
+                        @Challenge.Measurement
                     </span>
                     <span>
-                        <i class="bi bi-people-fill me-1" aria-hidden="true" /> 
+                        <i class="bi bi-people-fill me-1" aria-hidden="true"></i>
                         @Challenge.Athletes?.Count @(Challenge.Athletes?.Count == 1 ? "participant" : "participants")
                     </span>
                 </div>
 
                 <div class="d-flex flex-wrap cg-1 rg-1 mb-4">
-                 @if (Challenge.ActivityTypes.Count > 0)
+                    @if (Challenge.ActivityTypes.Count > 0)
                     {
                         foreach (Strava.ActivityType type in Challenge.ActivityTypes)
                         {
@@ -104,14 +106,14 @@
                 @if (HasJoined == false)
                 {
                     <button class="btn btn-primary mt-auto" @onclick="JoinChallenge" @onclick:stopPropagation="true">
-                        <i class="bi bi-box-arrow-in-right me-2" aria-hidden="true" />
+                        <i class="bi bi-box-arrow-in-right me-2" aria-hidden="true"></i>
                         <span>Join</span>
                     </button>
                 }
-                else if (HasJoined == true)
+                else
                 {
                     <button class="btn btn-secondary mt-auto" @onclick="LeaveChallenge" @onclick:stopPropagation="true">
-                        <i class="bi bi-box-arrow-left me-2" aria-hidden="true" />
+                        <i class="bi bi-box-arrow-left me-2" aria-hidden="true"></i>
                         <span>Leave</span>
                     </button>
                 }
@@ -138,14 +140,14 @@
             <span>Draw winner</span>
         </HeaderContent>
         <BodyContent>
-            @if(DrawingWinner)
+            @if (DrawingWinner)
             {
                 <div class="spinner-border text-primary" role="status">
                     <span class="visually-hidden">Loading...</span>
                 </div>
                 <span class="text-center mt-3">Spinning the wheel...</span>
             }
-            else 
+            else
             {
                 @if (Winner is null)
                 {
@@ -160,7 +162,7 @@
                 {
                     <h5 class="mb-3">The winner for @Challenge.Title is...</h5>
                     <div class="d-flex flex-row align-items-center column-gap-1 mb-3">
-                        <Avatar Url="@Winner.ImgUrl" Size="30" />
+                        <Avatar Url="@Winner.ImgUrl" Size="30"/>
                         <span>@Winner.Name</span>
                     </div>
                     <span>Great job! Congratulations on the victory! 🎉</span>

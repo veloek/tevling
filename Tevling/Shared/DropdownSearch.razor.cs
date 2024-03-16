@@ -1,29 +1,18 @@
 namespace Tevling.Shared;
 
-public partial class DropdownSearch<T> : ComponentBase {
-    [Parameter]
-    public IEnumerable<T> Items { get; set; } = [];
+public partial class DropdownSearch<T> : ComponentBase 
+{
+    [Parameter] public IEnumerable<T> Items { get; set; } = [];
+    [Parameter] public Func<T, string>? DisplayFunc { get; set; }
+    [Parameter] public Func<string, Task<IEnumerable<T>>>? CustomSearchFuncAsync { get; set; }
+    [Parameter] public EventCallback<ICollection<T>> SelectedItemsChanged { get; set; }
+    [Parameter] public ICollection<T> SelectedItems { get; set; } = [];
 
-    [Parameter]
-    public Func<T, string>? DisplayFunc { get; set; }
-
-    [Parameter]
-    public Func<string, Task<IEnumerable<T>>>? CustomSearchFuncAsync { get; set; }
-
-    [Parameter]
-    public EventCallback<ICollection<T>> SelectedItemsChanged { get; set; }
-
-    [Parameter]
-    public ICollection<T> SelectedItems { get; set; } = [];
-
-    private string SearchTerm = string.Empty;
-    private bool IsSearchFocused = false;
-
-    private Timer? SearchInputBlurTimer;
     private Timer? DebounceTimer;
-
+    private bool IsSearchFocused = false;
+    private Timer? SearchInputBlurTimer;
+    private string SearchTerm = string.Empty;
     private IEnumerable<T> FilteredItems { get; set;} = [];
-
 
     protected override async Task OnInitializedAsync()
     {
@@ -54,10 +43,15 @@ public partial class DropdownSearch<T> : ComponentBase {
                 FilteredItems = [];
             }
             else
+            {
                 FilteredItems =  await CustomSearchFuncAsync(SearchTerm);
+            }
         }
         else
+        {
             FilteredItems = Items.Where(item => DisplayFunc != null && DisplayFunc(item).Contains(SearchTerm, StringComparison.OrdinalIgnoreCase));
+        }
+
         StateHasChanged(); 
     }
 
@@ -79,11 +73,11 @@ public partial class DropdownSearch<T> : ComponentBase {
 
     private async Task SelectItemAsync(T item)
     {
-        List<T> newSelection = [.. SelectedItems, item];
+        List<T> newSelection = [..SelectedItems, item];
         SelectedItems = newSelection;
         await SelectedItemsChanged.InvokeAsync(newSelection);
     }
-    
+
 
     public async Task DeselectItemAsync(T item)
     {
@@ -97,6 +91,7 @@ public partial class DropdownSearch<T> : ComponentBase {
 
     public void Dispose()
     {
+        DebounceTimer?.Dispose();
         SearchInputBlurTimer?.Dispose();
     }
 }

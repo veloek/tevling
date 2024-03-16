@@ -1,20 +1,21 @@
 @typeparam T
 
 <div class="dropdown">
-    <label>Search
-        <input class="form-control search-input dropdown-toggle" type="text" 
-            @bind="@SearchTerm" 
-            @oninput="OnSearchInput"
-            @onfocus="() => IsSearchFocused = true"
-            @onblur="() => OnInputBlur()"/>
+    <label>
+        Search
+        <input class="form-control search-input dropdown-toggle" type="text"
+               @bind="@SearchTerm"
+               @oninput="OnSearchInput"
+               @onfocus="() => IsSearchFocused = true"
+               @onblur="OnInputBlur"/>
     </label>
 
-    <div class="dropdown-menu" style="@(IsSearchFocused && FilteredItems.Count() > 0 ? "display: block;" : "display: none;")">
-       @if (DisplayFunc != null)
+    <div class="dropdown-menu" style="@(IsSearchFocused && FilteredItems.Any() ? "display: block;" : "display: none;")">
+        @if (DisplayFunc != null)
         {
-            @foreach (var item in FilteredItems.Where(item => SelectedItems is null || !SelectedItems.Contains(item)))
+            @foreach (var item in FilteredItems.Where(item => !SelectedItems.Contains(item)))
             {
-                <button type="button" class="dropdown-item" @onclick=" () =>  SelectItemAsync(item)">@DisplayFunc(item)</button>
+                <button type="button" class="dropdown-item" @onclick="() => SelectItemAsync(item)">@DisplayFunc(item)</button>
             }
         }
         else

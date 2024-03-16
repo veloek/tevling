@@ -1,82 +1,82 @@
 .athlete-card {
-  display: flex;
-  flex-direction: row;
-  border-radius: 1rem;
-  width: 34rem;
-  box-shadow: 0px 4px 4px 0 rgba(0, 0, 0, 0.25);
-  transition: box-shadow 0.2s, max-height 1s ease-in-out;
-  column-gap: 1em;
+    display: flex;
+    flex-direction: row;
+    border-radius: 1rem;
+    width: 34rem;
+    box-shadow: 0 4px 4px 0 rgba(0, 0, 0, 0.25);
+    transition: box-shadow 0.2s, max-height 1s ease-in-out;
+    column-gap: 1em;
 }
 
 @media (max-width: 500px) {
-  .athlete-card {
-    max-width: 22rem;
-  }
+    .athlete-card {
+        max-width: 22rem;
+    }
 
-  .athlete-name {
-    max-width: 7rem;
-  }
+    .athlete-name {
+        max-width: 7rem;
+    }
 
-  .strava-link {
-    max-width: 4rem;
-  }
+    .strava-link {
+        max-width: 4rem;
+    }
 
-  .unfollow-button,
-  .follow-button {
-    max-width: 6rem;
-  }
+    .unfollow-button,
+    .follow-button {
+        max-width: 6rem;
+    }
 }
 
 .athlete-name {
-  width: 15rem;
+    width: 15rem;
 }
 
 .strava-link {
-  font-size: smaller;
-  font-weight: 300;
-  width: 7rem;
+    font-size: smaller;
+    font-weight: 300;
+    width: 7rem;
 }
 
 .unfollow-button,
 .follow-button {
-  width: 8rem;
+    width: 8rem;
 }
 
 .page[data-bs-theme="dark"] .athlete-card {
-  background-color: #121417;
-  box-shadow: 0px 4px 4px 0 rgba(0, 0, 0, 0.25);
+    background-color: #121417;
+    box-shadow: 0 4px 4px 0 rgba(0, 0, 0, 0.25);
 }
 
 .page[data-bs-theme="light"] .athlete-card {
-  background-color: white;
+    background-color: white;
 }
 
 .bi-heart-fill,
 .bi-heartbreak-fill {
-  color: red;
+    color: red;
 }
 
 .unfollow-button:hover,
 .follow-button:hover {
-  cursor: pointer;
+    cursor: pointer;
 }
 
 .unfollow-button:hover .bi-heart-fill::before {
-  content: "\F770";
+    content: "\F770";
 }
 
 .unfollow-button:hover .unfollow-button-text {
-  display: none;
+    display: none;
 }
 
 .unfollow-button:hover::after {
-  content: "Unfollow";
+    content: "Unfollow";
 }
 
 .follow-button:hover .bi-heart::before {
-  content: "\F415";
+    content: "\F415";
 }
 
 .follow-button:hover .bi-heart {
-  color: red;
+    color: red;
 }

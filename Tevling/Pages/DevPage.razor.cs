@@ -2,8 +2,7 @@ namespace Tevling.Pages;
 
 public partial class DevPage : ComponentBase
 {
-    [Inject]
-    IAuthenticationService AuthenticationService { get; set; } = null!;
+    [Inject] private IAuthenticationService AuthenticationService { get; set; } = null!;
 
     private Athlete Athlete { get; set; } = default!;
 

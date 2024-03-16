@@ -2,22 +2,15 @@ namespace Tevling.Pages;
 
 public partial class Profile : ComponentBase
 {
-    [Inject]
-    IAuthenticationService AuthenticationService { get; set; } = null!;
+    [Inject] private IAuthenticationService AuthenticationService { get; set; } = null!;
+    [Inject] private IActivityService ActivityService { get; set; } = null!;
+    [Inject] private IAthleteService AthleteService { get; set; } = null!;
+    [Inject] private IBrowserTime BrowserTime { get; set; } = null!;
 
-    [Inject]
-    IActivityService ActivityService { get; set; } = null!;
-
-    [Inject]
-    IAthleteService AthleteService { get; set; } = null!;
-
-    [Inject]
-    IBrowserTime BrowserTime { get; set; } = null!;
-
-    private Athlete Athlete { get; set; } = default!;
     private string? CreatedTime;
     private bool Importing { get; set; }
     private string? ImportResult { get; set; }
+    private Athlete Athlete { get; set; } = default!;
 
     protected override async Task OnInitializedAsync()
     {
@@ -30,7 +23,7 @@ public partial class Profile : ComponentBase
         CreatedTime = browserTime.ToString("dd'.'MM'.'yyyy");
     }
 
-    public async Task Import()
+    private async Task Import()
     {
         if (Athlete.HasImportedActivities)
         {

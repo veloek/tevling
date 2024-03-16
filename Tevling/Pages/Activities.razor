@@ -6,75 +6,75 @@
 
 <div class="d-flex column-gap-3 mb-3 flex-wrap-reverse flex-row">
     <div class="activities me-5">
-            @{
-                int step = 0;
-            }
-            @foreach (Activity activity in ActivityList)
+        @{
+            int step = 0;
+        }
+        @foreach (Activity activity in ActivityList)
+        {
+            if (activity.Details.StartDate.IsSameDateUtc())
             {
-                if (activity.Details.StartDate.IsSameDateUtc())
+                if (step == 0)
                 {
-                    if (step == 0)
-                    {
-                        <h3 class="mb-3 mt-4">Today</h3>
-                        step = 1;
-                    }
+                    <h3 class="mb-3 mt-4">Today</h3>
+                    step = 1;
                 }
-                else if (activity.Details.StartDate.IsYesterdayUtc())
-                {
-                    if (step <= 1)
-                    {
-                        <h3 class="mb-3 mt-4">Yesterday</h3>
-                        step = 2;
-                    }
-                }
-                else if (activity.Details.StartDate.IsSameWeekStartingOnMondayUtc())
-                {
-                    if (step <= 2)
-                    {
-                        <h3 class="mb-3 mt-4">This week</h3>
-                        step = 3;
-                    }
-                }
-                else if (activity.Details.StartDate.IsLastWeekStartingOnMondayUtc())
-                {
-                    if (step <= 3)
-                    {
-                        <h3 class="mb-3 mt-4">Last week</h3>
-                        step = 4;
-                    }
-                }
-                else if (activity.Details.StartDate.IsSameMonthUtc())
-                {
-                    if (step <= 4)
-                    {
-                        <h3 class="mb-3 mt-4">This month</h3>
-                        step = 5;
-                    }
-                }
-                else if (activity.Details.StartDate.IsLastMonthUtc())
-                {
-                    if (step <= 5)
-                    {
-                        <h3 class="mb-3 mt-4">Last month</h3>
-                        step = 6;
-                    }
-                }
-                else if (activity.Details.StartDate.IsSameYearUtc())
-                {
-                    if (step <= 6)
-                    {
-                       <h3 class="mb-3 mt-4">This year</h3>
-                        step = 7;
-                    }
-                }
-                else if (step <= 7)
-                {
-                    <h3 class="mb-3 mt-4">Older</h3>
-                    step = 8;
-                }
-
-                <ActivityCard Activity="activity"></ActivityCard>
             }
+            else if (activity.Details.StartDate.IsYesterdayUtc())
+            {
+                if (step <= 1)
+                {
+                    <h3 class="mb-3 mt-4">Yesterday</h3>
+                    step = 2;
+                }
+            }
+            else if (activity.Details.StartDate.IsSameWeekStartingOnMondayUtc())
+            {
+                if (step <= 2)
+                {
+                    <h3 class="mb-3 mt-4">This week</h3>
+                    step = 3;
+                }
+            }
+            else if (activity.Details.StartDate.IsLastWeekStartingOnMondayUtc())
+            {
+                if (step <= 3)
+                {
+                    <h3 class="mb-3 mt-4">Last week</h3>
+                    step = 4;
+                }
+            }
+            else if (activity.Details.StartDate.IsSameMonthUtc())
+            {
+                if (step <= 4)
+                {
+                    <h3 class="mb-3 mt-4">This month</h3>
+                    step = 5;
+                }
+            }
+            else if (activity.Details.StartDate.IsLastMonthUtc())
+            {
+                if (step <= 5)
+                {
+                    <h3 class="mb-3 mt-4">Last month</h3>
+                    step = 6;
+                }
+            }
+            else if (activity.Details.StartDate.IsSameYearUtc())
+            {
+                if (step <= 6)
+                {
+                    <h3 class="mb-3 mt-4">This year</h3>
+                    step = 7;
+                }
+            }
+            else if (step <= 7)
+            {
+                <h3 class="mb-3 mt-4">Older</h3>
+                step = 8;
+            }
+
+            <ActivityCard Activity="activity"></ActivityCard>
+        }
 
         @if (ActivityList.Length == 0 && !Reloading)
         {
@@ -85,16 +85,15 @@
                 following some <a href="athletes">athletes</a>.
             </p>
         }
-
         <InfiniteScrollingMarker LoadMore="LoadMore" HasMore="HasMore">
             <LoadingTemplate>Loading...</LoadingTemplate>
         </InfiniteScrollingMarker>
-        </div>
+    </div>
 
     <div class="d-flex flex-column rg-3 activities-filters mb-4 mt-5">
         <h2>Filters</h2>
         <label class="mb-2">
-            <input class="form-check-input me-1" type="checkbox" @bind-value="ShowOnlyMine" />
+            <input class="form-check-input me-1" type="checkbox" @bind-value="ShowOnlyMine"/>
             Show only my activities
         </label>
     </div>

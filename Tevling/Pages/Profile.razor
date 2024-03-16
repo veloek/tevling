@@ -2,7 +2,7 @@
 
 <h1 class="title mb-5">Profile</h1>
 <div class="profile d-flex flex-row column-gap-2 mb-5">
-    <Avatar Url="@Athlete.ImgUrl" Size="50" />
+    <Avatar Url="@Athlete.ImgUrl" Size="50"/>
     <div class="d-flex flex-column">
         <span class="profile-name">@Athlete.Name</span>
         <span class="member-since">Member since @CreatedTime</span>
@@ -20,9 +20,9 @@
             else
             {
                 <div class="d-flex flex-column row-gap-3">
-                @foreach (var follower in Athlete.Followers)
+                    @foreach (var follower in Athlete.Followers)
                     {
-                        <AthleteCard Athlete="@follower" IsFollowing="Athlete.IsFollowing(follower.Id)" />
+                        <AthleteCard Athlete="@follower" IsFollowing="Athlete.IsFollowing(follower.Id)"/>
                     }
                 </div>
             }
@@ -36,12 +36,12 @@
             }
             else
             {
-            <div class="d-flex flex-column row-gap-3">
-                @foreach (var athlete in Athlete.Following)
-                {
-                    <AthleteCard Athlete="@athlete" IsFollowing="true" />
-                }
-            </div>
+                <div class="d-flex flex-column row-gap-3">
+                    @foreach (var athlete in Athlete.Following)
+                    {
+                        <AthleteCard Athlete="@athlete" IsFollowing="true"/>
+                    }
+                </div>
             }
 
         </div>
@@ -49,9 +49,9 @@
     <div class="profile-actions mb-5">
         <div class="d-flex flex-column row-gap-3">
             <h4 class="mt-4">Import activities from Strava</h4>
-            <span>Import last 30 days of activities to get started! <br /> (This can only be done once)</span>
+            <span>Import last 30 days of activities to get started! <br/> (This can only be done once)</span>
             <button class="btn btn-primary" @onclick="Import" disabled="@(Importing || Athlete.HasImportedActivities)">
-                <i class="bi bi-box-arrow-in-down me-1" aria-hidden="true" />
+                <i class="bi bi-box-arrow-in-down me-1" aria-hidden="true"></i>
                 @if (Athlete.HasImportedActivities)
                 {
                     <text>Import complete</text>
@@ -74,15 +74,18 @@
         <div class="d-flex flex-column row-gap-2">
             <h4 class="mt-4">Sign out</h4>
             <span>If using a public/shared computer, please remember to sign out.</span>
-            <a class="btn btn-secondary mt-1" href="/auth/logout"> <i class="bi bi-box-arrow-right me-1" aria-hidden="true" />Sign out</a>
+            <a class="btn btn-secondary mt-1" href="/auth/logout"><i class="bi bi-box-arrow-right me-1" aria-hidden="true"></i>Sign out</a>
         </div>
 
         <div class="d-flex flex-column row-gap-2">
             <h4 class="mt-4">Delete account</h4>
-            <span class="text-danger">Delete user account and deauthorize application. All data will be
-                removed.<br />NB! This cannot be undone! </span>
+            <span class="text-danger">
+                Delete user account and deauthorize application. All data will be
+                removed.<br/>NB! This cannot be undone!
+            </span>
             <a class="btn btn-danger mt-1" data-bs-toggle="modal" data-bs-target="#deleteAccount">
-                <i class="bi bi-trash-fill me-1"aria-hidden="true" />Forget me</a>
+                <i class="bi bi-trash-fill me-1" aria-hidden="true"></i>Forget me
+            </a>
         </div>
     </div>
 </div>
@@ -93,7 +96,7 @@
         <span>Delete account</span>
     </HeaderContent>
     <BodyContent>
-        <i class="bi bi-trash delete-account-modal-icon" aria-hidden="true" />
+        <i class="bi bi-trash delete-account-modal-icon" aria-hidden="true"></i>
         <span class="text-center delete-account-modal-text">Are you sure you want to delete your Tevling account?</span>
     </BodyContent>
     <FooterContent>
