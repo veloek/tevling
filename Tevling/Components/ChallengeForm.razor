@@ -1,82 +1,113 @@
 <EditForm FormName="challenge" method="post" Model="@Challenge" OnValidSubmit="SubmitForm">
-    <div class="form-row mb-2">
-        <label>Title:
-            <InputText @bind-Value="@Challenge.Title" size="50" class="form-control" />
-        </label>
-    </div>
-    <div class="form-row mb-2">
-        <label>Description:
-            <InputTextArea @bind-Value="@Challenge.Description" cols="50" rows="4" class="form-control" />
-        </label>
-    </div>
-    <div class="form-row mb-2">
-        <label>Start:
-            <InputDate @bind-Value="@Challenge.Start" Type="InputDateType.Date"
-                max="@Challenge.End.ToString("yyyy-MM-dd")" class="form-control" />
-        </label>
-        <label>End:
-            <InputDate @bind-Value="@Challenge.End" Type="InputDateType.Date"
-                min="@Challenge.Start.ToString("yyyy-MM-dd")" class="form-control" />
-        </label>
-    </div>
-    <div class="form-row mb-2">
-        <InputRadioGroup @bind-Value="@Challenge.Measurement">
-            @foreach (var measurement in Enum.GetValues<ChallengeMeasurement>())
-            {
-                <div class="form-check form-check-inline">
-                    <label>@measurement: <InputRadio Value="@measurement" /></label>
-                </div>
-            }
-        </InputRadioGroup>
-    </div>
-    <div class="form-row mb-2">
-        <label>Private challenge <input @bind="Challenge.IsPrivate" class="form-check-input" type="checkbox" /></label>
-    </div>
-    <div class="form-row mb-2">
-        <div class="d-flex cg-3">
-            <div>
-                <label>Activities:
-                    <InputSelect @bind-Value="@Challenge.ActivityTypes" class="form-control" multiple style="height: 15rem;">
-                        @foreach (var activityType in Enum.GetValues<Strava.ActivityType>())
-                        {
-                            <option value="@activityType">@ActivityTypeExt.ToString(activityType)</option>
-                        }
-                    </InputSelect>
+    <div class="d-flex flex-row mb-3 column-gap-5 flex-wrap">
+        <div class="left-column me-5">
+            <div class="form-row mb-5">
+                <label>
+                    Title
+                    <InputText @bind-Value="@Challenge.Title" size="50" class="form-control"/>
                 </label>
-
             </div>
-            @if (Challenge.IsPrivate)
-            {
+            <div class="form-row mb-5">
+                <label>
+                    Description
+                    <InputTextArea @bind-Value="@Challenge.Description" cols="50" rows="4" class="form-control"/>
+                </label>
+            </div>
+            <div class="form-row mb-5">
+                <label class="me-4">
+                    Start
+                    <InputDate @bind-Value="@Challenge.Start" Type="InputDateType.Date"
+                               max="@Challenge.End.ToString("yyyy-MM-dd")" class="form-control"/>
+                </label>
+                <label>
+                    End
+                    <InputDate @bind-Value="@Challenge.End" Type="InputDateType.Date"
+                               min="@Challenge.Start.ToString("yyyy-MM-dd")" class="form-control"/>
+                </label>
+            </div>
+            <div class="form-row mb-5 d-flex column-gap-5">
                 <div>
-                    Athletes:
-                    <Autocomplete SearchMethod="SearchAthletes" @bind-Values="Challenge.InvitedAthletes" MaximumSuggestions="MaximumSuggestions" EnableDropDown="true" placeholder="Search for athlete...">
-                        <SelectedTemplate Context="athlete">@athlete.Name.Split(" ").First()</SelectedTemplate>
-                        <ResultTemplate Context="athlete">@athlete.Name</ResultTemplate>
-                        <NotFoundTemplate Context="athlete">No Athletes Found</NotFoundTemplate>
-                    </Autocomplete>
+                    <h5 class="mb-3">Challenge type</h5>
+                    <InputRadioGroup @bind-Value="@Challenge.Measurement">
+                        @foreach (var measurement in Enum.GetValues<ChallengeMeasurement>())
+                        {
+                            <div>
+                                <InputRadio Value="@measurement" class="me-2 form-check-input"/><label>@measurement</label>
+                            </div>
+                        }
+                    </InputRadioGroup>
                 </div>
-            }
+                <div>
+                    <h5 class="mb-3">Challenge visibility</h5>
+                    <InputRadioGroup @bind-Value="@Challenge.IsPrivate">
+                        <div>
+                            <InputRadio Value="false" class="form-check-input"/> <label>Public challenge</label>
+                        </div>
+                        <div>
+                            <InputRadio Value="true" class="form-check-input"/> <label>Private challenge</label>
+                        </div>
+                    </InputRadioGroup>
+                </div>
+            </div>
+            <div class="form-row mb-2 activity-types-selection">
+                <h5 class="mb-3">Activity types</h5>
+                <div class="mb-3">
+                    <DropdownSearch Items="@ActivityTypes" T="Strava.ActivityType"
+                                    DisplayFunc="@ActivityTypeExt.ToString"
+                                    @bind-SelectedItems="@Challenge.ActivityTypes"
+                                    @ref="_dropdownSearchRefActivityTypes">
+                    </DropdownSearch>
+                </div>
+                <div class="mb-5">
+                    @if (Challenge.ActivityTypes.Count == 0)
+                    {
+                        <a type="button" class="btn btn-primary selected-activity-type py-1">All activities</a>
+                    }
+                    <div class="d-flex flex-wrap column-gap-2 row-gap-1">
+                        @foreach (var item in Challenge.ActivityTypes)
+                        {
+                            <a @onclick="() => DeselectActivityType(item)" type="button" class="btn btn-primary selected-activity-type">
+                                @ActivityTypeExt.ToString(item)<i class="bi bi-x ms-1"></i>
+                            </a>
+                        }
+                    </div>
+                </div>
+            </div>
+            
+            <DataAnnotationsValidator/>
+            <ValidationSummary/>
+            
         </div>
-        <p class="d-flex flex-wrap mt-2 cg-1 rg-1">
-            @if (Challenge.ActivityTypes.Length > 0)
-            {
-                @foreach (Strava.ActivityType type in Challenge.ActivityTypes)
-                {
-                    <span class="badge rounded-pill bg-primary">@ActivityTypeExt.ToString(type)</span>
-                }
-            }
-            else
-            {
-                <span class="badge bg-primary">All activities</span>
-            }
-        </p>
+        
+        @if (Challenge.IsPrivate)
+        {
+            <div class="right-column">
+                <h5 class="mb-3">Athletes</h5>
+                <DropdownSearch T="Athlete"
+                                DisplayFunc="@AthletesDisplayFunc"
+                                CustomSearchFuncAsync="@SearchAthletes"
+                                @bind-SelectedItems="@Challenge.InvitedAthletes"
+                                @ref="_dropdownSearchRefAthletes">
+                </DropdownSearch>
+                <div class="d-flex flex-column row-gap-1 mt-3">
+                    @foreach (var athlete in Challenge.InvitedAthletes)
+                    {
+                        <div class="d-flex selected-athlete column-gap-2">
+                            <a @onclick="() => DeselectAthlete(athlete)" type="button">
+                                <i class="bi bi-x-circle ms-1"></i>
+                            </a>
+                            <Avatar Url="@athlete.ImgUrl" Size="30"/>
+                            @AthletesDisplayFunc(athlete)
+                        </div>
+                    }
+                </div>
+            </div>
+        }
     </div>
-
-    <DataAnnotationsValidator />
-    <ValidationSummary />
-
-    <div class="form-group">
+    
+    <div class="form-group mt-5 mb-5">
         <button class="btn btn-primary" type="submit">@SubmitLabel</button>
         <button class="btn btn-secondary" type="button" @onclick="Cancel">@CancelLabel</button>
     </div>
+    
 </EditForm>

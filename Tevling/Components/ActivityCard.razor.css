@@ -1,42 +1,62 @@
 .activity-card {
     display: flex;
     flex-direction: row;
+    border-radius: 1.5rem;
+    width: 34rem;
+    box-shadow: 0 4px 4px 0 rgba(0, 0, 0, 0.25);
+    transition: box-shadow 0.2s, max-height 1s ease-in-out;
     column-gap: 1em;
+    margin-bottom: 1rem;
+}
+
+@media (min-width: 501px) {
+    .activity-card-body {
+        margin-left: 3rem;
+    }
+}
+
+@media (max-width: 500px) {
+    .activity-card {
+        width: 21rem;
+    }
+
+    .activity-time,
+    .strava-link,
+    .athlete-name {
+        text-wrap: none;
+    }
+
+    .athlete-name-container {
+        margin-bottom: 1rem;
+    }
 }
 
 .activity-card-content {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
+    width: 100%;
 }
 
-.activity-card-header {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-}
-
-.athlete-name {
-    margin: 0;
-    font-size: 0.8rem;
+.activity-time,
+.strava-link {
+    font-size: smaller;
+    font-weight: 300;
 }
 
 .activity-time {
-    margin: 0;
-    font-size: 0.7em;
-    font-style: italic;
+    color: #737373;
 }
 
-.activity-card-body {
-    overflow: hidden;
-}
-
-.activity-title {
-    margin: 0;
-    font-size: 0.9rem;
+.activity-name {
+    font-weight: 600;
 }
 
 .activity-description {
-    margin: 0;
-    font-size: 0.7rem;
+    font-size: 0.9rem;
+}
+
+.page[data-bs-theme="dark"] .activity-card {
+    background-color: #121417;
+}
+
+.page[data-bs-theme="light"] .activity-card {
+    background-color: white;
 }

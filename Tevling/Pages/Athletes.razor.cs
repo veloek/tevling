@@ -2,16 +2,20 @@ namespace Tevling.Pages;
 
 public partial class Athletes : ComponentBase, IDisposable
 {
-    [Inject]
-    IAthleteService AthleteService { get; set; } = null!;
+    [Inject] private IAthleteService AthleteService { get; set; } = null!;
+    [Inject] private IAuthenticationService AuthenticationService { get; set; } = null!;
+    [Inject] private ILogger<Athletes> Logger { get; set; } = null!;
 
-    [Inject]
-    IAuthenticationService AuthenticationService { get; set; } = null!;
-
-    [Inject]
-    ILogger<Athletes> Logger { get; set; } = null!;
-
+    private IDisposable? _athleteFeedSubscription;
+    private List<Athlete> _athletes = [];
+    private int _page;
+    private readonly int _pageSize = 10;
     private bool _showOnlyFollowing;
+    private Athlete[] AthleteList { get; set; } = [];
+    private Athlete Athlete { get; set; } = default!;
+
+    private bool HasMore { get; set; } = true;
+
     private bool ShowOnlyFollowing
     {
         get => _showOnlyFollowing;
@@ -21,13 +25,11 @@ public partial class Athletes : ComponentBase, IDisposable
             OnFilterChange();
         }
     }
-    private Athlete[] AthleteList { get; set; } = [];
-    private Athlete Athlete { get; set; } = default!;
-    private bool HasMore { get; set; } = true;
-    private List<Athlete> _athletes = [];
-    private IDisposable? _athleteFeedSubscription;
-    private int _pageSize = 10;
-    private int _page = 0;
+
+    public void Dispose()
+    {
+        _athleteFeedSubscription?.Dispose();
+    }
 
     protected override async Task OnInitializedAsync()
     {
@@ -57,7 +59,7 @@ public partial class Athletes : ComponentBase, IDisposable
     private async Task FetchAthletes(CancellationToken ct = default)
     {
         AthleteFilter filter = new(ShowOnlyFollowing ? Athlete.Id : null);
-        Athlete[] athletes = await AthleteService.GetAthletesAsync(filter, new(_pageSize, _page), ct);
+        Athlete[] athletes = await AthleteService.GetAthletesAsync(filter, new Paging(_pageSize, _page), ct);
         AddAthletes(athletes);
     }
 
@@ -126,10 +128,5 @@ public partial class Athletes : ComponentBase, IDisposable
             .ToArray();
 
         InvokeAsync(StateHasChanged);
-    }
-
-    public void Dispose()
-    {
-        _athleteFeedSubscription?.Dispose();
     }
 }

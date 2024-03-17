@@ -4,12 +4,13 @@ namespace Tevling.Shared;
 
 public partial class InfiniteScrollingMarker : ComponentBase, IAsyncDisposable
 {
-    [Inject]
-    IJSRuntime JSRuntime { get; set; } = null!;
+    [Inject] private IJSRuntime JSRuntime { get; set; } = null!;
 
     private CancellationTokenSource _cts = new();
     private ElementReference _markerRef;
-    private ElementReference MarkerRef {
+
+    private ElementReference MarkerRef
+    {
         get => _markerRef;
         set
         {
@@ -17,20 +18,18 @@ public partial class InfiniteScrollingMarker : ComponentBase, IAsyncDisposable
             OnRefChange();
         }
     }
+
     private bool _isLoading;
     private DotNetObjectReference<InfiniteScrollingMarker>? _objectReference;
     private IJSObjectReference? _module;
     private IJSObjectReference? _instance;
     private int _initialized = 0; // cannot use bool because of Interlocked.Exchange
 
-    [Parameter]
-    public Func<CancellationToken, Task>? LoadMore { get; set; }
+    [Parameter] public Func<CancellationToken, Task>? LoadMore { get; set; }
 
-    [Parameter]
-    public bool HasMore { get; set; }
+    [Parameter] public bool HasMore { get; set; }
 
-    [Parameter]
-    public RenderFragment? LoadingTemplate { get; set; }
+    [Parameter] public RenderFragment? LoadingTemplate { get; set; }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -49,6 +48,7 @@ public partial class InfiniteScrollingMarker : ComponentBase, IAsyncDisposable
                 await _instance.InvokeVoidAsync("dispose");
                 await _instance.DisposeAsync();
             }
+
             _instance = await _module!.InvokeAsync<IJSObjectReference>("initialize", _markerRef, _objectReference);
         }
     }

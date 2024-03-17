@@ -1,5 +1,12 @@
-<div class="form-check form-switch d-flex cg-3 align-items-center">
-    <span class="oi oi-sun" />
-    <input @bind="IsDarkMode" class="form-check-input" type="checkbox" role="switch" />
-    <span class="oi oi-moon" />
+<div class="@((IsDarkMode ? "dark-mode-switch mx-auto" : "dark-mode-switch light mx-auto"))">
+    <button type="button" class="@((IsDarkMode ? "inactive light px-3 py-1" : "active light px-3 py-1"))"
+            @onclick="ToggleDarkMode" disabled="@(!IsDarkMode)">
+        <i class="@((IsDarkMode ? "bi bi-sun me-1" : "bi bi-sun-fill me-1"))" aria-hidden="true"></i>
+        <span class="d-none d-md-inline">Light</span>
+    </button>
+    <button type="button" class="@((IsDarkMode ? "active dark px-3 py-1" : "inactive dark px-3 py-1"))"
+            @onclick="ToggleDarkMode" disabled="@(IsDarkMode)">
+        <i class="@((IsDarkMode ? "bi bi-moon-fill me-1" : "bi bi-moon me-1"))" aria-hidden="true"></i>
+        <span class="d-none d-md-inline">Dark</span>
+    </button>
 </div>

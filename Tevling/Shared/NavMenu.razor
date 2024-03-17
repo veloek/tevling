@@ -1,46 +1,63 @@
-<div class="top-row ps-3 navbar navbar-dark">
+<div class="top-row navbar navbar-dark">
     <div class="container-fluid">
-        <a class="navbar-brand" href="activities">Tevling</a>
+        <a href="dashboard">
+            <img src="../tevling_logo.svg" alt="Tevling Logo" class="logo"/>
+        </a>
         <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
-            <span class="navbar-toggler-icon"></span>
+            <i class="bi bi-list" aria-hidden="true"></i>
         </button>
     </div>
 </div>
 
-<div class="@NavMenuCssClass flex-grow-1" @onclick="ToggleNavMenu">
+<div class="@NavMenuCssClass flex-grow-1 px-4 pb-4" @onclick="ToggleNavMenu">
     <nav class="d-flex flex-column" style="height: 100%;">
-        <div class="nav-item px-3">
+        <div class="nav-item">
+            <NavLink class="nav-link" href="dashboard">
+                <i class="bi bi-columns-gap nav-icon me-2" aria-hidden="true"></i> Dashboard
+            </NavLink>
+        </div>
+        <div class="nav-item">
             <NavLink class="nav-link" href="activities">
-                <span class="oi oi-list-rich" aria-hidden="true"></span> Activities
+                <i class="bi bi-person-arms-up me-2" aria-hidden="true"></i> Activities
             </NavLink>
         </div>
-        <div class="nav-item px-3">
+        <div class="nav-item">
             <NavLink class="nav-link" href="challenges">
-                <span class="oi oi-timer" aria-hidden="true"></span> Challenges
+                <i class="bi bi-trophy-fill me-2" aria-hidden="true"></i> Challenges
             </NavLink>
         </div>
-        <div class="nav-item px-3">
+        <div class="nav-item">
             <NavLink class="nav-link" href="athletes">
-                <span class="oi oi-people" aria-hidden="true"></span> Athletes
+                <i class="bi bi-people-fill me-2" aria-hidden="true"></i> Athletes
             </NavLink>
         </div>
-        <div class="nav-item px-3">
+        <div class="nav-item">
             <NavLink class="nav-link" href="profile">
-                <span class="oi oi-person" aria-hidden="true"></span> Profile
+                <i class="bi bi-person-circle me-2" aria-hidden="true"></i> Profile
+            </NavLink>
+        </div>
+        <div class="px-2">
+            <hr class="divider">
+        </div>
+        <div class="nav-item">
+            <NavLink class="nav-link" href="about">
+                <i class="bi bi-info-lg me-2" aria-hidden="true"></i> About
             </NavLink>
         </div>
         <FeatureGate FeatureFlag="FeatureFlag.DevToolsMenuItem">
-            <div class="nav-item px-3">
+            <div class="nav-item">
                 <NavLink class="nav-link" href="dev">
-                    <span class="oi oi-cog" aria-hidden="true"></span> Dev
+                    <i class="bi bi-mouse me-2" aria-hidden="true"></i> Dev
                 </NavLink>
             </div>
         </FeatureGate>
-        <div class="nav-item px-3 mt-auto">
-            <NavLink class="nav-link" href="about">
-                <span class="oi oi-info" aria-hidden="true"></span> About
-            </NavLink>
+        <div class="user-info d-flex flex-row align-items-center mt-auto mb-4 ms-2 px-1 pt-4 ">
+            <a href="/profile" class="me-2 d-flex align-items-center">
+                <Avatar Url="@Athlete.ImgUrl" Size="35"/>
+            </a>
+            @Athlete.Name
         </div>
-        <div class="strava-icon"></div>
+        <DarkMode OnChange="OnThemeChange!"/>
+        <div class="strava-icon mt-4"></div>
     </nav>
 </div>

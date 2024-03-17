@@ -4,21 +4,28 @@ namespace Tevling.Pages;
 
 public partial class Challenges : ComponentBase, IDisposable
 {
-    [Inject]
-    private ILogger<Challenges> Logger { get; set; } = null!;
-    [Inject]
-    private IAuthenticationService AuthenticationService { get; set; } = null!;
-    [Inject]
-    private IChallengeService ChallengeService { get; set; } = null!;
+    [Inject] private ILogger<Challenges> Logger { get; set; } = null!;
+    [Inject] private IAuthenticationService AuthenticationService { get; set; } = null!;
+    [Inject] private IChallengeService ChallengeService { get; set; } = null!;
 
-    private Challenge[] ChallengeList { get; set; } = [];
+    private readonly Subject<string> _filterTextSubject = new();
+    private readonly TimeSpan _filterTextThrottle = TimeSpan.FromMilliseconds(300);
+
+    private readonly int _pageSize = 10;
+    private IDisposable? _challengeFeedSubscription;
     private List<Challenge> _challenges = [];
+
+    private string _filterText = string.Empty;
+    private IDisposable? _filterTextSubscription;
+    private int _page;
+
+    private bool _showAllChallenges = true;
+
+    private bool _showOutdatedChallenges;
     private int AthleteId { get; set; }
     private bool HasMore { get; set; } = true;
-    private readonly TimeSpan _filterTextThrottle = TimeSpan.FromMilliseconds(300);
-    private readonly Subject<string> _filterTextSubject = new();
-    private IDisposable? _filterTextsubscription;
-    private bool _showAllChallenges = true;
+    private Challenge[] ChallengeList { get; set; } = [];
+
     private bool ShowAllChallenges
     {
         get => _showAllChallenges;
@@ -28,7 +35,7 @@ public partial class Challenges : ComponentBase, IDisposable
             OnFilterChange();
         }
     }
-    private bool _showOutdatedChallenges;
+
     private bool ShowOutdatedChallenges
     {
         get => _showOutdatedChallenges;
@@ -38,7 +45,7 @@ public partial class Challenges : ComponentBase, IDisposable
             OnFilterChange();
         }
     }
-    private string _filterText = string.Empty;
+
     private string FilterText
     {
         get => _filterText;
@@ -49,22 +56,21 @@ public partial class Challenges : ComponentBase, IDisposable
         }
     }
 
-    private IDisposable? _challengeFeedSubscription;
-    private int _pageSize = 10;
-    private int _page = 0;
-
+    public void Dispose()
+    {
+        _filterTextSubscription?.Dispose();
+        _challengeFeedSubscription?.Dispose();
+    }
+    
     protected override async Task OnInitializedAsync()
     {
-        Athlete? athlete = await AuthenticationService.GetCurrentAthleteAsync();
+        Athlete athlete = await AuthenticationService.GetCurrentAthleteAsync();
 
-        if (athlete != null)
-        {
-            AthleteId = athlete.Id;
-            await FetchChallenges();
-            SubscribeToChallengeFeed();
-        }
+        AthleteId = athlete.Id;
+        await FetchChallenges();
+        SubscribeToChallengeFeed();
 
-        _filterTextsubscription = _filterTextSubject
+        _filterTextSubscription = _filterTextSubject
             .Throttle(_filterTextThrottle)
             .Subscribe(s =>
             {
@@ -98,10 +104,11 @@ public partial class Challenges : ComponentBase, IDisposable
     private async Task FetchChallenges(CancellationToken ct = default)
     {
         ChallengeFilter filter = new(
-            SearchText: _filterText,
-            ByAthleteId: _showAllChallenges ? null : AthleteId,
-            IncludeOutdatedChallenges: _showOutdatedChallenges);
-        Challenge[] challenges = await ChallengeService.GetChallengesAsync(AthleteId, filter, new(_pageSize, _page), ct);
+            _filterText,
+            _showAllChallenges ? null : AthleteId,
+            _showOutdatedChallenges);
+        Challenge[] challenges =
+            await ChallengeService.GetChallengesAsync(AthleteId, filter, new Paging(_pageSize, _page), ct);
         AddChallenges(challenges);
     }
 
@@ -159,22 +166,16 @@ public partial class Challenges : ComponentBase, IDisposable
     {
         ChallengeList = _challenges
             .Where(c => _showAllChallenges
-                || c.Athletes?.Any(athlete => athlete.Id == AthleteId) == true
-                || c.CreatedById == AthleteId)
+                        || c.Athletes?.Any(athlete => athlete.Id == AthleteId) == true
+                        || c.CreatedById == AthleteId)
             .Where(c => _showOutdatedChallenges
-                || c.End.UtcDateTime.Date >= DateTimeOffset.UtcNow.Date)
+                        || c.End.UtcDateTime.Date >= DateTimeOffset.UtcNow.Date)
             .Where(c => string.IsNullOrWhiteSpace(_filterText)
-                || c.Title.Contains(_filterText, StringComparison.OrdinalIgnoreCase))
+                        || c.Title.Contains(_filterText, StringComparison.OrdinalIgnoreCase))
             .OrderByDescending(c => c.Start)
             .ThenBy(c => c.Title)
             .ToArray();
 
         InvokeAsync(StateHasChanged);
-    }
-
-    public void Dispose()
-    {
-        _filterTextsubscription?.Dispose();
-        _challengeFeedSubscription?.Dispose();
     }
 }

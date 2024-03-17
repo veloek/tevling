@@ -1,0 +1,17 @@
+<div class="modal fade" id="@Id" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+     aria-labelledby="@Id" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered @(Size != null ? "modal-" + Size : " ")">
+        <div class="modal-content">
+            <div class="modal-header">
+                @HeaderContent
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body d-flex flex-column align-items-center">
+                @BodyContent
+            </div>
+            <div class="modal-footer flex-column align-items-center">
+                @FooterContent
+            </div>
+        </div>
+    </div>
+</div>

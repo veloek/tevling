@@ -1,0 +1,50 @@
+.title {
+  letter-spacing: 0.2rem;
+  font-variant: all-small-caps;
+  font-size: xxx-large;
+}
+
+.member-since {
+  font-size: smaller;
+  font-weight: 300;
+}
+
+.profile-name {
+  font-size: larger;
+}
+
+.profile-actions span,
+.followers span,
+.following span {
+  font-weight: 300;
+}
+
+.profile-actions a,
+button {
+  width: fit-content;
+}
+
+.profile-info {
+  margin-right: 13rem;
+}
+
+@media (max-width: 1500px) {
+  .profile-info {
+    margin-right: 3rem;
+  }
+}
+
+.delete-account-modal-button {
+  width: 10rem;
+}
+
+.delete-account-modal-icon {
+  font-size: 6rem;
+}
+
+a.btn-secondary,
+button.btn-secondary {
+  background-color: white;
+  color: black;
+  border: 1px solid black;
+}

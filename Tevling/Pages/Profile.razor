@@ -1,44 +1,110 @@
 @page "/profile"
 
-<h1>Profile</h1>
+<h1 class="title mb-5">Profile</h1>
+<div class="profile d-flex flex-row column-gap-2 mb-5">
+    <Avatar Url="@Athlete.ImgUrl" Size="50"/>
+    <div class="d-flex flex-column">
+        <span class="profile-name">@Athlete.Name</span>
+        <span class="member-since">Member since @CreatedTime</span>
+    </div>
+</div>
 
-<h5 class="mt-3">Hello, @Athlete.Name!</h5>
-<p>
-    You joined Tevling @CreatedTime.
-    You're currently following @Athlete.Following?.Count <a href="/athletes">athletes</a> and
-    have @Athlete.Followers?.Count followers.
-</p>
+<div class="d-flex flex-row flex-wrap">
+    <div class="profile-info d-flex flex-column row-gap-5">
+        <div class="followers">
+            <h2 class="mb-3">Followers</h2>
+            @if (Athlete.Followers?.Count == 0 || Athlete.Followers is null)
+            {
+                <span>You currently have no followers 😕</span>
+            }
+            else
+            {
+                <div class="d-flex flex-column row-gap-3">
+                    @foreach (var follower in Athlete.Followers)
+                    {
+                        <AthleteCard Athlete="@follower" 
+                            IsFollowing="Athlete.IsFollowing(follower.Id)" 
+                            FollowingStatusChanged="() => ToggleFollowing(follower.Id)"/>
+                    }
+                </div>
+            }
+        </div>
 
-<h4 class="mt-4">Import activities from Strava</h4>
-<p>Import last 30 days of activities to get started!<br />
-<em style="font-size: 0.9rem;">(This can only be done once)</em></p>
-<p>
-    <button class="btn btn-primary" @onclick="Import" disabled="@(Importing || Athlete.HasImportedActivities)">
-        @if (Athlete.HasImportedActivities)
-        {
-            <text>Import complete</text>
-        }
-        else if (Importing)
-        {
-            <text>Importing...</text>
-        }
-        else
-        {
-            <text>Import activities</text>
-        }
-    </button>
-</p>
-@if (!string.IsNullOrEmpty(ImportResult))
-{
-    <p>@ImportResult</p>
-}
+        <div class="following mb-5">
+            <h2 class="mb-3">Following</h2>
+            @if (Athlete.Following?.Count == 0 || Athlete.Following is null)
+            {
+                <span>You're not following anyone 😕</span>
+            }
+            else
+            {
+                <div class="d-flex flex-column row-gap-3">
+                    @foreach (var following in Athlete.Following)
+                    {
+                        <AthleteCard Athlete="@following" 
+                            IsFollowing="true"
+                            FollowingStatusChanged="() => ToggleFollowing(following.Id)"/>
+                    }
+                </div>
+            }
 
-<h4 class="mt-4">Sign out</h4>
-<p>If using a public/shared computer, please remember to sign out.</p>
-<p><a class="btn btn-secondary" href="/auth/logout">Sign out</a></p>
+        </div>
+    </div>
+    <div class="profile-actions mb-5">
+        <div class="d-flex flex-column row-gap-3">
+            <h4 class="mt-4">Import activities from Strava</h4>
+            <span>Import last 30 days of activities to get started! <br/> (This can only be done once)</span>
+            <button class="btn btn-primary" @onclick="Import" disabled="@(Importing || Athlete.HasImportedActivities)">
+                <i class="bi bi-box-arrow-in-down me-1" aria-hidden="true"></i>
+                @if (Athlete.HasImportedActivities)
+                {
+                    <text>Import complete</text>
+                }
+                else if (Importing)
+                {
+                    <text>Importing...</text>
+                }
+                else
+                {
+                    <text>Import activities</text>
+                }
+            </button>
+            @if (!string.IsNullOrEmpty(ImportResult))
+            {
+                <p>@ImportResult</p>
+            }
+        </div>
 
-<hr class="my-4" />
-<h4>Delete account</h4>
-<p class="text-danger">Delete user account and deauthorize application. All data will be removed.<br />
-<em>NB! This cannot be undone!</em></p>
-<p><a class="btn btn-danger" href="/auth/logout?deauthorize=true">Forget me</a></p>
+        <div class="d-flex flex-column row-gap-2">
+            <h4 class="mt-4">Sign out</h4>
+            <span>If using a public/shared computer, please remember to sign out.</span>
+            <a class="btn btn-secondary mt-1" href="/auth/logout"><i class="bi bi-box-arrow-right me-1" aria-hidden="true"></i>Sign out</a>
+        </div>
+
+        <div class="d-flex flex-column row-gap-2">
+            <h4 class="mt-4">Delete account</h4>
+            <span class="text-danger">
+                Delete user account and deauthorize application. All data will be
+                removed.<br/>NB! This cannot be undone!
+            </span>
+            <a class="btn btn-danger mt-1" data-bs-toggle="modal" data-bs-target="#deleteAccount">
+                <i class="bi bi-trash-fill me-1" aria-hidden="true"></i>Forget me
+            </a>
+        </div>
+    </div>
+</div>
+
+
+<Modal Id="deleteAccount" Size="sm">
+    <HeaderContent>
+        <span>Delete account</span>
+    </HeaderContent>
+    <BodyContent>
+        <i class="bi bi-trash delete-account-modal-icon" aria-hidden="true"></i>
+        <span class="text-center delete-account-modal-text">Are you sure you want to delete your Tevling account?</span>
+    </BodyContent>
+    <FooterContent>
+        <a class="btn btn-danger mt-1 delete-account-modal-button" href="/auth/logout?deauthorize=true">Delete account</a>
+        <button class="btn btn-secondary mt-1 delete-account-modal-button" data-bs-dismiss="modal">Cancel</button>
+    </FooterContent>
+</Modal>

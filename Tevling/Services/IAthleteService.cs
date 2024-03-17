@@ -20,4 +20,5 @@ public interface IAthleteService
     IObservable<FeedUpdate<Athlete>> GetAthleteFeed();
 
     Task DeleteAthleteAsync(long stravaId, CancellationToken ct = default);
+    Task<Athlete[]> GetSuggestedAthletesToFollowAsync(int athleteId, CancellationToken ct = default);
 }

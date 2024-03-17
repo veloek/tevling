@@ -1,0 +1,39 @@
+.title {
+  letter-spacing: 0.2rem;
+  font-variant: all-small-caps;
+  font-size: xxx-large;
+}
+
+.challenge-search ::deep input {
+  width: 20rem;
+}
+
+.challenges {
+  max-width: 58rem;
+  margin-right: 5rem;
+}
+
+@media (max-width: 1500px) {
+  .challenges {
+    max-width: 38rem;
+  }
+}
+
+@media (max-width: 500px) {
+  .challenges {
+    margin-right: 0;
+  }
+
+  .challenge-list {
+    justify-content: center;
+  }
+}
+
+label {
+  font-weight: 300;
+}
+
+a {
+  border-radius: 0.8rem;
+  font-size: smaller;
+}

@@ -193,4 +193,28 @@ public class AthleteService : IAthleteService
 
         await dataContext.RemoveAthleteAsync(athlete, ct);
     }
+
+    public async Task<Athlete[]> GetSuggestedAthletesToFollowAsync(int athleteId, CancellationToken ct = default)
+    {
+        using DataContext dataContext = await _dataContextFactory.CreateDbContextAsync(ct);
+
+        List<int> followedAthleteIds = await dataContext.Following
+            .Where(f => f.FollowerId == athleteId)
+            .Select(f => f.FolloweeId)
+            .ToListAsync(ct);
+
+        Athlete[] suggestedAthletes = await dataContext.Athletes
+            .Where(a => dataContext.Following
+                .Where(f => followedAthleteIds.Contains(f.FollowerId))
+                .Select(f => f.FolloweeId)
+                .Except(followedAthleteIds)
+                .Contains(a.Id) && a.Id != athleteId)
+            .Take(5)
+            .ToArrayAsync(ct);
+
+        return suggestedAthletes;
+    }
+
+
+
 }

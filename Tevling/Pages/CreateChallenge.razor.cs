@@ -4,11 +4,8 @@ namespace Tevling.Pages;
 
 public partial class CreateChallenge : ComponentBase
 {
-    [Inject]
-    IChallengeService ChallengeService { get; set; } = null!;
-
-    [Inject]
-    IJSRuntime JSRuntime { get; set; } = null!;
+    [Inject] private IChallengeService ChallengeService { get; set; } = null!;
+    [Inject] private IJSRuntime JSRuntime { get; set; } = null!;
 
     private async Task OnSubmit(ChallengeFormModel challenge)
     {

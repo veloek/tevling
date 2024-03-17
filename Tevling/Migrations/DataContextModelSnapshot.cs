@@ -140,9 +140,14 @@ namespace Tevling.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
+                    b.Property<int?>("WinnerId")
+                        .HasColumnType("INTEGER");
+
                     b.HasKey("Id");
 
                     b.HasIndex("CreatedById");
+
+                    b.HasIndex("WinnerId");
 
                     b.ToTable("Challenges");
                 });
@@ -258,7 +263,13 @@ namespace Tevling.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Tevling.Model.Athlete", "Winner")
+                        .WithMany()
+                        .HasForeignKey("WinnerId");
+
                     b.Navigation("CreatedBy");
+
+                    b.Navigation("Winner");
                 });
 
             modelBuilder.Entity("Tevling.Model.Following", b =>
