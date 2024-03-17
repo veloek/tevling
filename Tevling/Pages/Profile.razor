@@ -22,7 +22,9 @@
                 <div class="d-flex flex-column row-gap-3">
                     @foreach (var follower in Athlete.Followers)
                     {
-                        <AthleteCard Athlete="@follower" IsFollowing="Athlete.IsFollowing(follower.Id)"/>
+                        <AthleteCard Athlete="@follower" 
+                            IsFollowing="Athlete.IsFollowing(follower.Id)" 
+                            FollowingStatusChanged="() => ToggleFollowing(follower.Id)"/>
                     }
                 </div>
             }
@@ -37,9 +39,11 @@
             else
             {
                 <div class="d-flex flex-column row-gap-3">
-                    @foreach (var athlete in Athlete.Following)
+                    @foreach (var following in Athlete.Following)
                     {
-                        <AthleteCard Athlete="@athlete" IsFollowing="true"/>
+                        <AthleteCard Athlete="@following" 
+                            IsFollowing="true"
+                            FollowingStatusChanged="() => ToggleFollowing(following.Id)"/>
                     }
                 </div>
             }

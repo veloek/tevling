@@ -48,4 +48,10 @@ public partial class Profile : ComponentBase
             Importing = false;
         }
     }
+
+    private async Task ToggleFollowing(int followingId)
+    {
+        Athlete = await AthleteService.ToggleFollowingAsync(Athlete, followingId);
+        await InvokeAsync(StateHasChanged);
+    }
 }
