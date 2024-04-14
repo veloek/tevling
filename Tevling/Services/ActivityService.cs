@@ -221,6 +221,7 @@ public class ActivityService : IActivityService
     {
         string accessToken = await _athleteService.GetAccessTokenAsync(activity.AthleteId, ct);
         Strava.Activity stravaActivity = await _stravaClient.GetActivityAsync(activity.StravaId, accessToken, ct);
+        _logger.LogDebug("Strava activity details: {@Details}", stravaActivity);
 
         ActivityDetails activityDetails = MapActivityDetails(stravaActivity);
 
