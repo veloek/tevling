@@ -211,10 +211,7 @@ public class AthleteService : IAthleteService
                 .Contains(a.Id) && a.Id != athleteId)
             .Take(5)
             .ToArrayAsync(ct);
-
+        
         return suggestedAthletes;
     }
-
-
-
 }

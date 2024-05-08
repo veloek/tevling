@@ -8,7 +8,7 @@ public partial class Dashboard : ComponentBase {
     [Inject] private IChallengeService ChallengeService { get; set; } = null!;
 
     private string Greeting {get; set;} = string.Empty;
-    private Athlete? Athlete { get; set; }
+    private Athlete Athlete { get; set; } = default!;
     private Dictionary<Challenge, (string, string)> ActiveChallenges { get; } = [];
     private Dictionary<Challenge, (string, string)> RecentOutdatedChallenges { get; } = [];
     private IEnumerable<Athlete> SuggestedAthletes {get; set; } = [];
@@ -22,19 +22,14 @@ public partial class Dashboard : ComponentBase {
 
         Athlete = await AuthenticationService.GetCurrentAthleteAsync();
 
-        if (Athlete != null)
-        {
-            int athleteId = Athlete.Id;
+
             await FetchActiveChallenges();
             await FetchRecentOutdatedChallenges();
             await FetchSuggestedAthletes();
             Greeting = await GetGreeting();
-        }
     }
 
     private async Task<string> GetGreeting(CancellationToken ct = default) {
-        if (Athlete is null) return string.Empty;
-
         string athleteFirstName = Athlete.Name.Split(' ')[0];
         DateTimeOffset browserTime = await BrowserTime.ConvertToLocal(DateTimeOffset.Now, ct);
         
@@ -47,8 +42,6 @@ public partial class Dashboard : ComponentBase {
 
     private async Task FetchActiveChallenges(CancellationToken ct = default)
     {
-        if (Athlete is null) return;
-        
         DateTimeOffset browserTime = await BrowserTime.ConvertToLocal(DateTimeOffset.Now, ct);
         ChallengeFilter filter = new(
             string.Empty,
@@ -81,7 +74,6 @@ public partial class Dashboard : ComponentBase {
 
     private async Task FetchRecentOutdatedChallenges(CancellationToken ct = default)
     {
-        if (Athlete is null) return;
         ChallengeFilter filter = new(
             string.Empty,
             null,
@@ -113,9 +105,13 @@ public partial class Dashboard : ComponentBase {
 
     private async Task FetchSuggestedAthletes(CancellationToken ct = default)
     {
-        if (Athlete is null) return;
-
         SuggestedAthletes = await AthleteService.GetSuggestedAthletesToFollowAsync(Athlete.Id, ct);
 
+    }
+    
+    private async Task ToggleFollowing(int followingId)
+    {
+        Athlete = await AthleteService.ToggleFollowingAsync(Athlete, followingId);
+        await InvokeAsync(StateHasChanged);
     }
 }

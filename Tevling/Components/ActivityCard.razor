@@ -4,11 +4,11 @@
         <div class="activity-card-content d-flex flex-column">
 
             <div class="activity-card-header d-flex flex-row align-items-center flex-wrap-reverse row-gap-1">
-                <div class="d-flex align-items-center flex-row column-gap-2 athlete-name-container">
+                <div class="d-flex align-items-center flex-row column-gap-2 athlete-name-container me-1">
                     <Avatar Url="@Activity.Athlete?.ImgUrl" Size="40"/>
                     <span class="athlete-name">@Activity.Athlete?.Name</span>
                 </div>
-                <span class="activity-time ms-2">@ActivityTime</span>
+                <span class="activity-time">@ActivityTime</span>
                 <div class="d-flex flex-row align-items-end ms-auto strava-link column-gap-1">
                     <a target="_blank" href="https://www.strava.com/activities/@Activity.StravaId">View on Strava</a>
                     <i class="bi bi-box-arrow-up-right pb-1" aria-hidden="true"></i>
