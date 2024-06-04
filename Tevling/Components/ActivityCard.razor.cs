@@ -6,7 +6,7 @@ public partial class ActivityCard : ComponentBase
 
     [Parameter] public Activity? Activity { get; set; }
 
-    private string? ActivityTime;
+    private string? ActivityTime { get; set; }
 
     private string Stats
     {
@@ -32,9 +32,9 @@ public partial class ActivityCard : ComponentBase
     {
         get
         {
-            if (Activity is null || Activity.Details.ElapsedTimeInSeconds <= 0) return string.Empty;
+            if (Activity?.Details.MovingTimeInSeconds is null or <= 0) return string.Empty;
 
-            TimeSpan timeSpan = TimeSpan.FromSeconds(Activity.Details.ElapsedTimeInSeconds);
+            TimeSpan timeSpan = TimeSpan.FromSeconds(Activity.Details.MovingTimeInSeconds);
             string formattedTime = "";
 
             if (timeSpan.Hours > 0)

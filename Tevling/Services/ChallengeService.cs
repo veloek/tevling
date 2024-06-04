@@ -255,7 +255,7 @@ public class ChallengeService : IChallengeService
                 Sum = result.Challenge.Measurement switch
                 {
                     ChallengeMeasurement.Distance => a.Activities.Select(x => x.Details.DistanceInMeters).Sum(),
-                    ChallengeMeasurement.Time => a.Activities.Select(x => x.Details.ElapsedTimeInSeconds).Sum(),
+                    ChallengeMeasurement.Time => a.Activities.Select(x => x.Details.MovingTimeInSeconds).Sum(),
                     ChallengeMeasurement.Elevation => a.Activities.Select(x => x.Details.TotalElevationGain).Sum(),
                     _ => 0
                 }
@@ -313,7 +313,7 @@ public class ChallengeService : IChallengeService
                         athleteTickets += (int)activity.Details.TotalElevationGain; // 1 m = 1 ticket
                         break;
                     case ChallengeMeasurement.Time:
-                        athleteTickets += activity.Details.ElapsedTimeInSeconds / 1800; // 30 min = 1 ticket
+                        athleteTickets += activity.Details.MovingTimeInSeconds / 1800; // 30 min = 1 ticket
                         break;
                     default:
                         athleteTickets += 0;
@@ -331,7 +331,7 @@ public class ChallengeService : IChallengeService
         {
             currentMax += Tickets;
             if (randomNumber > currentMax) continue;
-            
+
             challenge.WinnerId = Athlete.Id;
             await dataContext.UpdateChallengeAsync(challenge, CancellationToken.None);
 
