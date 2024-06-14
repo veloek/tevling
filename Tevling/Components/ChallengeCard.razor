@@ -50,7 +50,7 @@
                         <span>Congrats to all participants 👏</span>
                         <span>Now it's time to draw a winner 🏆</span>
                     </div>
-                    @if (Challenge.CreatedById == AthleteId)
+                    @if (Challenge.CreatedById == AthleteId || IsAdmin)
                     {
                         <button class="btn btn-primary mt-auto" data-bs-toggle="modal" data-bs-target="#drawWinner"
                                 @onclick:stopPropagation="true">
