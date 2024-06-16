@@ -15,7 +15,10 @@
                                 <a class="dropdown-item" href="challenges/@Challenge.Id/edit">Edit</a>
                             </li>
                             <li>
-                                <a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#deleteChallenge">Delete</a>
+                                <a class="dropdown-item"
+                                   data-bs-toggle="modal"
+                                   data-bs-target="#deleteChallenge-@(Challenge.Id)"
+                                   @onclick:stopPropagation="true">Delete</a>
                             </li>
                         </ul>
                     }
@@ -52,7 +55,9 @@
                     </div>
                     @if (Challenge.CreatedById == AthleteId || IsAdmin)
                     {
-                        <button class="btn btn-primary mt-auto" data-bs-toggle="modal" data-bs-target="#drawWinner"
+                        <button class="btn btn-primary mt-auto"
+                                data-bs-toggle="modal"
+                                data-bs-target="#drawWinner-@(Challenge.Id)"
                                 @onclick:stopPropagation="true">
                             <i class="bi bi-stars me-2" aria-hidden="true"></i>
                             <span>Draw winner</span>
@@ -121,8 +126,7 @@
         }
     </div>
 
-
-    <Modal Id="deleteChallenge" Size="sm">
+    <Modal Id="@($"deleteChallenge-{Challenge.Id}")" Size="sm">
         <HeaderContent>
             <span class="text-center">Delete challenge</span>
         </HeaderContent>
@@ -135,7 +139,7 @@
         </FooterContent>
     </Modal>
 
-    <Modal Id="drawWinner">
+    <Modal Id="@($"drawWinner-{Challenge.Id}")">
         <HeaderContent>
             <span>Draw winner</span>
         </HeaderContent>
