@@ -292,14 +292,13 @@ public class ChallengeService : IChallengeService
         if (challenge == null) return null;
 
         List<(Athlete Athlete, int Tickets)> tickets = [];
-        ;
 
         foreach (Athlete athlete in challenge.Athletes ?? [])
         {
             int athleteTickets = 0;
             if (athlete.Activities == null) continue;
             IEnumerable<Activity> challengeActivities = athlete.Activities.Where(a =>
-                challenge.ActivityTypes.Contains(a.Details.Type) &&
+                (challenge.ActivityTypes.Count == 0 || challenge.ActivityTypes.Contains(a.Details.Type)) &&
                 a.Details.StartDate >= challenge.Start &&
                 a.Details.StartDate <= challenge.End);
 
