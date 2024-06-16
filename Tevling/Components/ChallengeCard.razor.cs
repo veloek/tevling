@@ -13,7 +13,6 @@ public partial class ChallengeCard : ComponentBase
 
     private DateTimeOffset? CurrentBrowserTime { get; set; }
     private ScoreBoard? ScoreBoard { get; set; }
-    private bool IsAdmin => AthleteId == 11; // TEMP HACK
 
     private string MeasurementIcon
     {
