@@ -112,9 +112,9 @@ public partial class DevTools : ComponentBase
         });
     }
 
-    private async Task ImportAllAthletesActivities()
+    private async Task ImportAllAthletesActivities(int nDays)
     {
-        DateTimeOffset from = DateTimeOffset.Now - TimeSpan.FromDays(7);
+        DateTimeOffset from = DateTimeOffset.Now - TimeSpan.FromDays(nDays);
         Athlete[] athletes = await AthleteService.GetAthletesAsync();
         foreach (Athlete athlete in athletes) await ActivityService.ImportActivitiesForAthlete(athlete.Id, from);
     }
