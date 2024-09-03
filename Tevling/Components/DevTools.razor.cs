@@ -10,6 +10,7 @@ public partial class DevTools : ComponentBase
 
     private Athlete[] _athletes = [];
     private bool NoOtherAthletes => _athletes.Length == 1;
+    private int ClearChallengeWinnerId { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
@@ -136,5 +137,13 @@ public partial class DevTools : ComponentBase
             IsPrivate = false,
             CreatedBy = Athlete.Id
         });
+    }
+
+    private async Task ClearChallengeWinner()
+    {
+        if (ClearChallengeWinnerId > 0)
+        {
+            await ChallengeService.ClearChallengeWinnerAsync(ClearChallengeWinnerId);
+        }
     }
 }

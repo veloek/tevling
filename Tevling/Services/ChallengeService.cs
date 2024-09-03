@@ -342,29 +342,14 @@ public class ChallengeService : IChallengeService
         return null;
     }
 
-    public async Task<Challenge> InviteAthleteAsync(int athleteId, int challengeId, CancellationToken ct = default)
+    public async Task ClearChallengeWinnerAsync(int challengeId, CancellationToken ct = default)
     {
         using DataContext dataContext = await _dataContextFactory.CreateDbContextAsync(ct);
 
-        Challenge challenge = await dataContext.Challenges
-                                  .Include(c => c.Athletes)
-                                  .Include(c => c.CreatedBy)
-                                  .Include(c => c.InvitedAthletes)
-                                  .AsTracking()
-                                  .FirstOrDefaultAsync(c => c.Id == challengeId, ct)
-                              ?? throw new Exception($"Challenge ID {challengeId} not found");
+        Challenge? challenge = await dataContext.Challenges.FirstOrDefaultAsync(c => c.Id == challengeId, ct);
+        if (challenge == null) return;
 
-        Athlete athlete = await dataContext.Athletes
-                              .AsTracking()
-                              .FirstOrDefaultAsync(a => a.Id == athleteId, ct)
-                          ?? throw new Exception($"Athlete ID {athleteId} not found");
-
-        challenge.InvitedAthletes!.Add(athlete);
-
-        await dataContext.UpdateChallengeAsync(challenge, ct);
-
-        _challengeFeed.OnNext(new FeedUpdate<Challenge> { Item = challenge, Action = FeedAction.Update });
-
-        return challenge;
+        challenge.WinnerId = null;
+        await dataContext.UpdateChallengeAsync(challenge, CancellationToken.None);
     }
 }
