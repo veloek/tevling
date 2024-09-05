@@ -44,6 +44,10 @@ public class DataContext : DbContext
                 e => e.HasOne<Athlete>().WithMany().HasForeignKey(e => e.FolloweeId),
                 e => e.HasOne<Athlete>().WithMany().HasForeignKey(e => e.FollowerId));
 
+        modelBuilder.Entity<Athlete>()
+            .Property(a => a.Created)
+            .HasConversion(new DateTimeOffsetToBinaryConverter());
+
         modelBuilder.Entity<Challenge>()
             .HasOne(c => c.CreatedBy);
 

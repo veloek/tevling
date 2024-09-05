@@ -219,6 +219,7 @@ public class AthleteService : IAthleteService
                         .Except(followedAthleteIds)
                         .Contains(a.Id) &&
                     a.Id != athleteId)
+            .OrderBy(a => a.Created)
             .Take(5)
             .ToArrayAsync(ct);
 
