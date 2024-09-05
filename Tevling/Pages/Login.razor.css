@@ -1,52 +1,52 @@
 .tevling-login {
-    min-width: 300px;
-    margin: auto;
-    text-align: center;
+  min-width: 300px;
+  margin: auto;
+  text-align: center;
 }
 
 @media (min-width: 641px) {
-    .tevling-login {
-        padding-top: 50px;
-    }
+  .tevling-login {
+    padding-top: 50px;
+  }
 }
 
 .login-title {
-    font-size: 58px;
-    font-weight: bold;
-    text-transform: uppercase;
-    letter-spacing: 0.7rem;
+  font-size: 58px;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.7rem;
 }
 
 .login-subtitle {
-    font-style: italic;
-    font-size: 20px;
+  font-style: italic;
+  font-size: 20px;
 }
 
 .tevling-logo {
-    margin: 2rem 0;
+  margin: 2rem 0;
 }
 
 button.strava-login {
-    border: none;
-    background-color: inherit;
-    background-image: url('../btn_strava_connectwith_orange@2x.png');
-    background-position: center;
-    background-size: 100%;
-    background-repeat: no-repeat;
-    text-indent: -9999px;
-    width: 193px;
-    height: 48px;
+  border: none;
+  background-color: inherit;
+  background-image: url('../btn_strava_connectwith_orange@2x.png');
+  background-position: center;
+  background-size: 100%;
+  background-repeat: no-repeat;
+  text-indent: -9999px;
+  width: 193px;
+  height: 48px;
 }
 
 button.strava-login:hover {
-    filter: drop-shadow(0px 0px 5px #c1c1c1);
+  filter: drop-shadow(0px 0px 5px #c1c1c1);
 }
 
 button.strava-login:active {
-    filter: none !important;
+  filter: none !important;
 }
 
 ::deep .copyright {
-    font-size: 10px;
-    margin-top: 2rem;
+  font-size: 10px;
+  margin-top: 2rem;
 }

@@ -36,7 +36,8 @@ public class AuthenticationService : IAuthenticationService
         };
 
         ClaimsIdentity claimsIdentity = new(
-            claims, CookieAuthenticationDefaults.AuthenticationScheme);
+            claims,
+            CookieAuthenticationDefaults.AuthenticationScheme);
 
         AuthenticationProperties authProperties = new()
         {
@@ -46,8 +47,8 @@ public class AuthenticationService : IAuthenticationService
             RedirectUri = "/",
         };
 
-        HttpContext httpContext = _httpContextAccessor.HttpContext
-            ?? throw new InvalidOperationException("No active HttpContext");
+        HttpContext httpContext = _httpContextAccessor.HttpContext ??
+            throw new InvalidOperationException("No active HttpContext");
 
         await httpContext.SignInAsync(
             CookieAuthenticationDefaults.AuthenticationScheme,
@@ -63,7 +64,9 @@ public class AuthenticationService : IAuthenticationService
             .GetAuthenticationStateAsync();
 
         string athleteIdStr = authenticationState.User.FindFirst(
-            ClaimTypes.NameIdentifier)?.Value ?? string.Empty;
+                    ClaimTypes.NameIdentifier)
+                ?.Value ??
+            string.Empty;
 
         Athlete? athlete = null;
 
@@ -82,11 +85,12 @@ public class AuthenticationService : IAuthenticationService
 
     public async Task LogoutAsync(bool deauthorizeApp = false, CancellationToken ct = default)
     {
-        HttpContext httpContext = _httpContextAccessor.HttpContext
-            ?? throw new InvalidOperationException("No active HttpContext");
+        HttpContext httpContext = _httpContextAccessor.HttpContext ??
+            throw new InvalidOperationException("No active HttpContext");
 
         string? athleteIdStr = httpContext.User.Claims
-            .FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+            .FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)
+            ?.Value;
 
         int athleteId = int.TryParse(athleteIdStr, out int parsed) ? parsed : default;
 

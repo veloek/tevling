@@ -4,5 +4,5 @@ public enum FeedAction
 {
     Create,
     Update,
-    Delete
+    Delete,
 }

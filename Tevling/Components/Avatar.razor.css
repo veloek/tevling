@@ -1,7 +1,7 @@
 .avatar {
-    display: inline-flex;
-    align-items: center;
-    border-radius: 50%;
-    overflow: hidden;
-    height: fit-content;
+  display: inline-flex;
+  align-items: center;
+  border-radius: 50%;
+  overflow: hidden;
+  height: fit-content;
 }

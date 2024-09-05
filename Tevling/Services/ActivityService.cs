@@ -24,13 +24,15 @@ public class ActivityService : IActivityService
         _stravaClient = stravaClient;
     }
 
-    public async Task<Activity> CreateActivityAsync(long stravaAthleteId, long stravaActivityId,
+    public async Task<Activity> CreateActivityAsync(
+        long stravaAthleteId,
+        long stravaActivityId,
         CancellationToken ct = default)
     {
         using DataContext dataContext = await _dataContextFactory.CreateDbContextAsync(ct);
 
         Athlete athlete = await dataContext.Athletes
-            .FirstOrDefaultAsync(a => a.StravaId == stravaAthleteId, ct) ??
+                .FirstOrDefaultAsync(a => a.StravaId == stravaAthleteId, ct) ??
             throw new Exception($"Unknown Strava athlete ID {stravaAthleteId}");
 
         Activity? existingActivity = await dataContext.Activities
@@ -44,12 +46,17 @@ public class ActivityService : IActivityService
             return existingActivity;
         }
 
-        _logger.LogInformation("Adding Strava activity ID {StravaActivityId} for athlete ID {AthleteId}", stravaActivityId, athlete.Id);
-        Activity activity = await dataContext.AddActivityAsync(new Activity()
-        {
-            StravaId = stravaActivityId,
-            AthleteId = athlete.Id,
-        }, ct);
+        _logger.LogInformation(
+            "Adding Strava activity ID {StravaActivityId} for athlete ID {AthleteId}",
+            stravaActivityId,
+            athlete.Id);
+        Activity activity = await dataContext.AddActivityAsync(
+            new Activity()
+            {
+                StravaId = stravaActivityId,
+                AthleteId = athlete.Id,
+            },
+            ct);
 
         // Since tracking is disabled by default, we need to manually load the athlete for it to
         // be present in the feed update.
@@ -66,24 +73,29 @@ public class ActivityService : IActivityService
         return activity;
     }
 
-    public async Task<Activity> UpdateActivityAsync(long stravaAthleteId, long stravaActivityId,
+    public async Task<Activity> UpdateActivityAsync(
+        long stravaAthleteId,
+        long stravaActivityId,
         CancellationToken ct = default)
     {
         using DataContext dataContext = await _dataContextFactory.CreateDbContextAsync(ct);
 
         Athlete athlete = await dataContext.Athletes
-            .FirstOrDefaultAsync(a => a.StravaId == stravaAthleteId, ct) ??
+                .FirstOrDefaultAsync(a => a.StravaId == stravaAthleteId, ct) ??
             throw new Exception($"Unknown Strava athlete ID {stravaAthleteId}");
 
         Activity activity = await dataContext.Activities
-            .Include(a => a.Athlete)
-            .FirstOrDefaultAsync(a => a.AthleteId == athlete.Id && a.StravaId == stravaActivityId, ct) ??
+                .Include(a => a.Athlete)
+                .FirstOrDefaultAsync(a => a.AthleteId == athlete.Id && a.StravaId == stravaActivityId, ct) ??
             throw new Exception($"Unknown Strava activity ID {stravaActivityId}");
 
         _logger.LogDebug("Fetching activity details for Strava activity ID {StravaActivityId}", stravaActivityId);
         ActivityDetails activityDetails = await FetchActivityDetailsAsync(activity, CancellationToken.None);
 
-        _logger.LogInformation("Updating Strava activity ID {StravaActivityId} for athlete {AthleteId}", stravaActivityId, athlete.Id);
+        _logger.LogInformation(
+            "Updating Strava activity ID {StravaActivityId} for athlete {AthleteId}",
+            stravaActivityId,
+            athlete.Id);
         activity.Details = activityDetails;
         activity = await dataContext.UpdateActivityAsync(activity, CancellationToken.None);
 
@@ -92,42 +104,49 @@ public class ActivityService : IActivityService
         return activity;
     }
 
-    public async Task DeleteActivityAsync(long stravaAthleteId, long stravaActivityId,
+    public async Task DeleteActivityAsync(
+        long stravaAthleteId,
+        long stravaActivityId,
         CancellationToken ct = default)
     {
         using DataContext dataContext = await _dataContextFactory.CreateDbContextAsync(ct);
 
         Athlete athlete = await dataContext.Athletes
-            .FirstOrDefaultAsync(a => a.StravaId == stravaAthleteId, ct) ??
+                .FirstOrDefaultAsync(a => a.StravaId == stravaAthleteId, ct) ??
             throw new Exception($"Unknown Strava athlete ID {stravaAthleteId}");
 
         Activity? activity = await dataContext.Activities
-            .FirstOrDefaultAsync(a => a.AthleteId == athlete.Id && a.StravaId == stravaActivityId, ct) ??
+                .FirstOrDefaultAsync(a => a.AthleteId == athlete.Id && a.StravaId == stravaActivityId, ct) ??
             throw new Exception($"Unknown Strava activity ID {stravaActivityId}");
 
-        _logger.LogInformation("Deleting Strava activity ID {StravaActivityId} for athlete {AthleteId}", stravaActivityId, athlete.Id);
+        _logger.LogInformation(
+            "Deleting Strava activity ID {StravaActivityId} for athlete {AthleteId}",
+            stravaActivityId,
+            athlete.Id);
         _ = await dataContext.RemoveActivityAsync(activity, ct);
 
         _activityFeed.OnNext(new FeedUpdate<Activity> { Item = activity, Action = FeedAction.Delete });
     }
 
-    public async Task<Activity[]> GetActivitiesAsync(ActivityFilter filter, Paging? paging = null,
+    public async Task<Activity[]> GetActivitiesAsync(
+        ActivityFilter filter,
+        Paging? paging = null,
         CancellationToken ct = default)
     {
         using DataContext dataContext = await _dataContextFactory.CreateDbContextAsync(ct);
 
         Athlete athlete = await dataContext.Athletes
-            .AsQueryable()
-            .If(filter.IncludeFollowing, q => q.Include(a => a.Following))
-            .FirstOrDefaultAsync(a => a.Id == filter.AthleteId, ct)
-                ?? throw new Exception($"Unknown athlete ID {filter.AthleteId}");
+                .AsQueryable()
+                .If(filter.IncludeFollowing, q => q.Include(a => a.Following))
+                .FirstOrDefaultAsync(a => a.Id == filter.AthleteId, ct) ??
+            throw new Exception($"Unknown athlete ID {filter.AthleteId}");
 
         Activity[] activities = await dataContext.Activities
             .Include(a => a.Athlete)
             .ThenInclude(a => a!.Following)
-            .Where(activity => activity.AthleteId == athlete.Id
-                            || (filter.IncludeFollowing
-                                && athlete.Following!.Select(a => a.Id).Contains(activity.AthleteId)))
+            .Where(
+                activity => activity.AthleteId == athlete.Id ||
+                    (filter.IncludeFollowing && athlete.Following!.Select(a => a.Id).Contains(activity.AthleteId)))
             .OrderByDescending(activity => activity.Details.StartDate)
             .ThenBy(activity => activity.Id) // Need stable sorting for paging
             .If(paging != null, x => x.Skip(paging!.Value.Page * paging!.Value.PageSize), x => (IQueryable<Activity>)x)
@@ -140,27 +159,35 @@ public class ActivityService : IActivityService
     public IObservable<FeedUpdate<Activity>> GetActivityFeedForAthlete(int athleteId)
     {
         return Observable
-            .FromAsync(async ct =>
-            {
-                using DataContext dataContext = await _dataContextFactory.CreateDbContextAsync(ct);
-
-                Athlete? athlete = await dataContext.Athletes
-                    .Include(a => a.Following)
-                    .FirstOrDefaultAsync(a => a.Id == athleteId, ct);
-
-                return athlete;
-            })
-            .SelectMany(athlete =>
-            {
-                if (athlete is null)
+            .FromAsync(
+                async ct =>
                 {
-                    return Observable.Throw<FeedUpdate<Activity>>(new ArgumentException($"Athlete {athleteId} not found"));
-                }
-                return _activityFeed.Where(a => a.Item.AthleteId == athlete.Id || athlete.IsFollowing(a.Item.AthleteId));
-            });
+                    using DataContext dataContext = await _dataContextFactory.CreateDbContextAsync(ct);
+
+                    Athlete? athlete = await dataContext.Athletes
+                        .Include(a => a.Following)
+                        .FirstOrDefaultAsync(a => a.Id == athleteId, ct);
+
+                    return athlete;
+                })
+            .SelectMany(
+                athlete =>
+                {
+                    if (athlete is null)
+                    {
+                        return Observable.Throw<FeedUpdate<Activity>>(
+                            new ArgumentException($"Athlete {athleteId} not found"));
+                    }
+
+                    return _activityFeed.Where(
+                        a => a.Item.AthleteId == athlete.Id || athlete.IsFollowing(a.Item.AthleteId));
+                });
     }
 
-    public async Task ImportActivitiesForAthleteAsync(int athleteId, DateTimeOffset from, CancellationToken ct = default)
+    public async Task ImportActivitiesForAthleteAsync(
+        int athleteId,
+        DateTimeOffset from,
+        CancellationToken ct = default)
     {
         using DataContext dataContext = await _dataContextFactory.CreateDbContextAsync(ct);
 
@@ -182,7 +209,11 @@ public class ActivityService : IActivityService
             _logger.LogInformation("Fetching page {Page} of import", page);
 
             activities = await _stravaClient.GetAthleteActivitiesAsync(
-                accessToken, after: from, page: page, pageSize: pageSize, ct: ct);
+                accessToken,
+                after: from,
+                page: page,
+                pageSize: pageSize,
+                ct: ct);
 
             foreach (SummaryActivity stravaActivity in activities)
             {
@@ -203,7 +234,6 @@ public class ActivityService : IActivityService
             {
                 await Task.Delay(TimeSpan.FromSeconds(1), ct);
             }
-
         } while (activities.Length == pageSize && page++ <= 10); // Fail safe at 10 pages max
     }
 
@@ -220,7 +250,7 @@ public class ActivityService : IActivityService
 
     private static ActivityDetails MapActivityDetails(DetailedActivity stravaActivity)
     {
-        return new()
+        return new ActivityDetails
         {
             Name = stravaActivity.Name ?? string.Empty,
             Description = stravaActivity.Description,

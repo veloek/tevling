@@ -5,8 +5,7 @@ namespace Tevling.Model;
 
 public class ChallengeFormModel
 {
-    [Required, MinLength(3)]
-    public string Title { get; set; } = string.Empty;
+    [Required] [MinLength(3)] public string Title { get; set; } = string.Empty;
 
     public string Description { get; set; } = string.Empty;
     public DateTimeOffset Start { get; set; }

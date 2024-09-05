@@ -19,6 +19,7 @@
 </Router>
 
 @inject IHttpContextAccessor HttpContextAccessor
+
 @code
 {
     private bool IsEnabled(FeatureGateAttribute a)
@@ -27,7 +28,7 @@
             return false;
 
         IFeatureManagerSnapshot fm = HttpContextAccessor.HttpContext.RequestServices.GetRequiredService<IFeatureManagerSnapshot>();
-        return (a.RequirementType != RequirementType.All)
+        return a.RequirementType != RequirementType.All
             ? a.Features.Any((string feature) => fm.IsEnabledAsync(feature).GetAwaiter().GetResult())
             : a.Features.All((string feature) => fm.IsEnabledAsync(feature).GetAwaiter().GetResult());
     }

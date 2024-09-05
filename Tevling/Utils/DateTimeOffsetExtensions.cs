@@ -18,7 +18,7 @@ public static class DateTimeOffsetExt
             ? TimeSpan.FromDays(6)
             : TimeSpan.FromDays((int)DateTimeOffset.UtcNow.DayOfWeek - 1);
 
-        return (DateTimeOffset.UtcNow.Date - dto.UtcDateTime.Date) <= timeSinceMonday;
+        return DateTimeOffset.UtcNow.Date - dto.UtcDateTime.Date <= timeSinceMonday;
     }
 
     public static bool IsLastWeekStartingOnMondayUtc(this DateTimeOffset dto)
@@ -27,19 +27,19 @@ public static class DateTimeOffsetExt
             ? TimeSpan.FromDays(6 + 7)
             : TimeSpan.FromDays((int)DateTimeOffset.UtcNow.DayOfWeek - 1 + 7);
 
-        return (DateTimeOffset.UtcNow.Date - dto.UtcDateTime.Date) <= timeSinceLastMonday;
+        return DateTimeOffset.UtcNow.Date - dto.UtcDateTime.Date <= timeSinceLastMonday;
     }
 
     public static bool IsSameMonthUtc(this DateTimeOffset dto)
     {
-        return dto.UtcDateTime.Year == DateTimeOffset.UtcNow.Year
-            && dto.UtcDateTime.Month == DateTimeOffset.UtcNow.Month;
+        return dto.UtcDateTime.Year == DateTimeOffset.UtcNow.Year &&
+            dto.UtcDateTime.Month == DateTimeOffset.UtcNow.Month;
     }
 
     public static bool IsLastMonthUtc(this DateTimeOffset dto)
     {
-        return dto.UtcDateTime.Year == DateTimeOffset.UtcNow.AddMonths(-1).Year
-            && dto.UtcDateTime.Month == DateTimeOffset.UtcNow.AddMonths(-1).Month;
+        return dto.UtcDateTime.Year == DateTimeOffset.UtcNow.AddMonths(-1).Year &&
+            dto.UtcDateTime.Month == DateTimeOffset.UtcNow.AddMonths(-1).Month;
     }
 
     public static bool IsSameYearUtc(this DateTimeOffset dto)

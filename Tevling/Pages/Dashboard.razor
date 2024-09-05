@@ -13,7 +13,7 @@
     }
     else
     {
-        @foreach (var challenge in ActiveChallenges)
+        @foreach (KeyValuePair<Challenge, (string, string)> challenge in ActiveChallenges)
         {
             <div class="joined-challenge-card d-flex flex-row mt-2 column-gap-2">
                 <span class="challenge-title">@challenge.Key.Title</span>
@@ -32,7 +32,7 @@
     }
     else
     {
-        @foreach (var challenge in RecentOutdatedChallenges)
+        @foreach (KeyValuePair<Challenge, (string, string)> challenge in RecentOutdatedChallenges)
         {
             <div class="joined-challenge-card d-flex flex-row mt-2">
                 <span class="challenge-title">@challenge.Key.Title</span>
@@ -51,11 +51,11 @@
     }
     else
     {
-        @foreach (var athlete in SuggestedAthletes)
+        @foreach (Athlete? athlete in SuggestedAthletes)
         {
             <AthleteCard Athlete="@athlete"
                          IsFollowing="@Athlete.IsFollowing(athlete.Id)"
-                         FollowingStatusChanged="() => ToggleFollowing(athlete.Id)"/>
+                         FollowingStatusChanged="() => ToggleFollowing(athlete.Id)" />
         }
     }
 </div>

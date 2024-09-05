@@ -46,7 +46,7 @@ public partial class ChallengeForm : ComponentBase
             Challenge.IsPrivate = EditChallenge.IsPrivate;
             Challenge.CreatedBy = EditChallenge.CreatedById;
             Challenge.InvitedAthletes = EditChallenge.InvitedAthletes?.ToList() ?? []
-            ;
+                ;
         }
         else
         {
@@ -54,7 +54,7 @@ public partial class ChallengeForm : ComponentBase
             {
                 Start = DateTimeOffset.Now,
                 End = DateTimeOffset.Now.AddMonths(1),
-                CreatedBy = Athlete.Id
+                CreatedBy = Athlete.Id,
             };
         }
     }
@@ -64,7 +64,7 @@ public partial class ChallengeForm : ComponentBase
         AthleteFilter filter = new()
         {
             SearchText = searchText,
-            NotIn = Challenge.InvitedAthletes.Select(a => a.Id).Append(Athlete.Id)
+            NotIn = Challenge.InvitedAthletes.Select(a => a.Id).Append(Athlete.Id),
         };
 
         Athlete[] result = await AthleteService.GetAthletesAsync(filter, new Paging(MaximumSuggestions));

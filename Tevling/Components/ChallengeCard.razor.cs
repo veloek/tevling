@@ -23,7 +23,7 @@ public partial class ChallengeCard : ComponentBase
                 ChallengeMeasurement.Distance => "bi-arrow-right",
                 ChallengeMeasurement.Time => "bi-stopwatch-fill",
                 ChallengeMeasurement.Elevation => "bi-arrow-up",
-                _ => "bi-question-circle"
+                _ => "bi-question-circle",
             };
         }
     }

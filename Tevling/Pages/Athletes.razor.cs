@@ -72,29 +72,31 @@ public partial class Athletes : ComponentBase, IDisposable
     private void SubscribeToAthleteFeed()
     {
         _athleteFeedSubscription = AthleteService.GetAthleteFeed()
-            .Catch<FeedUpdate<Athlete>, Exception>(err =>
-            {
-                Logger.LogError(err, "Error in athlete feed");
-                return Observable.Throw<FeedUpdate<Athlete>>(err).Delay(TimeSpan.FromSeconds(1));
-            })
-            .Retry()
-            .Subscribe(feed =>
-            {
-                switch (feed.Action)
+            .Catch<FeedUpdate<Athlete>, Exception>(
+                err =>
                 {
-                    case FeedAction.Create:
-                        AddAthletes(feed.Item);
-                        break;
-                    case FeedAction.Update:
-                        ReplaceAthlete(feed.Item);
-                        break;
-                    case FeedAction.Delete:
-                        RemoveAthlete(feed.Item);
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException("Unknown athlete feed action: " + feed.Action);
-                }
-            });
+                    Logger.LogError(err, "Error in athlete feed");
+                    return Observable.Throw<FeedUpdate<Athlete>>(err).Delay(TimeSpan.FromSeconds(1));
+                })
+            .Retry()
+            .Subscribe(
+                feed =>
+                {
+                    switch (feed.Action)
+                    {
+                        case FeedAction.Create:
+                            AddAthletes(feed.Item);
+                            break;
+                        case FeedAction.Update:
+                            ReplaceAthlete(feed.Item);
+                            break;
+                        case FeedAction.Delete:
+                            RemoveAthlete(feed.Item);
+                            break;
+                        default:
+                            throw new ArgumentOutOfRangeException("Unknown athlete feed action: " + feed.Action);
+                    }
+                });
     }
 
     private void AddAthletes(params Athlete[] athletes)

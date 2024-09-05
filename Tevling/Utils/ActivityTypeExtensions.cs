@@ -21,7 +21,7 @@ public static class ActivityTypeExt
             ActivityType.VirtualRide => "Virtual ride",
             ActivityType.VirtualRun => "Virtual run",
             ActivityType.WeightTraining => "Weight training",
-            _ => activityType.ToString()
+            _ => activityType.ToString(),
         };
     }
 }

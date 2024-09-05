@@ -2,7 +2,7 @@
 
 <h1 class="title mb-5">Profile</h1>
 <div class="profile d-flex flex-row column-gap-2 mb-5">
-    <Avatar Url="@Athlete.ImgUrl" Size="50"/>
+    <Avatar Url="@Athlete.ImgUrl" Size="50" />
     <div class="d-flex flex-column">
         <span class="profile-name">@Athlete.Name</span>
         <span class="member-since">Member since @CreatedTime</span>
@@ -20,11 +20,11 @@
             else
             {
                 <div class="d-flex flex-column row-gap-3">
-                    @foreach (var follower in Athlete.Followers)
+                    @foreach (Athlete? follower in Athlete.Followers)
                     {
-                        <AthleteCard Athlete="@follower" 
-                            IsFollowing="Athlete.IsFollowing(follower.Id)" 
-                            FollowingStatusChanged="() => ToggleFollowing(follower.Id)"/>
+                        <AthleteCard Athlete="@follower"
+                                     IsFollowing="Athlete.IsFollowing(follower.Id)"
+                                     FollowingStatusChanged="() => ToggleFollowing(follower.Id)" />
                     }
                 </div>
             }
@@ -39,11 +39,11 @@
             else
             {
                 <div class="d-flex flex-column row-gap-3">
-                    @foreach (var following in Athlete.Following)
+                    @foreach (Athlete? following in Athlete.Following)
                     {
-                        <AthleteCard Athlete="@following" 
-                            IsFollowing="true"
-                            FollowingStatusChanged="() => ToggleFollowing(following.Id)"/>
+                        <AthleteCard Athlete="@following"
+                                     IsFollowing="true"
+                                     FollowingStatusChanged="() => ToggleFollowing(following.Id)" />
                     }
                 </div>
             }
@@ -53,7 +53,7 @@
     <div class="profile-actions mb-5">
         <div class="d-flex flex-column row-gap-3">
             <h4 class="mt-4">Import activities from Strava</h4>
-            <span>Import last 30 days of activities to get started! <br/> (This can only be done once)</span>
+            <span>Import last 30 days of activities to get started! <br /> (This can only be done once)</span>
             <button class="btn btn-primary" @onclick="Import" disabled="@(Importing || Athlete.HasImportedActivities)">
                 <i class="bi bi-box-arrow-in-down me-1" aria-hidden="true"></i>
                 @if (Athlete.HasImportedActivities)
@@ -85,7 +85,7 @@
             <h4 class="mt-4">Delete account</h4>
             <span class="text-danger">
                 Delete user account and deauthorize application. All data will be
-                removed.<br/>NB! This cannot be undone!
+                removed.<br />NB! This cannot be undone!
             </span>
             <a class="btn btn-danger mt-1" data-bs-toggle="modal" data-bs-target="#deleteAccount">
                 <i class="bi bi-trash-fill me-1" aria-hidden="true"></i>Forget me

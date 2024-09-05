@@ -1,13 +1,12 @@
 export function convert(dateString) {
     let d = new Date(dateString);
 
-    if (isNaN(d.valueOf()))
-    {
+    if (isNaN(d.valueOf())) {
         return null;
     }
 
     let year = pad(d.getFullYear(), 4);
-    let month = pad(d.getMonth()+1, 2);
+    let month = pad(d.getMonth() + 1, 2);
     let date = pad(d.getDate(), 2);
     let hours = pad(d.getHours(), 2);
     let minutes = pad(d.getMinutes(), 2);
@@ -23,7 +22,7 @@ function pad(num, n) {
         if (num < Math.pow(10, i))
             return "0".repeat(n - i) + num;
 
-    return ""+num;
+    return "" + num;
 }
 
 function formatTz(tz) {

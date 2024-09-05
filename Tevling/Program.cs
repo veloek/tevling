@@ -7,7 +7,8 @@ using Microsoft.FeatureManagement;
 using Serilog;
 
 Log.Logger = new LoggerConfiguration()
-    .WriteTo.Console()
+    .WriteTo
+    .Console()
     .CreateBootstrapLogger();
 
 Log.Information("Starting Tevling...");
@@ -19,13 +20,17 @@ string? appSettingsPath = builder.Configuration.GetValue<string>("TEVLING_APPSET
 if (!string.IsNullOrEmpty(appSettingsPath))
 {
     Log.Information($"Adding optional config file with reloadOnChange: {appSettingsPath}");
-    builder.Configuration.AddJsonFile(appSettingsPath, optional: true, reloadOnChange: true);
+    builder.Configuration.AddJsonFile(appSettingsPath, true, true);
 }
 
-builder.Host.UseSerilog((context, services, configuration) => configuration
-    .ReadFrom.Configuration(context.Configuration)
-    .ReadFrom.Services(services)
-    .Enrich.FromLogContext());
+builder.Host.UseSerilog(
+    (context, services, configuration) => configuration
+        .ReadFrom
+        .Configuration(context.Configuration)
+        .ReadFrom
+        .Services(services)
+        .Enrich
+        .FromLogContext());
 
 // Add services to the container.
 builder.Services.AddRazorPages();
@@ -36,30 +41,33 @@ builder.Services.AddHealthChecks();
 builder.Services.AddLocalization();
 
 IConfigurationSection section = builder.Configuration.GetSection(nameof(StravaConfig));
-StravaConfig stravaConfig = section.Get<StravaConfig>() ?? new();
+StravaConfig stravaConfig = section.Get<StravaConfig>() ?? new StravaConfig();
 builder.Services.AddSingleton(stravaConfig);
 
 builder.Services
     .AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-    .AddCookie(options =>
-    {
-        options.LoginPath = "/login";
-        options.ReturnUrlParameter = "returnUrl";
-    });
+    .AddCookie(
+        options =>
+        {
+            options.LoginPath = "/login";
+            options.ReturnUrlParameter = "returnUrl";
+        });
 
 // Make sure our data directoy used to store the SQLite DB file exists.
 string dataDir = Path.Join(Environment.CurrentDirectory, "storage");
 Directory.CreateDirectory(dataDir);
 
-builder.Services.AddDbContextFactory<DataContext>(optionsBuilder =>
-{
-    string dbPath = Path.Join(dataDir, "tevling.db");
-    optionsBuilder.UseSqlite($"Data Source={dbPath}");
-    optionsBuilder.ConfigureWarnings(w => w.Throw(RelationalEventId.MultipleCollectionIncludeWarning));
-    // optionsBuilder.LogTo(Console.WriteLine);
-});
+builder.Services.AddDbContextFactory<DataContext>(
+    optionsBuilder =>
+    {
+        string dbPath = Path.Join(dataDir, "tevling.db");
+        optionsBuilder.UseSqlite($"Data Source={dbPath}");
+        optionsBuilder.ConfigureWarnings(w => w.Throw(RelationalEventId.MultipleCollectionIncludeWarning));
+        // optionsBuilder.LogTo(Console.WriteLine);
+    });
 
-builder.Services.AddDataProtection()
+builder.Services
+    .AddDataProtection()
     .PersistKeysToFileSystem(new DirectoryInfo(dataDir));
 
 builder.Services.AddBlazoredLocalStorage();
@@ -85,10 +93,11 @@ if (!app.Environment.IsDevelopment())
 
 app.UseStaticFiles();
 app.UseRouting();
-app.UseRequestLocalization(new RequestLocalizationOptions()
-    .AddSupportedCultures(new[] { "en", "no", "nb", "nn" })
-    .AddSupportedUICultures(new[] { "en", "no", "nb", "nn" })
-    .SetDefaultCulture("en"));
+app.UseRequestLocalization(
+    new RequestLocalizationOptions()
+        .AddSupportedCultures(new[] { "en", "no", "nb", "nn" })
+        .AddSupportedUICultures(new[] { "en", "no", "nb", "nn" })
+        .SetDefaultCulture("en"));
 
 app.UseAuthentication();
 app.UseAuthorization();

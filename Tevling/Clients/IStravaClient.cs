@@ -5,12 +5,16 @@ namespace Tevling.Clients;
 public interface IStravaClient
 {
     Task<TokenResponse> GetAccessTokenByAuthorizationCodeAsync(
-        string authorizationCode, CancellationToken ct = default);
+        string authorizationCode,
+        CancellationToken ct = default);
 
     Task<TokenResponse> GetAccessTokenByRefreshTokenAsync(
-        string refreshToken, CancellationToken ct = default);
+        string refreshToken,
+        CancellationToken ct = default);
 
-    Task<DetailedActivity> GetActivityAsync(long stravaId, string accessToken,
+    Task<DetailedActivity> GetActivityAsync(
+        long stravaId,
+        string accessToken,
         CancellationToken ct = default);
 
     Task<SummaryActivity[]> GetAthleteActivitiesAsync(

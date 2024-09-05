@@ -61,7 +61,7 @@ public partial class Challenges : ComponentBase, IDisposable
         _filterTextSubscription?.Dispose();
         _challengeFeedSubscription?.Dispose();
     }
-    
+
     protected override async Task OnInitializedAsync()
     {
         Athlete athlete = await AuthenticationService.GetCurrentAthleteAsync();
@@ -72,11 +72,12 @@ public partial class Challenges : ComponentBase, IDisposable
 
         _filterTextSubscription = _filterTextSubject
             .Throttle(_filterTextThrottle)
-            .Subscribe(s =>
-            {
-                FilterText = s;
-                InvokeAsync(StateHasChanged);
-            });
+            .Subscribe(
+                s =>
+                {
+                    FilterText = s;
+                    InvokeAsync(StateHasChanged);
+                });
     }
 
     private void SetFilterTextDebounced(ChangeEventArgs e)
@@ -115,29 +116,31 @@ public partial class Challenges : ComponentBase, IDisposable
     private void SubscribeToChallengeFeed()
     {
         _challengeFeedSubscription = ChallengeService.GetChallengeFeed()
-            .Catch<FeedUpdate<Challenge>, Exception>(err =>
-            {
-                Logger.LogError(err, "Error in challenge feed");
-                return Observable.Throw<FeedUpdate<Challenge>>(err).Delay(TimeSpan.FromSeconds(1));
-            })
-            .Retry()
-            .Subscribe(feed =>
-            {
-                switch (feed.Action)
+            .Catch<FeedUpdate<Challenge>, Exception>(
+                err =>
                 {
-                    case FeedAction.Create:
-                        AddChallenges(feed.Item);
-                        break;
-                    case FeedAction.Update:
-                        ReplaceChallenge(feed.Item);
-                        break;
-                    case FeedAction.Delete:
-                        RemoveChallenge(feed.Item);
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException("Unknown challenge feed action: " + feed.Action);
-                }
-            });
+                    Logger.LogError(err, "Error in challenge feed");
+                    return Observable.Throw<FeedUpdate<Challenge>>(err).Delay(TimeSpan.FromSeconds(1));
+                })
+            .Retry()
+            .Subscribe(
+                feed =>
+                {
+                    switch (feed.Action)
+                    {
+                        case FeedAction.Create:
+                            AddChallenges(feed.Item);
+                            break;
+                        case FeedAction.Update:
+                            ReplaceChallenge(feed.Item);
+                            break;
+                        case FeedAction.Delete:
+                            RemoveChallenge(feed.Item);
+                            break;
+                        default:
+                            throw new ArgumentOutOfRangeException("Unknown challenge feed action: " + feed.Action);
+                    }
+                });
     }
 
     private void AddChallenges(params Challenge[] challenges)
@@ -165,13 +168,14 @@ public partial class Challenges : ComponentBase, IDisposable
     private void UpdateChallenges()
     {
         ChallengeList = _challenges
-            .Where(c => _showAllChallenges
-                        || c.Athletes?.Any(athlete => athlete.Id == AthleteId) == true
-                        || c.CreatedById == AthleteId)
-            .Where(c => _showOutdatedChallenges
-                        || c.End.UtcDateTime.Date >= DateTimeOffset.UtcNow.Date)
-            .Where(c => string.IsNullOrWhiteSpace(_filterText)
-                        || c.Title.Contains(_filterText, StringComparison.OrdinalIgnoreCase))
+            .Where(
+                c => _showAllChallenges ||
+                    c.Athletes?.Any(athlete => athlete.Id == AthleteId) == true ||
+                    c.CreatedById == AthleteId)
+            .Where(c => _showOutdatedChallenges || c.End.UtcDateTime.Date >= DateTimeOffset.UtcNow.Date)
+            .Where(
+                c => string.IsNullOrWhiteSpace(_filterText) ||
+                    c.Title.Contains(_filterText, StringComparison.OrdinalIgnoreCase))
             .OrderByDescending(c => c.Start)
             .ThenBy(c => c.Title)
             .ToArray();

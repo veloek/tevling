@@ -4,11 +4,18 @@ public interface IAthleteService
 {
     Task<Athlete?> GetAthleteByIdAsync(int athleteId, CancellationToken ct = default);
 
-    Task<Athlete[]> GetAthletesAsync(AthleteFilter? filter = null, Paging? paging = null,
+    Task<Athlete[]> GetAthletesAsync(
+        AthleteFilter? filter = null,
+        Paging? paging = null,
         CancellationToken ct = default);
 
-    Task<Athlete> UpsertAthleteAsync(long stravaId, string name, string? imgUrl,
-        string accessToken, string refreshToken, DateTimeOffset accessTokenExpiry,
+    Task<Athlete> UpsertAthleteAsync(
+        long stravaId,
+        string name,
+        string? imgUrl,
+        string accessToken,
+        string refreshToken,
+        DateTimeOffset accessTokenExpiry,
         CancellationToken ct = default);
 
     Task<Athlete> ToggleFollowingAsync(Athlete athlete, int followingId, CancellationToken ct = default);

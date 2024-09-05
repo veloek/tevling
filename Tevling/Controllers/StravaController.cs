@@ -48,10 +48,11 @@ public class StravaController : ControllerBase
         if (mode != "subscribe" || verifyToken != _stravaConfig.VerifyToken)
             return BadRequest();
 
-        return new JsonResult(new Dictionary<string, string>()
-        {
-            ["hub.challenge"] = challenge
-        });
+        return new JsonResult(
+            new Dictionary<string, string>()
+            {
+                ["hub.challenge"] = challenge,
+            });
     }
 
     /// <summary>
@@ -78,7 +79,9 @@ public class StravaController : ControllerBase
                 ("activity", "update") => _activityService.UpdateActivityAsync(activity.OwnerId, activity.ObjectId, ct),
                 ("activity", "delete") => _activityService.DeleteActivityAsync(activity.OwnerId, activity.ObjectId, ct),
                 // ("athlete", "create") => CreateAthlete(activity.OwnerId, activity.ObjectId, ct),
-                ("athlete", "update") when IsDeauthorizeEvent(activity) => _athleteService.DeleteAthleteAsync(activity.OwnerId, ct),
+                ("athlete", "update") when IsDeauthorizeEvent(activity) => _athleteService.DeleteAthleteAsync(
+                    activity.OwnerId,
+                    ct),
                 // ("athlete", "delete") => DeleteAthlete(activity.OwnerId, activity.ObjectId, ct),
                 _ => LogUnknownEvent(activity),
             });
@@ -90,7 +93,9 @@ public class StravaController : ControllerBase
     }
 
     private static bool IsDeauthorizeEvent(WebhookEvent @event)
-        => @event.Updates?.Contains(new("authorized", "false")) == true;
+    {
+        return @event.Updates?.Contains(new KeyValuePair<string, string>("authorized", "false")) == true;
+    }
 
     private Task LogUnknownEvent(WebhookEvent @event)
     {
@@ -111,19 +116,22 @@ public class StravaController : ControllerBase
     /// <exception cref="Exception"></exception>
     [HttpGet]
     [Route("authorize")]
-    public async Task<IActionResult> Authorize([FromQuery] string code, [FromQuery] string? returnUrl, CancellationToken ct)
+    public async Task<IActionResult> Authorize(
+        [FromQuery] string code,
+        [FromQuery] string? returnUrl,
+        CancellationToken ct)
     {
         TokenResponse tokenResponse = await _stravaClient.GetAccessTokenByAuthorizationCodeAsync(code, ct);
 
         if (tokenResponse.Athlete != null)
         {
-            Model.Athlete athlete = await _athleteService.UpsertAthleteAsync(
-                stravaId: tokenResponse.Athlete.Id,
-                name: $"{tokenResponse.Athlete.Firstname} {tokenResponse.Athlete.Lastname}",
-                imgUrl: tokenResponse.Athlete.Profile,
-                accessToken: tokenResponse.AccessToken ?? string.Empty,
-                refreshToken: tokenResponse.RefreshToken ?? string.Empty,
-                accessTokenExpiry: DateTimeOffset.FromUnixTimeSeconds(tokenResponse.ExpiresAt),
+            Athlete athlete = await _athleteService.UpsertAthleteAsync(
+                tokenResponse.Athlete.Id,
+                $"{tokenResponse.Athlete.Firstname} {tokenResponse.Athlete.Lastname}",
+                tokenResponse.Athlete.Profile,
+                tokenResponse.AccessToken ?? string.Empty,
+                tokenResponse.RefreshToken ?? string.Empty,
+                DateTimeOffset.FromUnixTimeSeconds(tokenResponse.ExpiresAt),
                 ct);
 
             await _authenticationService.LoginAsync(athlete, ct);

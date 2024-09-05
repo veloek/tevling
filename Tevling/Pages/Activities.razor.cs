@@ -73,29 +73,31 @@ public partial class Activities : ComponentBase, IDisposable
     private void SubscribeToActivityFeed()
     {
         _activityFeedSubscription = ActivityService.GetActivityFeedForAthlete(Athlete.Id)
-            .Catch<FeedUpdate<Activity>, Exception>(err =>
-            {
-                Logger.LogError(err, "Error in activity feed");
-                return Observable.Throw<FeedUpdate<Activity>>(err).Delay(TimeSpan.FromSeconds(1));
-            })
-            .Retry()
-            .Subscribe(feed =>
-            {
-                switch (feed.Action)
+            .Catch<FeedUpdate<Activity>, Exception>(
+                err =>
                 {
-                    case FeedAction.Create:
-                        AddActivities(feed.Item);
-                        break;
-                    case FeedAction.Update:
-                        ReplaceActivity(feed.Item);
-                        break;
-                    case FeedAction.Delete:
-                        RemoveActivity(feed.Item);
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException("Unknown activity feed action: " + feed.Action);
-                }
-            });
+                    Logger.LogError(err, "Error in activity feed");
+                    return Observable.Throw<FeedUpdate<Activity>>(err).Delay(TimeSpan.FromSeconds(1));
+                })
+            .Retry()
+            .Subscribe(
+                feed =>
+                {
+                    switch (feed.Action)
+                    {
+                        case FeedAction.Create:
+                            AddActivities(feed.Item);
+                            break;
+                        case FeedAction.Update:
+                            ReplaceActivity(feed.Item);
+                            break;
+                        case FeedAction.Delete:
+                            RemoveActivity(feed.Item);
+                            break;
+                        default:
+                            throw new ArgumentOutOfRangeException("Unknown activity feed action: " + feed.Action);
+                    }
+                });
     }
 
     private void AddActivities(params Activity[] activities)

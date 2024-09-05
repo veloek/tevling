@@ -8,6 +8,7 @@ public partial class DarkMode : ComponentBase
     [Parameter] public Action<string>? OnChange { get; set; }
 
     private bool _isDarkMode;
+
     private bool IsDarkMode
     {
         get => _isDarkMode;

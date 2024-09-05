@@ -20,7 +20,7 @@ public class AuthController : ControllerBase
 
     [HttpGet]
     [Route("logout")]
-    public async Task<IActionResult> LogOut([FromQuery]bool? deauthorize, CancellationToken ct)
+    public async Task<IActionResult> LogOut([FromQuery] bool? deauthorize, CancellationToken ct)
     {
         await _authenticationService.LogoutAsync(deauthorize == true, ct);
 

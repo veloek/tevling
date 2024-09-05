@@ -7,13 +7,13 @@
                @bind="@SearchTerm"
                @oninput="OnSearchInput"
                @onfocus="() => IsSearchFocused = true"
-               @onblur="OnInputBlur"/>
+               @onblur="OnInputBlur" />
     </label>
 
     <div class="dropdown-menu" style="@(IsSearchFocused && FilteredItems.Any() ? "display: block;" : "display: none;")">
         @if (DisplayFunc != null)
         {
-            @foreach (var item in FilteredItems.Where(item => !SelectedItems.Contains(item)))
+            @foreach (T? item in FilteredItems.Where(item => !SelectedItems.Contains(item)))
             {
                 <button type="button" class="dropdown-item" @onclick="() => SelectItemAsync(item)">@DisplayFunc(item)</button>
             }

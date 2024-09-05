@@ -1,6 +1,6 @@
 namespace Tevling.Shared;
 
-public partial class DropdownSearch<T> : ComponentBase 
+public partial class DropdownSearch<T> : ComponentBase
 {
     [Parameter] public IEnumerable<T> Items { get; set; } = [];
     [Parameter] public Func<T, string>? DisplayFunc { get; set; }
@@ -12,7 +12,7 @@ public partial class DropdownSearch<T> : ComponentBase
     private bool IsSearchFocused = false;
     private Timer? SearchInputBlurTimer;
     private string SearchTerm = string.Empty;
-    private IEnumerable<T> FilteredItems { get; set;} = [];
+    private IEnumerable<T> FilteredItems { get; set; } = [];
 
     protected override async Task OnInitializedAsync()
     {
@@ -25,18 +25,17 @@ public partial class DropdownSearch<T> : ComponentBase
         SearchTerm = e.Value?.ToString() ?? string.Empty;
 
         DebounceTimer?.Dispose();
-        DebounceTimer = new Timer(async _ =>
-        {
-            await InvokeAsync(async () =>
-            {
-                await FilterItems();
-            });
-        }, null, 500, Timeout.Infinite); 
+        DebounceTimer = new Timer(
+            async _ => { await InvokeAsync(async () => { await FilterItems(); }); },
+            null,
+            500,
+            Timeout.Infinite);
     }
 
     private async Task FilterItems()
     {
-        if (CustomSearchFuncAsync is not null) {
+        if (CustomSearchFuncAsync is not null)
+        {
             if (SearchTerm == string.Empty)
             {
                 DebounceTimer?.Dispose();
@@ -44,31 +43,38 @@ public partial class DropdownSearch<T> : ComponentBase
             }
             else
             {
-                FilteredItems =  await CustomSearchFuncAsync(SearchTerm);
+                FilteredItems = await CustomSearchFuncAsync(SearchTerm);
             }
         }
         else
         {
-            FilteredItems = Items.Where(item => DisplayFunc != null && DisplayFunc(item).Contains(SearchTerm, StringComparison.OrdinalIgnoreCase));
+            FilteredItems = Items.Where(
+                item => DisplayFunc != null &&
+                    DisplayFunc(item).Contains(SearchTerm, StringComparison.OrdinalIgnoreCase));
         }
 
-        StateHasChanged(); 
+        StateHasChanged();
     }
 
 
     private void OnInputBlur()
     {
-        SearchInputBlurTimer?.Dispose(); 
-        SearchInputBlurTimer = new Timer(_ =>
-        {
-            InvokeAsync(async () =>
+        SearchInputBlurTimer?.Dispose();
+        SearchInputBlurTimer = new Timer(
+            _ =>
             {
-                IsSearchFocused = false;
-                SearchTerm = string.Empty;
-                StateHasChanged();
-                await FilterItems();
-            });
-        }, null, 200, Timeout.Infinite); 
+                InvokeAsync(
+                    async () =>
+                    {
+                        IsSearchFocused = false;
+                        SearchTerm = string.Empty;
+                        StateHasChanged();
+                        await FilterItems();
+                    });
+            },
+            null,
+            200,
+            Timeout.Infinite);
     }
 
     private async Task SelectItemAsync(T item)

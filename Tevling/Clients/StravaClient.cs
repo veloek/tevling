@@ -29,16 +29,20 @@ public class StravaClient : IStravaClient
         catch
         {
             string fallback = "https://www.strava.com/api/v3/";
-            _logger.LogWarning("Invalid BaseApiUri: '{BaseApiUrl}', using fallback: '{Fallback}'",
-                _stravaConfig.BaseApiUri, fallback);
+            _logger.LogWarning(
+                "Invalid BaseApiUri: '{BaseApiUrl}', using fallback: '{Fallback}'",
+                _stravaConfig.BaseApiUri,
+                fallback);
             _httpClient.BaseAddress = new Uri(fallback);
         }
     }
 
     public async Task<TokenResponse> GetAccessTokenByAuthorizationCodeAsync(
-        string authorizationCode, CancellationToken ct = default)
+        string authorizationCode,
+        CancellationToken ct = default)
     {
-        FormUrlEncodedContent content = new(new[]
+        FormUrlEncodedContent content = new(
+            new[]
             {
                 new KeyValuePair<string, string?>("client_id", _stravaConfig.ClientId.ToString()),
                 new KeyValuePair<string, string?>("client_secret", _stravaConfig.ClientSecret),
@@ -59,9 +63,11 @@ public class StravaClient : IStravaClient
     }
 
     public async Task<TokenResponse> GetAccessTokenByRefreshTokenAsync(
-        string refreshToken, CancellationToken ct = default)
+        string refreshToken,
+        CancellationToken ct = default)
     {
-        FormUrlEncodedContent content = new(new[]
+        FormUrlEncodedContent content = new(
+            new[]
             {
                 new KeyValuePair<string, string?>("client_id", _stravaConfig.ClientId.ToString()),
                 new KeyValuePair<string, string?>("client_secret", _stravaConfig.ClientSecret),
@@ -82,7 +88,9 @@ public class StravaClient : IStravaClient
     }
 
     public async Task<DetailedActivity> GetActivityAsync(
-        long stravaId, string accessToken, CancellationToken ct = default)
+        long stravaId,
+        string accessToken,
+        CancellationToken ct = default)
     {
         HttpRequestMessage request = new(HttpMethod.Get, $"activities/{stravaId}");
         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);

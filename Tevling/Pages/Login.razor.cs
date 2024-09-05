@@ -7,5 +7,6 @@ public partial class Login : ComponentBase
     [SupplyParameterFromQuery(Name = "returnUrl")]
     private string? ReturnUrl { get; set; }
 
-    private string RedirectUri => $"{StravaConfig.RedirectUri}?returnUrl={Uri.EscapeDataString(ReturnUrl ?? string.Empty)}";
+    private string RedirectUri =>
+        $"{StravaConfig.RedirectUri}?returnUrl={Uri.EscapeDataString(ReturnUrl ?? string.Empty)}";
 }

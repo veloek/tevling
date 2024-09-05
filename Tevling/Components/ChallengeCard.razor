@@ -18,7 +18,9 @@
                                 <a class="dropdown-item"
                                    data-bs-toggle="modal"
                                    data-bs-target="#deleteChallenge-@(Challenge.Id)"
-                                   @onclick:stopPropagation="true">Delete</a>
+                                   @onclick:stopPropagation="true">
+                                    Delete
+                                </a>
                             </li>
                         </ul>
                     }
@@ -166,7 +168,7 @@
                 {
                     <h5 class="mb-3">The winner for @Challenge.Title is...</h5>
                     <div class="d-flex flex-row align-items-center column-gap-1 mb-3">
-                        <Avatar Url="@Winner.ImgUrl" Size="30"/>
+                        <Avatar Url="@Winner.ImgUrl" Size="30" />
                         <span>@Winner.Name</span>
                     </div>
                     <span>Great job! Congratulations on the victory! 🎉</span>

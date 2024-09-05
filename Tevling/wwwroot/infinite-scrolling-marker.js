@@ -28,11 +28,9 @@ export function initialize(loadMoreEl, componentRef) {
 }
 
 function findClosestScrollingContainer(el) {
-    while (el != null)
-    {
+    while (el != null) {
         const style = getComputedStyle(el);
-        if (style.overflowY !== "visible")
-        {
+        if (style.overflowY !== "visible") {
             return el;
         }
         el = el.parentElement;

@@ -1,38 +1,39 @@
+@using Tevling.Strava
 <EditForm FormName="challenge" method="post" Model="@Challenge" OnValidSubmit="SubmitForm">
     <div class="d-flex flex-row mb-3 column-gap-5 flex-wrap">
         <div class="left-column me-5">
             <div class="form-row mb-5">
                 <label>
                     Title
-                    <InputText @bind-Value="@Challenge.Title" size="50" class="form-control"/>
+                    <InputText @bind-Value="@Challenge.Title" size="50" class="form-control" />
                 </label>
             </div>
             <div class="form-row mb-5">
                 <label>
                     Description
-                    <InputTextArea @bind-Value="@Challenge.Description" cols="50" rows="4" class="form-control"/>
+                    <InputTextArea @bind-Value="@Challenge.Description" cols="50" rows="4" class="form-control" />
                 </label>
             </div>
             <div class="form-row mb-5">
                 <label class="me-4">
                     Start
                     <InputDate @bind-Value="@Challenge.Start" Type="InputDateType.Date"
-                               max="@Challenge.End.ToString("yyyy-MM-dd")" class="form-control"/>
+                               max="@Challenge.End.ToString("yyyy-MM-dd")" class="form-control" />
                 </label>
                 <label>
                     End
                     <InputDate @bind-Value="@Challenge.End" Type="InputDateType.Date"
-                               min="@Challenge.Start.ToString("yyyy-MM-dd")" class="form-control"/>
+                               min="@Challenge.Start.ToString("yyyy-MM-dd")" class="form-control" />
                 </label>
             </div>
             <div class="form-row mb-5 d-flex column-gap-5">
                 <div>
                     <h5 class="mb-3">Challenge type</h5>
                     <InputRadioGroup @bind-Value="@Challenge.Measurement">
-                        @foreach (var measurement in Enum.GetValues<ChallengeMeasurement>())
+                        @foreach (ChallengeMeasurement measurement in Enum.GetValues<ChallengeMeasurement>())
                         {
                             <div>
-                                <InputRadio Value="@measurement" class="me-2 form-check-input"/><label>@measurement</label>
+                                <InputRadio Value="@measurement" class="me-2 form-check-input" /><label>@measurement</label>
                             </div>
                         }
                     </InputRadioGroup>
@@ -41,10 +42,10 @@
                     <h5 class="mb-3">Challenge visibility</h5>
                     <InputRadioGroup @bind-Value="@Challenge.IsPrivate">
                         <div>
-                            <InputRadio Value="false" class="form-check-input"/> <label>Public challenge</label>
+                            <InputRadio Value="false" class="form-check-input" /> <label>Public challenge</label>
                         </div>
                         <div>
-                            <InputRadio Value="true" class="form-check-input"/> <label>Private challenge</label>
+                            <InputRadio Value="true" class="form-check-input" /> <label>Private challenge</label>
                         </div>
                     </InputRadioGroup>
                 </div>
@@ -52,7 +53,7 @@
             <div class="form-row mb-2 activity-types-selection">
                 <h5 class="mb-3">Activity types</h5>
                 <div class="mb-3">
-                    <DropdownSearch Items="@ActivityTypes" T="Strava.ActivityType"
+                    <DropdownSearch Items="@ActivityTypes" T="ActivityType"
                                     DisplayFunc="@ActivityTypeExt.ToString"
                                     @bind-SelectedItems="@Challenge.ActivityTypes"
                                     @ref="_dropdownSearchRefActivityTypes">
@@ -64,7 +65,7 @@
                         <a type="button" class="btn btn-primary selected-activity-type py-1">All activities</a>
                     }
                     <div class="d-flex flex-wrap column-gap-2 row-gap-1">
-                        @foreach (var item in Challenge.ActivityTypes)
+                        @foreach (ActivityType item in Challenge.ActivityTypes)
                         {
                             <a @onclick="() => DeselectActivityType(item)" type="button" class="btn btn-primary selected-activity-type">
                                 @ActivityTypeExt.ToString(item)<i class="bi bi-x ms-1"></i>
@@ -73,12 +74,12 @@
                     </div>
                 </div>
             </div>
-            
-            <DataAnnotationsValidator/>
-            <ValidationSummary/>
-            
+
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+
         </div>
-        
+
         @if (Challenge.IsPrivate)
         {
             <div class="right-column">
@@ -90,13 +91,13 @@
                                 @ref="_dropdownSearchRefAthletes">
                 </DropdownSearch>
                 <div class="d-flex flex-column row-gap-1 mt-3">
-                    @foreach (var athlete in Challenge.InvitedAthletes)
+                    @foreach (Athlete? athlete in Challenge.InvitedAthletes)
                     {
                         <div class="d-flex selected-athlete column-gap-2">
                             <a @onclick="() => DeselectAthlete(athlete)" type="button">
                                 <i class="bi bi-x-circle ms-1"></i>
                             </a>
-                            <Avatar Url="@athlete.ImgUrl" Size="30"/>
+                            <Avatar Url="@athlete.ImgUrl" Size="30" />
                             @AthletesDisplayFunc(athlete)
                         </div>
                     }
@@ -104,10 +105,10 @@
             </div>
         }
     </div>
-    
+
     <div class="form-group mt-5 mb-5">
         <button class="btn btn-primary" type="submit">@SubmitLabel</button>
         <button class="btn btn-secondary" type="button" @onclick="Cancel">@CancelLabel</button>
     </div>
-    
+
 </EditForm>

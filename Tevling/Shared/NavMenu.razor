@@ -1,7 +1,7 @@
 <div class="top-row navbar navbar-dark">
     <div class="container-fluid">
         <a href="dashboard">
-            <img src="../tevling_logo.svg" alt="Tevling Logo" class="logo"/>
+            <img src="../tevling_logo.svg" alt="Tevling Logo" class="logo" />
         </a>
         <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
             <i class="bi bi-list" aria-hidden="true"></i>
@@ -53,11 +53,11 @@
         </FeatureGate>
         <div class="user-info d-flex flex-row align-items-center mt-auto mb-4 ms-2 px-1 pt-4 ">
             <a href="/profile" class="me-2 d-flex align-items-center">
-                <Avatar Url="@Athlete.ImgUrl" Size="35"/>
+                <Avatar Url="@Athlete.ImgUrl" Size="35" />
             </a>
             @Athlete.Name
         </div>
-        <DarkMode OnChange="OnThemeChange!"/>
+        <DarkMode OnChange="OnThemeChange!" />
         <div class="strava-icon mt-4"></div>
     </nav>
 </div>

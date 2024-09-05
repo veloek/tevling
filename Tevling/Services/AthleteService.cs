@@ -35,26 +35,27 @@ public class AthleteService : IAthleteService
         return athlete;
     }
 
-    public async Task<Athlete[]> GetAthletesAsync(AthleteFilter? filter = null, Paging? paging = null,
+    public async Task<Athlete[]> GetAthletesAsync(
+        AthleteFilter? filter = null,
+        Paging? paging = null,
         CancellationToken ct = default)
     {
         using DataContext dataContext = await _dataContextFactory.CreateDbContextAsync(ct);
 
         Athlete[] athletes = await dataContext.Athletes
-            .Where(athlete => filter == null
-                || !filter.FollowedBy.HasValue
-                || athlete.Followers!.Any(f => f.Id == filter.FollowedBy.Value))
-            .Where(athlete => filter == null
-                || string.IsNullOrWhiteSpace(filter.SearchText)
-                // TODO: Use EF.Functions.ILike when switching to PostgreSQL
-                //       to keep the search text case-insensitive
-                || EF.Functions.Like(athlete.Name, $"%{filter.SearchText}%"))
-            .Where(athlete => filter == null
-                || filter.In == null
-                || filter.In.Contains(athlete.Id))
-            .Where(athlete => filter == null
-                || filter.NotIn == null
-                || !filter.NotIn.Contains(athlete.Id))
+            .Where(
+                athlete => filter == null ||
+                    !filter.FollowedBy.HasValue ||
+                    athlete.Followers!.Any(f => f.Id == filter.FollowedBy.Value))
+            .Where(
+                athlete => filter == null ||
+                    string.IsNullOrWhiteSpace(filter.SearchText)
+                    // TODO: Use EF.Functions.ILike when switching to PostgreSQL
+                    //       to keep the search text case-insensitive
+                    ||
+                    EF.Functions.Like(athlete.Name, $"%{filter.SearchText}%"))
+            .Where(athlete => filter == null || filter.In == null || filter.In.Contains(athlete.Id))
+            .Where(athlete => filter == null || filter.NotIn == null || !filter.NotIn.Contains(athlete.Id))
             .OrderBy(athlete => athlete.Name)
             .ThenBy(athlete => athlete.Id)
             .If(paging != null, x => x.Skip(paging!.Value.Page * paging!.Value.PageSize), x => (IQueryable<Athlete>)x)
@@ -64,8 +65,13 @@ public class AthleteService : IAthleteService
         return athletes;
     }
 
-    public async Task<Athlete> UpsertAthleteAsync(long stravaId, string name, string? imgUrl,
-        string accessToken, string refreshToken, DateTimeOffset accessTokenExpiry,
+    public async Task<Athlete> UpsertAthleteAsync(
+        long stravaId,
+        string name,
+        string? imgUrl,
+        string accessToken,
+        string refreshToken,
+        DateTimeOffset accessTokenExpiry,
         CancellationToken ct = default)
     {
         using DataContext dataContext = await _dataContextFactory.CreateDbContextAsync(ct);
@@ -114,11 +120,13 @@ public class AthleteService : IAthleteService
 
         if (existing is null)
         {
-            await dataContext.AddFollowingAsync(new Following
-            {
-                FollowerId = athlete.Id,
-                FolloweeId = followingId,
-            }, ct);
+            await dataContext.AddFollowingAsync(
+                new Following
+                {
+                    FollowerId = athlete.Id,
+                    FolloweeId = followingId,
+                },
+                ct);
         }
         else
         {
@@ -126,8 +134,7 @@ public class AthleteService : IAthleteService
         }
 
         // Get an updated version of the athlete
-        athlete = await GetAthleteByIdAsync(athlete.Id, ct)
-            ?? throw new Exception("Athlete is gone");
+        athlete = await GetAthleteByIdAsync(athlete.Id, ct) ?? throw new Exception("Athlete is gone");
 
         return athlete;
     }
@@ -137,7 +144,7 @@ public class AthleteService : IAthleteService
         using DataContext dataContext = await _dataContextFactory.CreateDbContextAsync(ct);
 
         Athlete athlete = await dataContext.Athletes
-            .FirstOrDefaultAsync(a => a.Id == athleteId, ct) ??
+                .FirstOrDefaultAsync(a => a.Id == athleteId, ct) ??
             throw new Exception("Unknown athlete id: " + athleteId);
 
         athlete.HasImportedActivities = true;
@@ -152,10 +159,10 @@ public class AthleteService : IAthleteService
         using DataContext dataContext = await _dataContextFactory.CreateDbContextAsync(ct);
 
         Athlete athlete = await dataContext.Athletes
-            .FirstOrDefaultAsync(a => a.Id == athleteId, ct) ??
+                .FirstOrDefaultAsync(a => a.Id == athleteId, ct) ??
             throw new Exception("Unknown athlete id: " + athleteId);
 
-        if ((athlete.AccessTokenExpiry - DateTimeOffset.Now) < TimeSpan.FromMinutes(1))
+        if (athlete.AccessTokenExpiry - DateTimeOffset.Now < TimeSpan.FromMinutes(1))
         {
             (string accessToken, DateTimeOffset expiry) = await RefreshAccessToken(athlete.RefreshToken, ct);
             athlete.AccessToken = accessToken;
@@ -167,7 +174,8 @@ public class AthleteService : IAthleteService
     }
 
     private async Task<(string accessToken, DateTimeOffset expiry)> RefreshAccessToken(
-        string refreshToken, CancellationToken ct)
+        string refreshToken,
+        CancellationToken ct)
     {
         Strava.TokenResponse tokenResponse = await _stravaClient
             .GetAccessTokenByRefreshTokenAsync(refreshToken, ct);
@@ -188,7 +196,7 @@ public class AthleteService : IAthleteService
         using DataContext dataContext = await _dataContextFactory.CreateDbContextAsync(ct);
 
         Athlete athlete = await dataContext.Athletes
-            .FirstOrDefaultAsync(a => a.StravaId == stravaId, ct) ??
+                .FirstOrDefaultAsync(a => a.StravaId == stravaId, ct) ??
             throw new Exception("Unknown Strava athlete id: " + stravaId);
 
         await dataContext.RemoveAthleteAsync(athlete, ct);
@@ -204,14 +212,16 @@ public class AthleteService : IAthleteService
             .ToListAsync(ct);
 
         Athlete[] suggestedAthletes = await dataContext.Athletes
-            .Where(a => dataContext.Following
-                .Where(f => followedAthleteIds.Contains(f.FollowerId))
-                .Select(f => f.FolloweeId)
-                .Except(followedAthleteIds)
-                .Contains(a.Id) && a.Id != athleteId)
+            .Where(
+                a => dataContext.Following
+                        .Where(f => followedAthleteIds.Contains(f.FollowerId))
+                        .Select(f => f.FolloweeId)
+                        .Except(followedAthleteIds)
+                        .Contains(a.Id) &&
+                    a.Id != athleteId)
             .Take(5)
             .ToArrayAsync(ct);
-        
+
         return suggestedAthletes;
     }
 }
