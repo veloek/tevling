@@ -1,5 +1,6 @@
 using System.Reactive.Subjects;
 using Microsoft.EntityFrameworkCore;
+using Tevling.Strava;
 
 namespace Tevling.Services;
 
@@ -159,14 +160,21 @@ public class ActivityService : IActivityService
             });
     }
 
-    public async Task ImportActivitiesForAthlete(int athleteId, DateTimeOffset from, CancellationToken ct = default)
+    public async Task ImportActivitiesForAthleteAsync(int athleteId, DateTimeOffset from, CancellationToken ct = default)
     {
         using DataContext dataContext = await _dataContextFactory.CreateDbContextAsync(ct);
+
+        Athlete? athlete = await _athleteService.GetAthleteByIdAsync(athleteId, ct);
+        if (athlete is null)
+        {
+            _logger.LogWarning("Athlete {AthleteId} not found", athleteId);
+            return;
+        }
 
         string accessToken = await _athleteService.GetAccessTokenAsync(athleteId, ct);
         int page = 1;
         int pageSize = 30;
-        Strava.Activity[] activities;
+        SummaryActivity[] activities;
 
         _logger.LogInformation("Importing activities for athlete {AthleteId} starting from {From}", athleteId, from);
         do
@@ -176,35 +184,17 @@ public class ActivityService : IActivityService
             activities = await _stravaClient.GetAthleteActivitiesAsync(
                 accessToken, after: from, page: page, pageSize: pageSize, ct: ct);
 
-            foreach (Strava.Activity stravaActivity in activities)
+            foreach (SummaryActivity stravaActivity in activities)
             {
-                Activity? existingActivity = await dataContext.Activities
-                    .Include(a => a.Athlete)
-                    .AsTracking()
-                    .FirstOrDefaultAsync(a => a.StravaId == stravaActivity.Id);
+                bool existingActivity = await dataContext.Activities.AnyAsync(a => a.StravaId == stravaActivity.Id, ct);
 
-                Activity activity;
-                if (existingActivity is null)
+                if (existingActivity)
                 {
-                    _logger.LogInformation("Adding Strava activity ID {StravaActivityId} for athlete {AthleteId}", stravaActivity.Id, athleteId);
-                    activity = await dataContext.AddActivityAsync(new Activity()
-                    {
-                        StravaId = stravaActivity.Id,
-                        AthleteId = athleteId,
-                        Details = MapActivityDetails(stravaActivity),
-                    }, ct);
-
-                    await dataContext.Entry(activity).Reference(a => a.Athlete).LoadAsync(ct);
-
-                    _activityFeed.OnNext(new FeedUpdate<Activity> { Item = activity, Action = FeedAction.Create });
+                    await UpdateActivityAsync(athlete.StravaId, stravaActivity.Id, ct);
                 }
                 else
                 {
-                    _logger.LogInformation("Updating Strava activity ID {StravaActivityId} for athlete {AthleteId}", stravaActivity.Id, athleteId);
-                    existingActivity.Details = MapActivityDetails(stravaActivity);
-                    activity = await dataContext.UpdateActivityAsync(existingActivity, ct);
-
-                    _activityFeed.OnNext(new FeedUpdate<Activity> { Item = activity, Action = FeedAction.Update });
+                    await CreateActivityAsync(athlete.StravaId, stravaActivity.Id, ct);
                 }
             }
 
@@ -220,7 +210,7 @@ public class ActivityService : IActivityService
     private async Task<ActivityDetails> FetchActivityDetailsAsync(Activity activity, CancellationToken ct = default)
     {
         string accessToken = await _athleteService.GetAccessTokenAsync(activity.AthleteId, ct);
-        Strava.Activity stravaActivity = await _stravaClient.GetActivityAsync(activity.StravaId, accessToken, ct);
+        DetailedActivity stravaActivity = await _stravaClient.GetActivityAsync(activity.StravaId, accessToken, ct);
         _logger.LogDebug("Strava activity details: {@Details}", stravaActivity);
 
         ActivityDetails activityDetails = MapActivityDetails(stravaActivity);
@@ -228,7 +218,7 @@ public class ActivityService : IActivityService
         return activityDetails;
     }
 
-    private static ActivityDetails MapActivityDetails(Strava.Activity stravaActivity)
+    private static ActivityDetails MapActivityDetails(DetailedActivity stravaActivity)
     {
         return new()
         {

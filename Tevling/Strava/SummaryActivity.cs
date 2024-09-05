@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 
 namespace Tevling.Strava;
 
-public class Activity
+public class SummaryActivity
 {
     [JsonPropertyName("id")]
     // The unique identifier of the activity
@@ -49,9 +49,14 @@ public class Activity
     // The activity's lowest elevation, in meters
     public float ElevLow { get; set; }
 
+    [Obsolete("Use SportType instead")]
     [JsonPropertyName("type")]
     // An instance of ActivityType.
     public ActivityType Type { get; set; }
+
+    [JsonPropertyName("sport_type")]
+    // An instance of SportType.
+    public SportType SportType { get; set; }
 
     [JsonPropertyName("start_date")]
     // The time at which the activity was started.
@@ -168,48 +173,4 @@ public class Activity
     [JsonPropertyName("weighted_average_watts")]
     // Similar to Normalized Power. Rides with power meter data only
     public int WeightedAverageWatts { get; set; }
-
-    [JsonPropertyName("description")]
-    // The description of the activity
-    public string? Description { get; set; }
-
-    [JsonPropertyName("photos")]
-    // An instance of PhotosSummary.
-    public PhotosSummary? Photos { get; set; }
-
-    [JsonPropertyName("gear")]
-    // An instance of SummaryGear.
-    public SummaryGear? Gear { get; set; }
-
-    [JsonPropertyName("calories")]
-    // The number of kilocalories consumed during this activity
-    public float Calories { get; set; }
-
-    [JsonPropertyName("segment_efforts")]
-    // A collection of DetailedSegmentEffort objects.
-    public DetailedSegmentEffort[]? SegmentEfforts { get; set; }
-
-    [JsonPropertyName("device_name")]
-    // The name of the device used to record the activity
-    public string? DeviceName { get; set; }
-
-    [JsonPropertyName("embed_token")]
-    // The token used to embed a Strava activity
-    public string? EmbedToken { get; set; }
-
-    [JsonPropertyName("splits_metric")]
-    // The splits of this activity in metric units (for runs)
-    public Split[]? SplitsMetric { get; set; }
-
-    [JsonPropertyName("splits_standard")]
-    // The splits of this activity in imperial units (for runs)
-    public Split[]? SplitsStandard { get; set; }
-
-    [JsonPropertyName("laps")]
-    // A collection of Lap objects.
-    public Lap[]? Laps { get; set; }
-
-    [JsonPropertyName("best_efforts")]
-    // A collection of DetailedSegmentEffort objects.
-    public DetailedSegmentEffort[]? BestEfforts { get; set; }
 }

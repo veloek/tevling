@@ -117,7 +117,7 @@ public partial class DevTools : ComponentBase
     {
         DateTimeOffset from = DateTimeOffset.Now - TimeSpan.FromDays(nDays);
         Athlete[] athletes = await AthleteService.GetAthletesAsync();
-        foreach (Athlete athlete in athletes) await ActivityService.ImportActivitiesForAthlete(athlete.Id, from);
+        foreach (Athlete athlete in athletes) await ActivityService.ImportActivitiesForAthleteAsync(athlete.Id, from);
     }
 
     private async Task AddChallenge()

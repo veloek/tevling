@@ -2,8 +2,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.FeatureManagement.Mvc;
 using Tevling.Strava;
-using Activity = Tevling.Strava.Activity;
-using Athlete = Tevling.Strava.Athlete;
 using RouteAttribute = Microsoft.AspNetCore.Mvc.RouteAttribute;
 
 namespace Tevling.Controllers;
@@ -37,7 +35,7 @@ public class DevController : ControllerBase
     [Route("strava/activities/{stravaId}")]
     public IActionResult GetActivity(long stravaId)
     {
-        Activity activity = new()
+        DetailedActivity activity = new()
         {
             Id = stravaId,
             Name = "Activity_" + stravaId,
@@ -64,17 +62,15 @@ public class DevController : ControllerBase
         if (page <= 0) return BadRequest("Invalid page");
         if (pageSize <= 0 || pageSize > 50) return BadRequest("Invalid page size");
 
-        Activity[] activities = Enumerable.Range(1000 * page, page < 3 ? pageSize : pageSize - 1)
-            .Select(i => new Activity()
+        SummaryActivity[] activities = Enumerable.Range(1000 * page, page < 3 ? pageSize : pageSize - 1)
+            .Select(i => new SummaryActivity()
             {
                 Id = i,
                 Name = "Activity_" + i,
-                Description = "Description_" + i,
                 Distance = 0.0f,
                 MovingTime = 0,
                 ElapsedTime = 0,
                 TotalElevationGain = 0.0f,
-                Calories = 0.0f,
                 Type = ActivityType.Run,
                 StartDate = DateTimeOffset.UtcNow,
                 Manual = true,
@@ -95,7 +91,7 @@ public class DevController : ControllerBase
             ExpiresIn = 21600,
             RefreshToken = "REFRESHTOKEN",
             AccessToken = "ACCESSTOKEN",
-            Athlete = new Athlete
+            Athlete = new SummaryAthlete()
             {
                 Id = 1337,
                 Firstname = "Trainer",

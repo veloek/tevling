@@ -3,7 +3,6 @@ using System.Net.Http.Headers;
 using System.Text.Json;
 using System.Web;
 using Tevling.Strava;
-using Activity = Tevling.Strava.Activity;
 
 namespace Tevling.Clients;
 
@@ -82,7 +81,7 @@ public class StravaClient : IStravaClient
         return tokenResponse;
     }
 
-    public async Task<Activity> GetActivityAsync(
+    public async Task<DetailedActivity> GetActivityAsync(
         long stravaId, string accessToken, CancellationToken ct = default)
     {
         HttpRequestMessage request = new(HttpMethod.Get, $"activities/{stravaId}");
@@ -96,7 +95,7 @@ public class StravaClient : IStravaClient
         string responseBody = await response.Content.ReadAsStringAsync(ct);
         try
         {
-            Activity activity = JsonSerializer.Deserialize<Activity>(responseBody) ??
+            DetailedActivity activity = JsonSerializer.Deserialize<DetailedActivity>(responseBody) ??
                 throw new Exception("Error deserializing activity");
 
             return activity;
@@ -110,7 +109,7 @@ public class StravaClient : IStravaClient
         }
     }
 
-    public async Task<Activity[]> GetAthleteActivitiesAsync(
+    public async Task<SummaryActivity[]> GetAthleteActivitiesAsync(
         string accessToken,
         DateTimeOffset? before = null,
         DateTimeOffset? after = null,
@@ -135,7 +134,7 @@ public class StravaClient : IStravaClient
         string responseBody = await response.Content.ReadAsStringAsync(ct);
         try
         {
-            Activity[] activities = JsonSerializer.Deserialize<Activity[]>(responseBody) ??
+            SummaryActivity[] activities = JsonSerializer.Deserialize<SummaryActivity[]>(responseBody) ??
                 throw new Exception("Error deserializing activities");
 
             return activities;

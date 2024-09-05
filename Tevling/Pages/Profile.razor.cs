@@ -35,7 +35,7 @@ public partial class Profile : ComponentBase
         ImportResult = "Importing activities, please wait...";
         try
         {
-            await ActivityService.ImportActivitiesForAthlete(Athlete.Id, DateTimeOffset.Now - TimeSpan.FromDays(30));
+            await ActivityService.ImportActivitiesForAthleteAsync(Athlete.Id, DateTimeOffset.Now - TimeSpan.FromDays(30));
             Athlete = await AthleteService.SetHasImportedActivities(Athlete.Id);
             ImportResult = "Import completed successfully";
         }

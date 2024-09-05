@@ -20,5 +20,5 @@ public class TokenResponse
     public string? AccessToken { get; set; }
 
     [JsonPropertyName("athlete")]
-    public Athlete? Athlete { get; set; }
+    public SummaryAthlete? Athlete { get; set; }
 }

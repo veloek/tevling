@@ -1,5 +1,4 @@
 using Tevling.Strava;
-using Activity = Tevling.Strava.Activity;
 
 namespace Tevling.Clients;
 
@@ -11,10 +10,10 @@ public interface IStravaClient
     Task<TokenResponse> GetAccessTokenByRefreshTokenAsync(
         string refreshToken, CancellationToken ct = default);
 
-    Task<Activity> GetActivityAsync(long stravaId, string accessToken,
+    Task<DetailedActivity> GetActivityAsync(long stravaId, string accessToken,
         CancellationToken ct = default);
 
-    Task<Activity[]> GetAthleteActivitiesAsync(
+    Task<SummaryActivity[]> GetAthleteActivitiesAsync(
         string accessToken,
         DateTimeOffset? before = null,
         DateTimeOffset? after = null,

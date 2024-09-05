@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 
 namespace Tevling.Strava;
 
-public class Athlete
+public class SummaryAthlete
 {
     [JsonPropertyName("id")]
     // The unique identifier of the athlete
