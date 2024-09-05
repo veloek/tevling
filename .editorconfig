@@ -3,11 +3,30 @@ root = true
 [*]
 charset = utf-8
 end_of_line = lf
+insert_final_newline = true
 
-[*.cs]
+[*.{cs,razor}]
 indent_style = space
 indent_size = 4
-insert_final_newline = true
+
+# ReSharper properties
+resharper_align_multiline_binary_expressions_chain = false
+resharper_braces_redundant = false
+resharper_csharp_align_multiline_binary_expressions_chain = false
+resharper_csharp_max_line_length = 120
+resharper_csharp_wrap_after_invocation_lpar = true
+resharper_csharp_wrap_arguments_style = chop_if_long
+resharper_csharp_wrap_lines = true
+resharper_csharp_wrap_parameters_style = chop_if_long
+resharper_force_attribute_style = separate
+resharper_html_space_before_self_closing = true
+resharper_keep_existing_attribute_arrangement = false
+resharper_keep_existing_linebreaks = true
+resharper_no_indent_inside_elements = html
+resharper_trailing_comma_in_multiline_lists = true
+resharper_wrap_after_property_in_chained_method_calls = true
+resharper_wrap_chained_binary_expressions = chop_if_long
+resharper_wrap_chained_method_calls = chop_if_long
 
 # Prefer explicit types unless apparent
 csharp_style_var_for_built_in_types = false
@@ -37,19 +56,23 @@ dotnet_style_prefer_conditional_expression_over_return = false
 csharp_style_unused_value_assignment_preference = discard_variable:none
 
 # IDE0008: Use explicit type instead of var
-dotnet_diagnostic.IDE0008.severity = warning
+dotnet_diagnostic.ide0008.severity = warning
 
 # IDE0059: Unnecessary assignment to a value
-dotnet_diagnostic.IDE0059.severity = warning
+dotnet_diagnostic.ide0059.severity = warning
 
 # IDE0060: Remove unused parameter
-dotnet_diagnostic.IDE0060.severity = warning
+dotnet_diagnostic.ide0060.severity = warning
 
 # IDE0090: Simplify new expression
-dotnet_diagnostic.IDE0090.severity = warning
+dotnet_diagnostic.ide0090.severity = warning
 
 # CA1012: Abstract types should not have public constructors
-dotnet_diagnostic.CA1012.severity = warning
+dotnet_diagnostic.ca1012.severity = warning
 
 # CA1822: Make member static
-dotnet_diagnostic.CA1822.severity = warning
+dotnet_diagnostic.ca1822.severity = warning
+
+[*.{json,css,csproj}]
+indent_style = space
+indent_size = 2
