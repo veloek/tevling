@@ -25,7 +25,7 @@ public partial class DarkMode : ComponentBase
     {
         if (firstRender)
         {
-            string currentTheme = await LocalStorage.GetThemeAsync();
+            string? currentTheme = await LocalStorage.GetThemeAsync();
             _isDarkMode = currentTheme == "dark";
             StateHasChanged();
         }

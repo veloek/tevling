@@ -6,7 +6,7 @@ public static class LocalStorageExt
 {
     private const string LS_KEY = "theme";
 
-    public static ValueTask<string> GetThemeAsync(this ILocalStorageService localStorage)
+    public static ValueTask<string?> GetThemeAsync(this ILocalStorageService localStorage)
     {
         return localStorage.GetItemAsync<string>(LS_KEY);
     }
