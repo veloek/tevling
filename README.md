@@ -66,6 +66,6 @@ Bug reports and PRs are very welcome!
 
 GNU GPLv3 or later.
 
-## Author
+## Copyright
 
-Vegard Løkken <vegard@loekken.org>
+Copyright © 2025 - Tevling Contributors
