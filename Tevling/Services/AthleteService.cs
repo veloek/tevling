@@ -22,7 +22,7 @@ public class AthleteService : IAthleteService
 
     public async Task<Athlete?> GetAthleteByIdAsync(int athleteId, CancellationToken ct = default)
     {
-        using DataContext dataContext = await _dataContextFactory.CreateDbContextAsync(ct);
+        await using DataContext dataContext = await _dataContextFactory.CreateDbContextAsync(ct);
 
         Athlete? athlete = await dataContext.Athletes
             .Include(a => a.Activities)
@@ -40,7 +40,7 @@ public class AthleteService : IAthleteService
         Paging? paging = null,
         CancellationToken ct = default)
     {
-        using DataContext dataContext = await _dataContextFactory.CreateDbContextAsync(ct);
+        await using DataContext dataContext = await _dataContextFactory.CreateDbContextAsync(ct);
 
         Athlete[] athletes = await dataContext.Athletes
             .Where(
@@ -58,7 +58,7 @@ public class AthleteService : IAthleteService
             .Where(athlete => filter == null || filter.NotIn == null || !filter.NotIn.Contains(athlete.Id))
             .OrderBy(athlete => athlete.Name)
             .ThenBy(athlete => athlete.Id)
-            .If(paging != null, x => x.Skip(paging!.Value.Page * paging!.Value.PageSize), x => (IQueryable<Athlete>)x)
+            .If(paging != null, x => x.Skip(paging!.Value.Page * paging!.Value.PageSize), x => x)
             .If(paging != null, x => x.Take(paging!.Value.PageSize))
             .ToArrayAsync(ct);
 
@@ -74,7 +74,7 @@ public class AthleteService : IAthleteService
         DateTimeOffset accessTokenExpiry,
         CancellationToken ct = default)
     {
-        using DataContext dataContext = await _dataContextFactory.CreateDbContextAsync(ct);
+        await using DataContext dataContext = await _dataContextFactory.CreateDbContextAsync(ct);
 
         bool newAthlete = false;
         Athlete? athlete = await dataContext.Athletes
@@ -112,7 +112,7 @@ public class AthleteService : IAthleteService
 
     public async Task<Athlete> ToggleFollowingAsync(Athlete athlete, int followingId, CancellationToken ct = default)
     {
-        using DataContext dataContext = await _dataContextFactory.CreateDbContextAsync(ct);
+        await using DataContext dataContext = await _dataContextFactory.CreateDbContextAsync(ct);
 
         Following? existing = await dataContext.Following
             .Where(f => f.FollowerId == athlete.Id && f.FolloweeId == followingId)
@@ -141,7 +141,7 @@ public class AthleteService : IAthleteService
 
     public async Task<Athlete> SetHasImportedActivities(int athleteId, CancellationToken ct = default)
     {
-        using DataContext dataContext = await _dataContextFactory.CreateDbContextAsync(ct);
+        await using DataContext dataContext = await _dataContextFactory.CreateDbContextAsync(ct);
 
         Athlete athlete = await dataContext.Athletes
                 .FirstOrDefaultAsync(a => a.Id == athleteId, ct) ??
@@ -156,7 +156,7 @@ public class AthleteService : IAthleteService
 
     public async Task<string> GetAccessTokenAsync(int athleteId, CancellationToken ct = default)
     {
-        using DataContext dataContext = await _dataContextFactory.CreateDbContextAsync(ct);
+        await using DataContext dataContext = await _dataContextFactory.CreateDbContextAsync(ct);
 
         Athlete athlete = await dataContext.Athletes
                 .FirstOrDefaultAsync(a => a.Id == athleteId, ct) ??
@@ -193,7 +193,7 @@ public class AthleteService : IAthleteService
 
     public async Task DeleteAthleteAsync(long stravaId, CancellationToken ct = default)
     {
-        using DataContext dataContext = await _dataContextFactory.CreateDbContextAsync(ct);
+        await using DataContext dataContext = await _dataContextFactory.CreateDbContextAsync(ct);
 
         Athlete athlete = await dataContext.Athletes
                 .FirstOrDefaultAsync(a => a.StravaId == stravaId, ct) ??
@@ -204,21 +204,17 @@ public class AthleteService : IAthleteService
 
     public async Task<Athlete[]> GetSuggestedAthletesToFollowAsync(int athleteId, CancellationToken ct = default)
     {
-        using DataContext dataContext = await _dataContextFactory.CreateDbContextAsync(ct);
+        await using DataContext dataContext = await _dataContextFactory.CreateDbContextAsync(ct);
 
-        List<int> followedAthleteIds = await dataContext.Following
+        IQueryable<int> followees = dataContext.Following
             .Where(f => f.FollowerId == athleteId)
-            .Select(f => f.FolloweeId)
-            .ToListAsync(ct);
+            .Select(f => f.FolloweeId);
+
+        IQueryable<int> followedByFollowees = dataContext.Following
+            .Join(followees, following => following.FollowerId, followee => followee, (f, _) => f.FolloweeId);
 
         Athlete[] suggestedAthletes = await dataContext.Athletes
-            .Where(
-                a => dataContext.Following
-                        .Where(f => followedAthleteIds.Contains(f.FollowerId))
-                        .Select(f => f.FolloweeId)
-                        .Except(followedAthleteIds)
-                        .Contains(a.Id) &&
-                    a.Id != athleteId)
+            .Where(a => followedByFollowees.Contains(a.Id) && !followees.Contains(a.Id) && a.Id != athleteId)
             .OrderBy(a => a.Created)
             .Take(5)
             .ToArrayAsync(ct);
