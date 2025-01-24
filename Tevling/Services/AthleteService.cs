@@ -164,16 +164,18 @@ public class AthleteService : IAthleteService
 
         if (athlete.AccessTokenExpiry - DateTimeOffset.Now < TimeSpan.FromMinutes(1))
         {
-            (string accessToken, DateTimeOffset expiry) = await RefreshAccessToken(athlete.RefreshToken, ct);
+            (string accessToken, DateTimeOffset expiry, string? refreshToken) =
+                await RefreshAccessToken(athlete.RefreshToken, ct);
             athlete.AccessToken = accessToken;
             athlete.AccessTokenExpiry = expiry;
+            athlete.RefreshToken = refreshToken ?? athlete.RefreshToken;
             athlete = await dataContext.UpdateAthleteAsync(athlete, ct);
         }
 
         return athlete.AccessToken;
     }
 
-    private async Task<(string accessToken, DateTimeOffset expiry)> RefreshAccessToken(
+    private async Task<(string accessToken, DateTimeOffset expiry, string? refreshToken)> RefreshAccessToken(
         string refreshToken,
         CancellationToken ct)
     {
@@ -183,7 +185,11 @@ public class AthleteService : IAthleteService
         if (tokenResponse.AccessToken is null)
             throw new Exception("AccessToken is null");
 
-        return (tokenResponse.AccessToken, DateTimeOffset.FromUnixTimeSeconds(tokenResponse.ExpiresAt));
+        return (
+            tokenResponse.AccessToken,
+            DateTimeOffset.FromUnixTimeSeconds(tokenResponse.ExpiresAt),
+            tokenResponse.RefreshToken
+        );
     }
 
     public IObservable<FeedUpdate<Athlete>> GetAthleteFeed()
