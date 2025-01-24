@@ -111,11 +111,13 @@ app.MapRazorComponents<App>().AddInteractiveServerRenderMode();
 
 try
 {
-    using IServiceScope serviceScope = app.Services.CreateScope();
-    IDbContextFactory<DataContext> dataContextFactory =
-        serviceScope.ServiceProvider.GetRequiredService<IDbContextFactory<DataContext>>();
-    using DataContext dataContext = await dataContextFactory.CreateDbContextAsync();
-    await dataContext.InitAsync();
+    using (IServiceScope serviceScope = app.Services.CreateScope())
+    {
+        IDbContextFactory<DataContext> dataContextFactory =
+            serviceScope.ServiceProvider.GetRequiredService<IDbContextFactory<DataContext>>();
+        await using DataContext dataContext = await dataContextFactory.CreateDbContextAsync();
+        await dataContext.InitAsync();
+    }
 
     await app.RunAsync();
 }
