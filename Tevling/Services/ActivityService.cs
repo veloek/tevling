@@ -4,32 +4,21 @@ using Tevling.Strava;
 
 namespace Tevling.Services;
 
-public class ActivityService : IActivityService
+public class ActivityService(
+    ILogger<ActivityService> logger,
+    IDbContextFactory<DataContext> dataContextFactory,
+    IAthleteService athleteService,
+    IStravaClient stravaClient)
+    : IActivityService
 {
-    private readonly ILogger<ActivityService> _logger;
-    private readonly IDbContextFactory<DataContext> _dataContextFactory;
-    private readonly IAthleteService _athleteService;
-    private readonly IStravaClient _stravaClient;
     private readonly Subject<FeedUpdate<Activity>> _activityFeed = new();
-
-    public ActivityService(
-        ILogger<ActivityService> logger,
-        IDbContextFactory<DataContext> dataContextFactory,
-        IAthleteService athleteService,
-        IStravaClient stravaClient)
-    {
-        _logger = logger;
-        _dataContextFactory = dataContextFactory;
-        _athleteService = athleteService;
-        _stravaClient = stravaClient;
-    }
 
     public async Task<Activity> CreateActivityAsync(
         long stravaAthleteId,
         long stravaActivityId,
         CancellationToken ct = default)
     {
-        await using DataContext dataContext = await _dataContextFactory.CreateDbContextAsync(ct);
+        await using DataContext dataContext = await dataContextFactory.CreateDbContextAsync(ct);
 
         Athlete athlete = await dataContext.Athletes
                 .FirstOrDefaultAsync(a => a.StravaId == stravaAthleteId, ct) ??
@@ -42,11 +31,11 @@ public class ActivityService : IActivityService
 
         if (existingActivity != null)
         {
-            _logger.LogInformation("Skipping duplicate activity with Strava ID: {StravaId}", stravaActivityId);
+            logger.LogInformation("Skipping duplicate activity with Strava ID: {StravaId}", stravaActivityId);
             return existingActivity;
         }
 
-        _logger.LogInformation(
+        logger.LogInformation(
             "Adding Strava activity ID {StravaActivityId} for athlete ID {AthleteId}",
             stravaActivityId,
             athlete.Id);
@@ -62,7 +51,7 @@ public class ActivityService : IActivityService
         // be present in the feed update.
         await dataContext.Entry(activity).Reference(a => a.Athlete).LoadAsync(ct);
 
-        _logger.LogDebug("Fetching activity details for Strava activity ID {StravaActivityId}", stravaActivityId);
+        logger.LogDebug("Fetching activity details for Strava activity ID {StravaActivityId}", stravaActivityId);
         ActivityDetails activityDetails = await FetchActivityDetailsAsync(activity, CancellationToken.None);
 
         activity.Details = activityDetails;
@@ -78,7 +67,7 @@ public class ActivityService : IActivityService
         long stravaActivityId,
         CancellationToken ct = default)
     {
-        await using DataContext dataContext = await _dataContextFactory.CreateDbContextAsync(ct);
+        await using DataContext dataContext = await dataContextFactory.CreateDbContextAsync(ct);
 
         Athlete athlete = await dataContext.Athletes
                 .FirstOrDefaultAsync(a => a.StravaId == stravaAthleteId, ct) ??
@@ -89,10 +78,10 @@ public class ActivityService : IActivityService
                 .FirstOrDefaultAsync(a => a.AthleteId == athlete.Id && a.StravaId == stravaActivityId, ct) ??
             throw new Exception($"Unknown Strava activity ID {stravaActivityId}");
 
-        _logger.LogDebug("Fetching activity details for Strava activity ID {StravaActivityId}", stravaActivityId);
+        logger.LogDebug("Fetching activity details for Strava activity ID {StravaActivityId}", stravaActivityId);
         ActivityDetails activityDetails = await FetchActivityDetailsAsync(activity, CancellationToken.None);
 
-        _logger.LogInformation(
+        logger.LogInformation(
             "Updating Strava activity ID {StravaActivityId} for athlete {AthleteId}",
             stravaActivityId,
             athlete.Id);
@@ -109,7 +98,7 @@ public class ActivityService : IActivityService
         long stravaActivityId,
         CancellationToken ct = default)
     {
-        await using DataContext dataContext = await _dataContextFactory.CreateDbContextAsync(ct);
+        await using DataContext dataContext = await dataContextFactory.CreateDbContextAsync(ct);
 
         Athlete athlete = await dataContext.Athletes
                 .FirstOrDefaultAsync(a => a.StravaId == stravaAthleteId, ct) ??
@@ -119,7 +108,7 @@ public class ActivityService : IActivityService
                 .FirstOrDefaultAsync(a => a.AthleteId == athlete.Id && a.StravaId == stravaActivityId, ct) ??
             throw new Exception($"Unknown Strava activity ID {stravaActivityId}");
 
-        _logger.LogInformation(
+        logger.LogInformation(
             "Deleting Strava activity ID {StravaActivityId} for athlete {AthleteId}",
             stravaActivityId,
             athlete.Id);
@@ -133,7 +122,7 @@ public class ActivityService : IActivityService
         Paging? paging = null,
         CancellationToken ct = default)
     {
-        await using DataContext dataContext = await _dataContextFactory.CreateDbContextAsync(ct);
+        await using DataContext dataContext = await dataContextFactory.CreateDbContextAsync(ct);
 
         Athlete athlete = await dataContext.Athletes
                 .AsQueryable()
@@ -162,7 +151,7 @@ public class ActivityService : IActivityService
             .FromAsync(
                 async ct =>
                 {
-                    await using DataContext dataContext = await _dataContextFactory.CreateDbContextAsync(ct);
+                    await using DataContext dataContext = await dataContextFactory.CreateDbContextAsync(ct);
 
                     Athlete? athlete = await dataContext.Athletes
                         .Include(a => a.Following)
@@ -189,26 +178,26 @@ public class ActivityService : IActivityService
         DateTimeOffset from,
         CancellationToken ct = default)
     {
-        await using DataContext dataContext = await _dataContextFactory.CreateDbContextAsync(ct);
+        await using DataContext dataContext = await dataContextFactory.CreateDbContextAsync(ct);
 
-        Athlete? athlete = await _athleteService.GetAthleteByIdAsync(athleteId, ct);
+        Athlete? athlete = await athleteService.GetAthleteByIdAsync(athleteId, ct);
         if (athlete is null)
         {
-            _logger.LogWarning("Athlete {AthleteId} not found", athleteId);
+            logger.LogWarning("Athlete {AthleteId} not found", athleteId);
             return;
         }
 
-        string accessToken = await _athleteService.GetAccessTokenAsync(athleteId, ct);
+        string accessToken = await athleteService.GetAccessTokenAsync(athleteId, ct);
         int page = 1;
         int pageSize = 30;
         SummaryActivity[] activities;
 
-        _logger.LogInformation("Importing activities for athlete {AthleteId} starting from {From}", athleteId, from);
+        logger.LogInformation("Importing activities for athlete {AthleteId} starting from {From}", athleteId, from);
         do
         {
-            _logger.LogInformation("Fetching page {Page} of import", page);
+            logger.LogInformation("Fetching page {Page} of import", page);
 
-            activities = await _stravaClient.GetAthleteActivitiesAsync(
+            activities = await stravaClient.GetAthleteActivitiesAsync(
                 accessToken,
                 after: from,
                 page: page,
@@ -239,9 +228,9 @@ public class ActivityService : IActivityService
 
     private async Task<ActivityDetails> FetchActivityDetailsAsync(Activity activity, CancellationToken ct = default)
     {
-        string accessToken = await _athleteService.GetAccessTokenAsync(activity.AthleteId, ct);
-        DetailedActivity stravaActivity = await _stravaClient.GetActivityAsync(activity.StravaId, accessToken, ct);
-        _logger.LogDebug("Strava activity details: {@Details}", stravaActivity);
+        string accessToken = await athleteService.GetAccessTokenAsync(activity.AthleteId, ct);
+        DetailedActivity stravaActivity = await stravaClient.GetActivityAsync(activity.StravaId, accessToken, ct);
+        logger.LogDebug("Strava activity details: {@Details}", stravaActivity);
 
         ActivityDetails activityDetails = MapActivityDetails(stravaActivity);
 

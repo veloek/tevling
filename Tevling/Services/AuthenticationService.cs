@@ -5,28 +5,14 @@ using Microsoft.AspNetCore.Components.Authorization;
 
 namespace Tevling.Services;
 
-public class AuthenticationService : IAuthenticationService
+public class AuthenticationService(
+    ILogger<AuthenticationService> logger,
+    AuthenticationStateProvider authenticationStateProvider,
+    IAthleteService athleteService,
+    IHttpContextAccessor httpContextAccessor,
+    IStravaClient stravaClient)
+    : IAuthenticationService
 {
-    private readonly ILogger<AuthenticationService> _logger;
-    private readonly AuthenticationStateProvider _authenticationStateProvider;
-    private readonly IAthleteService _athleteService;
-    private readonly IHttpContextAccessor _httpContextAccessor;
-    private readonly IStravaClient _stravaClient;
-
-    public AuthenticationService(
-        ILogger<AuthenticationService> logger,
-        AuthenticationStateProvider authenticationStateProvider,
-        IAthleteService athleteService,
-        IHttpContextAccessor httpContextAccessor,
-        IStravaClient stravaClient)
-    {
-        _logger = logger;
-        _authenticationStateProvider = authenticationStateProvider;
-        _athleteService = athleteService;
-        _httpContextAccessor = httpContextAccessor;
-        _stravaClient = stravaClient;
-    }
-
     public async Task LoginAsync(Athlete athlete, CancellationToken ct = default)
     {
         List<Claim> claims = new()
@@ -47,7 +33,7 @@ public class AuthenticationService : IAuthenticationService
             RedirectUri = "/",
         };
 
-        HttpContext httpContext = _httpContextAccessor.HttpContext ??
+        HttpContext httpContext = httpContextAccessor.HttpContext ??
             throw new InvalidOperationException("No active HttpContext");
 
         await httpContext.SignInAsync(
@@ -55,12 +41,12 @@ public class AuthenticationService : IAuthenticationService
             new ClaimsPrincipal(claimsIdentity),
             authProperties);
 
-        _logger.LogInformation("User ID {AthleteId} logged in at {DateTime}", athlete.Id, DateTime.Now);
+        logger.LogInformation("User ID {AthleteId} logged in at {DateTime}", athlete.Id, DateTime.Now);
     }
 
     public async Task<Athlete> GetCurrentAthleteAsync(CancellationToken ct = default)
     {
-        AuthenticationState authenticationState = await _authenticationStateProvider
+        AuthenticationState authenticationState = await authenticationStateProvider
             .GetAuthenticationStateAsync();
 
         string athleteIdStr = authenticationState.User.FindFirst(
@@ -72,7 +58,7 @@ public class AuthenticationService : IAuthenticationService
 
         if (int.TryParse(athleteIdStr, out int athleteId))
         {
-            athlete = await _athleteService.GetAthleteByIdAsync(athleteId, ct);
+            athlete = await athleteService.GetAthleteByIdAsync(athleteId, ct);
         }
 
         if (athlete is null)
@@ -85,7 +71,7 @@ public class AuthenticationService : IAuthenticationService
 
     public async Task LogoutAsync(bool deauthorizeApp = false, CancellationToken ct = default)
     {
-        HttpContext httpContext = _httpContextAccessor.HttpContext ??
+        HttpContext httpContext = httpContextAccessor.HttpContext ??
             throw new InvalidOperationException("No active HttpContext");
 
         string? athleteIdStr = httpContext.User.Claims
@@ -96,12 +82,12 @@ public class AuthenticationService : IAuthenticationService
 
         if (deauthorizeApp)
         {
-            string accessToken = await _athleteService.GetAccessTokenAsync(athleteId, ct);
-            await _stravaClient.DeauthorizeAppAsync(accessToken, ct);
+            string accessToken = await athleteService.GetAccessTokenAsync(athleteId, ct);
+            await stravaClient.DeauthorizeAppAsync(accessToken, ct);
         }
 
         await httpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
 
-        _logger.LogInformation("User ID {AthleteId} logged out at {DateTime}", athleteId, DateTime.Now);
+        logger.LogInformation("User ID {AthleteId} logged out at {DateTime}", athleteId, DateTime.Now);
     }
 }

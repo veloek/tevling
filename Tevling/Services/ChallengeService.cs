@@ -3,23 +3,16 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Tevling.Services;
 
-public class ChallengeService : IChallengeService
+public class ChallengeService(
+    ILogger<ChallengeService> logger,
+    IDbContextFactory<DataContext> dataContextFactory)
+    : IChallengeService
 {
     private readonly Subject<FeedUpdate<Challenge>> _challengeFeed = new();
-    private readonly IDbContextFactory<DataContext> _dataContextFactory;
-    private readonly ILogger<ChallengeService> _logger;
-
-    public ChallengeService(
-        ILogger<ChallengeService> logger,
-        IDbContextFactory<DataContext> dataContextFactory)
-    {
-        _logger = logger;
-        _dataContextFactory = dataContextFactory;
-    }
 
     public async Task<Challenge?> GetChallengeByIdAsync(int challengeId, CancellationToken ct = default)
     {
-        await using DataContext dataContext = await _dataContextFactory.CreateDbContextAsync(ct);
+        await using DataContext dataContext = await dataContextFactory.CreateDbContextAsync(ct);
 
         Challenge? challenge = await dataContext.Challenges
             .Include(c => c.Athletes)
@@ -37,7 +30,7 @@ public class ChallengeService : IChallengeService
         Paging? paging = null,
         CancellationToken ct = default)
     {
-        await using DataContext dataContext = await _dataContextFactory.CreateDbContextAsync(ct);
+        await using DataContext dataContext = await dataContextFactory.CreateDbContextAsync(ct);
 
         Challenge[] challenges = await dataContext.Challenges
             .Include(challenge => challenge.Athletes)
@@ -82,9 +75,9 @@ public class ChallengeService : IChallengeService
 
     public async Task<Challenge> CreateChallengeAsync(ChallengeFormModel newChallenge, CancellationToken ct = default)
     {
-        await using DataContext dataContext = await _dataContextFactory.CreateDbContextAsync(ct);
+        await using DataContext dataContext = await dataContextFactory.CreateDbContextAsync(ct);
 
-        _logger.LogInformation("Adding new challenge: {Title}", newChallenge.Title);
+        logger.LogInformation("Adding new challenge: {Title}", newChallenge.Title);
 
         foreach (Athlete athlete in newChallenge.InvitedAthletes)
             await dataContext.Entry(athlete).ReloadAsync(ct);
@@ -117,7 +110,7 @@ public class ChallengeService : IChallengeService
         ChallengeFormModel editChallenge,
         CancellationToken ct = default)
     {
-        await using DataContext dataContext = await _dataContextFactory.CreateDbContextAsync(ct);
+        await using DataContext dataContext = await dataContextFactory.CreateDbContextAsync(ct);
 
         Challenge challenge = await dataContext.Challenges
                 .Include(c => c.Athletes)
@@ -128,7 +121,7 @@ public class ChallengeService : IChallengeService
                 .FirstOrDefaultAsync(c => c.Id == challengeId, ct) ??
             throw new Exception($"Unknown challenge ID {challengeId}");
 
-        _logger.LogInformation("Updating challenge ID {ChallengeId}", challengeId);
+        logger.LogInformation("Updating challenge ID {ChallengeId}", challengeId);
 
 
         bool stillInvited(Athlete a)
@@ -162,7 +155,7 @@ public class ChallengeService : IChallengeService
 
     public async Task<Challenge> JoinChallengeAsync(int athleteId, int challengeId, CancellationToken ct = default)
     {
-        await using DataContext dataContext = await _dataContextFactory.CreateDbContextAsync(ct);
+        await using DataContext dataContext = await dataContextFactory.CreateDbContextAsync(ct);
 
         Challenge challenge = await dataContext.Challenges
                 .Include(c => c.Athletes)
@@ -187,7 +180,7 @@ public class ChallengeService : IChallengeService
 
     public async Task<Challenge> LeaveChallengeAsync(int athleteId, int challengeId, CancellationToken ct = default)
     {
-        await using DataContext dataContext = await _dataContextFactory.CreateDbContextAsync(ct);
+        await using DataContext dataContext = await dataContextFactory.CreateDbContextAsync(ct);
 
         Challenge challenge = await dataContext.Challenges
                 .Include(c => c.Athletes)
@@ -209,14 +202,14 @@ public class ChallengeService : IChallengeService
 
     public async Task DeleteChallengeAsync(int challengeId, CancellationToken ct = default)
     {
-        await using DataContext dataContext = await _dataContextFactory.CreateDbContextAsync(ct);
+        await using DataContext dataContext = await dataContextFactory.CreateDbContextAsync(ct);
 
         Challenge challenge = await dataContext.Challenges
                 .Include(c => c.Athletes) // TODO: Is this necessary?
                 .FirstOrDefaultAsync(c => c.Id == challengeId, ct) ??
             throw new Exception($"Unknown challenge ID {challengeId}");
 
-        _logger.LogInformation("Deleting challenge ID {ChallengeId}", challengeId);
+        logger.LogInformation("Deleting challenge ID {ChallengeId}", challengeId);
         _ = await dataContext.RemoveChallengeAsync(challenge, ct);
 
         _challengeFeed.OnNext(new FeedUpdate<Challenge> { Item = challenge, Action = FeedAction.Delete });
@@ -224,7 +217,7 @@ public class ChallengeService : IChallengeService
 
     public async Task<ScoreBoard> GetScoreBoardAsync(int challengeId, CancellationToken ct = default)
     {
-        await using DataContext dataContext = await _dataContextFactory.CreateDbContextAsync(ct);
+        await using DataContext dataContext = await dataContextFactory.CreateDbContextAsync(ct);
 
         var result = await dataContext.Challenges
             .Select(
@@ -296,7 +289,7 @@ public class ChallengeService : IChallengeService
 
     public async Task<Athlete?> DrawChallengeWinnerAsync(int challengeId, CancellationToken ct = default)
     {
-        await using DataContext dataContext = await _dataContextFactory.CreateDbContextAsync(ct);
+        await using DataContext dataContext = await dataContextFactory.CreateDbContextAsync(ct);
 
         Challenge? challenge = await dataContext.Challenges
             .Include(c => c.Athletes)!
@@ -361,7 +354,7 @@ public class ChallengeService : IChallengeService
 
     public async Task ClearChallengeWinnerAsync(int challengeId, CancellationToken ct = default)
     {
-        await using DataContext dataContext = await _dataContextFactory.CreateDbContextAsync(ct);
+        await using DataContext dataContext = await dataContextFactory.CreateDbContextAsync(ct);
 
         Challenge? challenge = await dataContext.Challenges.FirstOrDefaultAsync(c => c.Id == challengeId, ct);
         if (challenge == null) return;

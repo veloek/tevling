@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Tevling.Data;
 
-public class DataContext : DbContext
+public class DataContext(DbContextOptions<DataContext> options) : DbContext(options)
 {
     public DbSet<Activity> Activities { get; set; }
     public DbSet<Athlete> Athletes { get; set; }
@@ -12,9 +12,6 @@ public class DataContext : DbContext
     public DbSet<Following> Following { get; set; }
 
 #pragma warning disable CS8618
-    public DataContext(DbContextOptions<DataContext> options) : base(options)
-    {
-    }
 #pragma warning restore CS8618
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

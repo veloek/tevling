@@ -3,21 +3,14 @@ using Microsoft.JSInterop;
 
 namespace Tevling.Services;
 
-public class BrowserTime : IBrowserTime, IAsyncDisposable
+public class BrowserTime(IJSRuntime jsRuntime, ILogger<BrowserTime> logger) : IBrowserTime, IAsyncDisposable
 {
-    private readonly IJSRuntime _jsRuntime;
-    private readonly ILogger _logger;
+    private readonly ILogger _logger = logger;
     private IJSObjectReference? _module;
-
-    public BrowserTime(IJSRuntime jsRuntime, ILogger<BrowserTime> logger)
-    {
-        _jsRuntime = jsRuntime;
-        _logger = logger;
-    }
 
     public async Task<DateTimeOffset> ConvertToLocal(DateTimeOffset dt, CancellationToken ct = default)
     {
-        _module ??= await _jsRuntime.InvokeAsync<IJSObjectReference>("import", ct, "./browser-time.js");
+        _module ??= await jsRuntime.InvokeAsync<IJSObjectReference>("import", ct, "./browser-time.js");
 
         // This format must be supported by the Date constructor in Javascript.
         // It must also match what the script browser-time.js is returning.
