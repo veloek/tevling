@@ -29,7 +29,7 @@ public class ActivityService : IActivityService
         long stravaActivityId,
         CancellationToken ct = default)
     {
-        using DataContext dataContext = await _dataContextFactory.CreateDbContextAsync(ct);
+        await using DataContext dataContext = await _dataContextFactory.CreateDbContextAsync(ct);
 
         Athlete athlete = await dataContext.Athletes
                 .FirstOrDefaultAsync(a => a.StravaId == stravaAthleteId, ct) ??
@@ -78,7 +78,7 @@ public class ActivityService : IActivityService
         long stravaActivityId,
         CancellationToken ct = default)
     {
-        using DataContext dataContext = await _dataContextFactory.CreateDbContextAsync(ct);
+        await using DataContext dataContext = await _dataContextFactory.CreateDbContextAsync(ct);
 
         Athlete athlete = await dataContext.Athletes
                 .FirstOrDefaultAsync(a => a.StravaId == stravaAthleteId, ct) ??
@@ -109,7 +109,7 @@ public class ActivityService : IActivityService
         long stravaActivityId,
         CancellationToken ct = default)
     {
-        using DataContext dataContext = await _dataContextFactory.CreateDbContextAsync(ct);
+        await using DataContext dataContext = await _dataContextFactory.CreateDbContextAsync(ct);
 
         Athlete athlete = await dataContext.Athletes
                 .FirstOrDefaultAsync(a => a.StravaId == stravaAthleteId, ct) ??
@@ -133,7 +133,7 @@ public class ActivityService : IActivityService
         Paging? paging = null,
         CancellationToken ct = default)
     {
-        using DataContext dataContext = await _dataContextFactory.CreateDbContextAsync(ct);
+        await using DataContext dataContext = await _dataContextFactory.CreateDbContextAsync(ct);
 
         Athlete athlete = await dataContext.Athletes
                 .AsQueryable()
@@ -149,7 +149,7 @@ public class ActivityService : IActivityService
                     (filter.IncludeFollowing && athlete.Following!.Select(a => a.Id).Contains(activity.AthleteId)))
             .OrderByDescending(activity => activity.Details.StartDate)
             .ThenBy(activity => activity.Id) // Need stable sorting for paging
-            .If(paging != null, x => x.Skip(paging!.Value.Page * paging!.Value.PageSize), x => (IQueryable<Activity>)x)
+            .If(paging != null, x => x.Skip(paging!.Value.Page * paging!.Value.PageSize), x => x)
             .If(paging != null, x => x.Take(paging!.Value.PageSize))
             .ToArrayAsync(ct);
 
@@ -162,7 +162,7 @@ public class ActivityService : IActivityService
             .FromAsync(
                 async ct =>
                 {
-                    using DataContext dataContext = await _dataContextFactory.CreateDbContextAsync(ct);
+                    await using DataContext dataContext = await _dataContextFactory.CreateDbContextAsync(ct);
 
                     Athlete? athlete = await dataContext.Athletes
                         .Include(a => a.Following)
@@ -189,7 +189,7 @@ public class ActivityService : IActivityService
         DateTimeOffset from,
         CancellationToken ct = default)
     {
-        using DataContext dataContext = await _dataContextFactory.CreateDbContextAsync(ct);
+        await using DataContext dataContext = await _dataContextFactory.CreateDbContextAsync(ct);
 
         Athlete? athlete = await _athleteService.GetAthleteByIdAsync(athleteId, ct);
         if (athlete is null)
