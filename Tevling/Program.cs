@@ -81,7 +81,7 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
 builder.Services.AddScoped<IBrowserTime, BrowserTime>();
 
-builder.Services.AddHttpClient<IStravaClient, StravaClient>();
+builder.Services.AddStravaClient();
 
 WebApplication app = builder.Build();
 
@@ -127,3 +127,6 @@ finally
 {
     Log.CloseAndFlush();
 }
+
+// Workaround to make Program public for tests
+public partial class Program { }
