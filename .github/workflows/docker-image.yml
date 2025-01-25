@@ -18,6 +18,10 @@ jobs:
       packages: write
     steps:
     - uses: actions/checkout@v3
+      
+    - name: Get APP_VERSION
+      id: get_version
+      run: echo "APP_VERSION=$(git describe --tags)" >> $GITHUB_ENV
 
     - name: Docker login
       run: docker login ghcr.io -u $CR_NAMESPACE -p $CR_TOKEN
@@ -26,4 +30,11 @@ jobs:
       run: docker buildx create --use --bootstrap
 
     - name: Docker build and push
-      run: docker buildx build . --push --file Dockerfile --tag ghcr.io/$CR_NAMESPACE/tevling:$GITHUB_SHA --tag ghcr.io/$CR_NAMESPACE/tevling:latest --platform linux/arm64,linux/amd64
+      run:  |
+        docker buildx build . \
+          --push \
+          --file Dockerfile \
+          --build-arg APP_VERSION=${{ env.APP_VERSION }} \
+          --tag ghcr.io/$CR_NAMESPACE/tevling:$GITHUB_SHA \
+          --tag ghcr.io/$CR_NAMESPACE/tevling:latest \
+          --platform linux/arm64,linux/amd64
