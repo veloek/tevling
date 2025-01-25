@@ -17,8 +17,10 @@ jobs:
       contents: read
       packages: write
     steps:
-    - uses: actions/checkout@v3
-      
+    - uses: actions/checkout@v4
+      with:
+        fetch-tags: true
+
     - name: Get APP_VERSION
       id: get_version
       run: echo "APP_VERSION=$(git describe --tags)" >> $GITHUB_ENV
