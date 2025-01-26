@@ -18,6 +18,7 @@ spec:
           containers:
           - name: tevling
             image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+            imagePullPolicy: Always
             args: ['import', '1']
             env:
             - name: TEVLING_APPSETTINGS
