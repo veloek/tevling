@@ -26,15 +26,15 @@ spec:
             - secretRef:
                 name: {{ include "tevling.fullname" . }}
             securityContext:
-            {{- .Values.securityContext | toYaml | nindent 10 }}
+            {{- .Values.securityContext | toYaml | nindent 14 }}
             resources:
-            {{- .Values.resources | toYaml | nindent 10 }}
+            {{- .Values.resources | toYaml | nindent 14 }}
             volumeMounts:
             - mountPath: {{ .Values.appSettingsPath | dir }}
               name: config
           restartPolicy: OnFailure
           securityContext:
-          {{- .Values.podSecurity | toYaml | nindent 8 }}
+          {{- .Values.podSecurity | toYaml | nindent 12 }}
           volumes:
           - name: config
             configMap:
