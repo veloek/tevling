@@ -5,10 +5,12 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.FeatureManagement;
 using Serilog;
+using Serilog.Events;
 
 Log.Logger = new LoggerConfiguration()
-    .WriteTo
-    .Console()
+    .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
+    .Enrich.FromLogContext()
+    .WriteTo.Console()
     .CreateBootstrapLogger();
 
 Log.Information("Starting Tevling...");
@@ -25,12 +27,10 @@ if (!string.IsNullOrEmpty(appSettingsPath))
 
 builder.Host.UseSerilog(
     (context, services, configuration) => configuration
-        .ReadFrom
-        .Configuration(context.Configuration)
-        .ReadFrom
-        .Services(services)
-        .Enrich
-        .FromLogContext());
+        .ReadFrom.Configuration(context.Configuration)
+        .ReadFrom.Services(services)
+        .Enrich.FromLogContext()
+        .WriteTo.Console());
 
 // Add services to the container.
 builder.Services.AddRazorPages();
@@ -92,6 +92,7 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseStaticFiles();
+app.UseSerilogRequestLogging();
 app.UseRouting();
 app.UseRequestLocalization(
     new RequestLocalizationOptions()
@@ -101,9 +102,7 @@ app.UseRequestLocalization(
 
 app.UseAuthentication();
 app.UseAuthorization();
-
 app.UseAntiforgery();
-app.UseSerilogRequestLogging();
 
 app.MapHealthChecks("healthz");
 app.MapControllers();
