@@ -6,6 +6,7 @@
     <button class="btn btn-primary" @onclick="AddOthersChallenge" disabled="@NoOtherAthletes">Add challenge by others</button>
     <button class="btn btn-primary" @onclick="AddOthersPrivateChallenge" disabled="@NoOtherAthletes">Add private challenge by others</button>
     <button class="btn btn-primary" @onclick="AddOthersPrivateChallengeInvited" disabled="@NoOtherAthletes">Add private challenge by others where you're invited</button>
+    <button class="btn btn-primary" @onclick="() => ImportAllAthletesActivities(1)" disabled="@NoOtherAthletes">Import last 24 hours of activities for ALL athletes</button>
     <button class="btn btn-primary" @onclick="() => ImportAllAthletesActivities(7)" disabled="@NoOtherAthletes">Import last 7 days of activities for ALL athletes</button>
     <button class="btn btn-primary" @onclick="() => ImportAllAthletesActivities(14)" disabled="@NoOtherAthletes">Import last 14 days of activities for ALL athletes</button>
     <div class="d-flex flex-row cg-3">
