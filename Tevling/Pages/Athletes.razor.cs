@@ -11,6 +11,7 @@ public partial class Athletes : ComponentBase, IDisposable
     private int _page;
     private readonly int _pageSize = 10;
     private bool _showOnlyFollowing;
+    private bool _showOnlyFollowers;
     private Athlete[] AthleteList { get; set; } = [];
     private Athlete Athlete { get; set; } = default!;
 
@@ -22,6 +23,16 @@ public partial class Athletes : ComponentBase, IDisposable
         set
         {
             _showOnlyFollowing = value;
+            OnFilterChange();
+        }
+    }
+    
+    private bool ShowOnlyFollowers
+    {
+        get => _showOnlyFollowers;
+        set
+        {
+            _showOnlyFollowers = value;
             OnFilterChange();
         }
     }
@@ -126,6 +137,7 @@ public partial class Athletes : ComponentBase, IDisposable
         AthleteList = _athletes
             .Where(athlete => athlete.Id != Athlete.Id)
             .Where(athlete => !ShowOnlyFollowing || Athlete.IsFollowing(athlete.Id))
+            .Where(athlete => !ShowOnlyFollowers || Athlete.IsFollower(athlete.Id))
             .OrderBy(athlete => athlete.Name)
             .ToArray();
 
