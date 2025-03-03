@@ -130,6 +130,25 @@ public class AthleteService(
         return athlete;
     }
 
+    public async Task<Athlete> RemoveFollowerAsync(Athlete athlete, int followerId, CancellationToken ct = default)
+    {
+        await using DataContext dataContext = await dataContextFactory.CreateDbContextAsync(ct);
+
+        Following? existing = await dataContext.Following
+            .Where(f => f.FollowerId == followerId && f.FolloweeId == athlete.Id)
+            .FirstOrDefaultAsync(ct);
+
+        if (existing is not null)
+        {
+            await dataContext.RemoveFollowingAsync(existing, ct);
+        }
+
+        // Get an updated version of the athlete
+        athlete = await GetAthleteByIdAsync(athlete.Id, ct) ?? throw new Exception("Athlete is gone");
+
+        return athlete;
+    }
+
     public async Task<Athlete> SetHasImportedActivities(int athleteId, CancellationToken ct = default)
     {
         await using DataContext dataContext = await dataContextFactory.CreateDbContextAsync(ct);

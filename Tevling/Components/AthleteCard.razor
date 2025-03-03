@@ -27,6 +27,21 @@
                 </span>
             </div>
         }
+        
+        @if (IsFollower)
+        {
+            <button class="btn btn-outline-danger" @onclick="() => RemoveFollower.InvokeAsync()">
+                <i class="bi bi-trash" aria-hidden="true"></i>
+                Remove follower
+            </button>
+        }
+        else
+        {
+            <button class="btn">
+                <i class="bi bi-trash" aria-hidden="true"></i>
+                Remove follower
+            </button>
+        }
 
         <div class="d-flex flex-row align-items-center strava-link column-gap-1">
             <a target="_blank" href="https://www.strava.com/athletes/@Athlete.StravaId">View on Strava</a>
