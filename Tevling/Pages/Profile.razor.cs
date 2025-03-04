@@ -56,4 +56,10 @@ public partial class Profile : ComponentBase
         Athlete = await AthleteService.ToggleFollowingAsync(Athlete, followingId);
         await InvokeAsync(StateHasChanged);
     }
+
+    private async Task RemoveFollower(int followerId)
+    {
+        Athlete = await AthleteService.RemoveFollowerAsync(Athlete, followerId);
+        await InvokeAsync(StateHasChanged);
+    }
 }

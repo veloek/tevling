@@ -27,7 +27,7 @@
                 </span>
             </div>
         }
-        
+
         @if (IsFollower)
         {
             <button class="btn btn-outline-danger" @onclick="() => RemoveFollower.InvokeAsync()">
@@ -37,7 +37,7 @@
         }
         else
         {
-            <button class="btn">
+            <button class="btn btn-outline-secondary invisible" disabled>
                 <i class="bi bi-trash" aria-hidden="true"></i>
                 Remove follower
             </button>

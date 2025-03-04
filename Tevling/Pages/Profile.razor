@@ -24,7 +24,9 @@
                     {
                         <AthleteCard Athlete="@follower"
                                      IsFollowing="Athlete.IsFollowing(follower.Id)"
-                                     FollowingStatusChanged="() => ToggleFollowing(follower.Id)" />
+                                     FollowingStatusChanged="() => ToggleFollowing(follower.Id)"
+                                     IsFollower="@Athlete.IsFollower(follower.Id)"
+                                     RemoveFollower="() => RemoveFollower(follower.Id)" />
                     }
                 </div>
             }

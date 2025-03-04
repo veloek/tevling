@@ -79,12 +79,6 @@ public partial class Athletes : ComponentBase, IDisposable
         Athlete = await AthleteService.ToggleFollowingAsync(Athlete, followingId);
         await InvokeAsync(StateHasChanged);
     }
-    
-    private async Task RemoveFollower(int followerId)
-    {
-        Athlete = await AthleteService.RemoveFollowerAsync(Athlete, followerId);
-        await InvokeAsync(StateHasChanged);
-    }
 
     private void SubscribeToAthleteFeed()
     {
