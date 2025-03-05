@@ -16,6 +16,8 @@ public class Athlete
     public ICollection<Challenge>? Challenges { get; set; }
     public ICollection<Athlete>? Following { get; set; }
     public ICollection<Athlete>? Followers { get; set; }
+    public ICollection<Athlete>? PendingFollowing { get; set; }
+    public ICollection<Athlete>? PendingFollowers { get; set; }
 
     public bool IsFollowing(int athleteId)
     {
@@ -26,6 +28,16 @@ public class Athlete
     public bool IsFollower(int athleteId)
     {
         bool? result = Followers?.Select(athlete => athlete.Id).Contains(athleteId);
+        return result == true;
+    }
+    public bool IsPendingFollowing(int athleteId)
+    {
+        bool? result = PendingFollowing?.Select(athlete => athlete.Id).Contains(athleteId);
+        return result == true;
+    }
+    public bool IsPendingFollower(int athleteId)
+    {
+        bool? result = PendingFollowers?.Select(athlete => athlete.Id).Contains(athleteId);
         return result == true;
     }
 }

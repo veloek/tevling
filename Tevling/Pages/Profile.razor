@@ -2,7 +2,7 @@
 
 <h1 class="title mb-5">Profile</h1>
 <div class="profile d-flex flex-row column-gap-2 mb-5">
-    <Avatar Url="@Athlete.ImgUrl" Size="50" />
+    <Avatar Url="@Athlete.ImgUrl" Size="50"/>
     <div class="d-flex flex-column">
         <span class="profile-name">@Athlete.Name</span>
         <span class="member-since">Member since @CreatedTime</span>
@@ -11,6 +11,32 @@
 
 <div class="d-flex flex-row flex-wrap">
     <div class="profile-info d-flex flex-column row-gap-5">
+
+        <div class="follow-requests">
+            <h2 class="mb-3">Follow Requests</h2>
+            @if (Athlete.PendingFollowers?.Count == 0 || Athlete.PendingFollowers is null)
+            {
+                <span>Great work, You have no pending follower requests</span>
+            }
+            else
+            {
+                <div class="d-flex flex-column row-gap-3">
+                    @foreach (Athlete? pendingFollower in Athlete.PendingFollowers)
+                    {
+                        <AthleteCard Athlete="@pendingFollower"
+                                     IsFollowing="Athlete.IsFollowing(pendingFollower.Id)"
+                                     FollowingStatusChanged="() => ToggleFollowing(pendingFollower.Id)"
+                                     IsFollower="@Athlete.IsFollower(pendingFollower.Id)"
+                                     IsPendingFollowing="@Athlete.IsPendingFollowing(pendingFollower.Id)"
+                                     IsPendingFollower="@Athlete.IsPendingFollower(pendingFollower.Id)"
+                                     AcceptFollower="() => AcceptFollower(pendingFollower.Id)"
+                                     DeclineFollower="() => DeclineFollower(pendingFollower.Id)"
+                        />
+                    }
+                </div>
+            }
+        </div>
+        
         <div class="followers">
             <h2 class="mb-3">Followers</h2>
             @if (Athlete.Followers?.Count == 0 || Athlete.Followers is null)
@@ -20,12 +46,14 @@
             else
             {
                 <div class="d-flex flex-column row-gap-3">
+
                     @foreach (Athlete? follower in Athlete.Followers)
                     {
                         <AthleteCard Athlete="@follower"
                                      IsFollowing="Athlete.IsFollowing(follower.Id)"
                                      FollowingStatusChanged="() => ToggleFollowing(follower.Id)"
                                      IsFollower="@Athlete.IsFollower(follower.Id)"
+                                     IsPendingFollowing="@Athlete.IsPendingFollowing(follower.Id)"
                                      RemoveFollower="() => RemoveFollower(follower.Id)" />
                     }
                 </div>
@@ -34,28 +62,42 @@
 
         <div class="following mb-5">
             <h2 class="mb-3">Following</h2>
-            @if (Athlete.Following?.Count == 0 || Athlete.Following is null)
+            @if ((Athlete.Following?.Count == 0 || Athlete.Following is null) && (Athlete.PendingFollowing?.Count == 0 || Athlete.PendingFollowing is null))
             {
                 <span>You're not following anyone 😕</span>
             }
             else
             {
                 <div class="d-flex flex-column row-gap-3">
-                    @foreach (Athlete? following in Athlete.Following)
+                    @if (Athlete.Following is not null)
                     {
-                        <AthleteCard Athlete="@following"
-                                     IsFollowing="true"
-                                     FollowingStatusChanged="() => ToggleFollowing(following.Id)" />
+                        @foreach (Athlete? following in Athlete.Following)
+                        {
+                            <AthleteCard Athlete="@following"
+                                         IsFollowing="true"
+                                         FollowingStatusChanged="() => ToggleFollowing(following.Id)" />
+                        }
+                    }
+                    @if (Athlete.PendingFollowing is not null)
+                    {
+                        @foreach (Athlete? pendingAthlete in Athlete.PendingFollowing)
+                        {
+                            <AthleteCard Athlete="@pendingAthlete"
+                                         IsFollowing="@Athlete.IsFollowing(pendingAthlete.Id)"
+                                         IsPendingFollowing="@Athlete.IsPendingFollowing(pendingAthlete.Id)"
+                                         FollowingStatusChanged="() => ToggleFollowing(pendingAthlete.Id)" />
+                        }
                     }
                 </div>
             }
 
         </div>
+
     </div>
     <div class="profile-actions mb-5">
         <div class="d-flex flex-column row-gap-3">
             <h4 class="mt-4">Import activities from Strava</h4>
-            <span>Import last 30 days of activities to get started! <br /> (This can only be done once)</span>
+            <span>Import last 30 days of activities to get started! <br/> (This can only be done once)</span>
             <button class="btn btn-primary" @onclick="Import" disabled="@(Importing || Athlete.HasImportedActivities)">
                 <i class="bi bi-box-arrow-in-down me-1" aria-hidden="true"></i>
                 @if (Athlete.HasImportedActivities)
@@ -80,14 +122,15 @@
         <div class="d-flex flex-column row-gap-2">
             <h4 class="mt-4">Sign out</h4>
             <span>If using a public/shared computer, please remember to sign out.</span>
-            <a class="btn btn-secondary mt-1" href="/auth/logout"><i class="bi bi-box-arrow-right me-1" aria-hidden="true"></i>Sign out</a>
+            <a class="btn btn-secondary mt-1" href="/auth/logout"><i class="bi bi-box-arrow-right me-1"
+                                                                     aria-hidden="true"></i>Sign out</a>
         </div>
 
         <div class="d-flex flex-column row-gap-2">
             <h4 class="mt-4">Delete account</h4>
             <span class="text-danger">
                 Delete user account and deauthorize application. All data will be
-                removed.<br />NB! This cannot be undone!
+                removed.<br/>NB! This cannot be undone!
             </span>
             <a class="btn btn-danger mt-1" data-bs-toggle="modal" data-bs-target="#deleteAccount">
                 <i class="bi bi-trash-fill me-1" aria-hidden="true"></i>Forget me
@@ -106,7 +149,8 @@
         <span class="text-center delete-account-modal-text">Are you sure you want to delete your Tevling account?</span>
     </BodyContent>
     <FooterContent>
-        <a class="btn btn-danger mt-1 delete-account-modal-button" href="/auth/logout?deauthorize=true">Delete account</a>
+        <a class="btn btn-danger mt-1 delete-account-modal-button" href="/auth/logout?deauthorize=true">Delete
+            account</a>
         <button class="btn btn-secondary mt-1 delete-account-modal-button" data-bs-dismiss="modal">Cancel</button>
     </FooterContent>
 </Modal>

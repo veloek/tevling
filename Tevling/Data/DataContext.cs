@@ -44,7 +44,7 @@ public class DataContext(DbContextOptions<DataContext> options) : DbContext(opti
                 e => e.HasOne<Athlete>().WithMany().HasForeignKey(e => e.FollowerId));
         
         modelBuilder.Entity<Athlete>()
-            .HasMany(a => a.FollowRequests)
+            .HasMany(a => a.PendingFollowing)
             .WithMany(a => a.PendingFollowers)
             .UsingEntity<FollowRequest>(
                 e => e.HasOne<Athlete>().WithMany().HasForeignKey(e => e.FolloweeId),
