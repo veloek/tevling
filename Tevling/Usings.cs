@@ -1,3 +1,4 @@
+global using System;
 global using System.Reactive.Linq;
 global using Microsoft.AspNetCore.Components;
 global using Tevling;
