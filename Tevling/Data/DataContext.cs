@@ -10,6 +10,8 @@ public class DataContext(DbContextOptions<DataContext> options) : DbContext(opti
     public DbSet<Athlete> Athletes { get; set; }
     public DbSet<Challenge> Challenges { get; set; }
     public DbSet<Following> Following { get; set; }
+    
+    public DbSet<FollowRequest> FollowRequests { get; set; }
 
 #pragma warning disable CS8618
 #pragma warning restore CS8618
@@ -38,6 +40,13 @@ public class DataContext(DbContextOptions<DataContext> options) : DbContext(opti
             .HasMany(a => a.Following)
             .WithMany(a => a.Followers)
             .UsingEntity<Following>(
+                e => e.HasOne<Athlete>().WithMany().HasForeignKey(e => e.FolloweeId),
+                e => e.HasOne<Athlete>().WithMany().HasForeignKey(e => e.FollowerId));
+        
+        modelBuilder.Entity<Athlete>()
+            .HasMany(a => a.FollowRequests)
+            .WithMany(a => a.PendingFollowers)
+            .UsingEntity<FollowRequest>(
                 e => e.HasOne<Athlete>().WithMany().HasForeignKey(e => e.FolloweeId),
                 e => e.HasOne<Athlete>().WithMany().HasForeignKey(e => e.FollowerId));
 
@@ -149,10 +158,25 @@ public class DataContext(DbContextOptions<DataContext> options) : DbContext(opti
         entry.State = EntityState.Detached;
         return entry.Entity;
     }
+    public async Task<FollowRequest> AddFollowerRequestAsync(FollowRequest followRequest, CancellationToken ct = default)
+    {
+        EntityEntry<FollowRequest> entry = await FollowRequests.AddAsync(followRequest, ct);
+        _ = await SaveChangesAsync(ct);
+        entry.State = EntityState.Detached;
+        return entry.Entity;
+    }
 
     public async Task<Following> RemoveFollowingAsync(Following following, CancellationToken ct = default)
     {
         EntityEntry<Following> entry = Following.Remove(following);
+        _ = await SaveChangesAsync(ct);
+        entry.State = EntityState.Detached;
+        return entry.Entity;
+    }
+    
+    public async Task<FollowRequest> RemoveFollowRequestAsync(FollowRequest followRequest, CancellationToken ct = default)
+    {
+        EntityEntry<FollowRequest> entry = FollowRequests.Remove(followRequest);
         _ = await SaveChangesAsync(ct);
         entry.State = EntityState.Detached;
         return entry.Entity;
