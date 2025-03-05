@@ -2,7 +2,7 @@ using System.Text.Json.Serialization;
 
 namespace Tevling.Strava;
 
-public class Split
+public class SplitDetails
 {
     [JsonPropertyName("average_speed")]
     // The average speed of this split, in meters per second
@@ -18,7 +18,7 @@ public class Split
 
     [JsonPropertyName("elevation_difference")]
     // The elevation difference of this split, in meters
-    public float ElevationDifference { get; set; }
+    public float? ElevationDifference { get; set; }
 
     [JsonPropertyName("pace_zone")]
     // The pacing zone of this split
@@ -30,5 +30,5 @@ public class Split
 
     [JsonPropertyName("split")]
     // N/A
-    public int SplitTime { get; set; }
+    public int Split { get; set; }
 }
