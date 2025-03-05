@@ -175,4 +175,15 @@ public partial class DevTools : ComponentBase
             await ChallengeService.ClearChallengeWinnerAsync(ClearChallengeWinnerId);
         }
     }
+
+    private async Task AcceptAllFollowerRequests()
+    {
+        if (Athlete is null)
+            throw new ArgumentException(nameof(Athlete));
+
+        foreach (Athlete followRequest in Athlete.PendingFollowing ?? Enumerable.Empty<Athlete>())
+        {
+            await AthleteService.AcceptFollowerAsync(followRequest, Athlete.Id);            
+        }
+    }
 }
