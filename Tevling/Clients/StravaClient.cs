@@ -110,9 +110,9 @@ public class StravaClient : IStravaClient
         }
         catch
         {
-            // This was necessary to debug some deserialization issues in prod.
-            // Turns out the Strava API documentation is not 100% accurate...
-            _logger.LogInformation(responseBody);
+            // Log json to help debug deserialization issues
+            // Turns out the Strava API documentation isn't 100% accurate...
+            _logger.LogError("Error deserializing activity: {Response:j}", responseBody);
             throw;
         }
     }
@@ -149,9 +149,9 @@ public class StravaClient : IStravaClient
         }
         catch
         {
-            // This was necessary to debug some deserialization issues in prod.
-            // Turns out the Strava API documentation is not 100% accurate...
-            _logger.LogInformation(responseBody);
+            // Log json to help debug deserialization issues
+            // Turns out the Strava API documentation isn't 100% accurate...
+            _logger.LogError("Error deserializing activities: {Response:j}", responseBody);
             throw;
         }
     }
