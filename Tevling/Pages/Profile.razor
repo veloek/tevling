@@ -12,14 +12,10 @@
 <div class="d-flex flex-row flex-wrap">
     <div class="profile-info d-flex flex-column row-gap-5">
 
-        <div class="follow-requests">
-            <h2 class="mb-3">Follow Requests</h2>
-            @if (Athlete.PendingFollowers?.Count == 0 || Athlete.PendingFollowers is null)
-            {
-                <span>Great work, You have no pending follower requests</span>
-            }
-            else
-            {
+        @if (Athlete.PendingFollowers?.Count > 0 && Athlete.PendingFollowers is not null)
+        {
+            <div class="follow-requests">
+                <h2 class="mb-3">Follow Requests</h2>
                 <div class="d-flex flex-column row-gap-3">
                     @foreach (Athlete? pendingFollower in Athlete.PendingFollowers)
                     {
@@ -34,8 +30,8 @@
                         />
                     }
                 </div>
-            }
-        </div>
+            </div>
+        }
         
         <div class="followers">
             <h2 class="mb-3">Followers</h2>
