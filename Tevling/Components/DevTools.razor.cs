@@ -181,7 +181,7 @@ public partial class DevTools : ComponentBase
         if (Athlete is null)
             throw new ArgumentException(nameof(Athlete));
 
-        foreach (Athlete followRequest in Athlete.PendingFollowing ?? Enumerable.Empty<Athlete>())
+        foreach (Athlete followRequest in Athlete.PendingFollowing ?? [])
         {
             await AthleteService.AcceptFollowerAsync(followRequest, Athlete.Id);            
         }
