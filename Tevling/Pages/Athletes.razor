@@ -9,12 +9,18 @@
     Show only following
 </label>
 
+<label class="mb-5">
+    <input class="form-check-input me-1" type="checkbox" @bind-value="ShowOnlyFollowers" />
+    Show only followers
+</label>
+
 <div class="athletes d-flex flex-column row-gap-3">
     @foreach (Athlete? athlete in AthleteList)
     {
         <AthleteCard Athlete="@athlete"
                      IsFollowing="@Athlete.IsFollowing(athlete.Id)"
-                     FollowingStatusChanged="() => ToggleFollowing(athlete.Id)" />
+                     IsPendingFollowing="@Athlete.IsPendingFollowing(athlete.Id)"
+                     FollowingStatusChanged="() => ToggleFollowing(athlete.Id)"/>
     }
 </div>
 

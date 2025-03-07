@@ -18,6 +18,15 @@
                 </span>
             </div>
         }
+        else if (IsPendingFollowing)
+        {
+            <div class="unfollow-button" @onclick="() => FollowingStatusChanged.InvokeAsync()">
+                <i class="bi bi-heart-half" aria-hidden="true"></i>
+                <span class="unfollow-button-text">
+                    Pending
+                </span>
+            </div>
+        }
         else
         {
             <div class="follow-button" @onclick="() => FollowingStatusChanged.InvokeAsync()">
@@ -26,6 +35,34 @@
                     Follow
                 </span>
             </div>
+        }
+
+        @if (IsFollower)
+        {
+            <button class="btn btn-outline-danger invisible" disabled="">
+                <i class="bi bi-x-circle" aria-hidden="true"></i>
+            </button>
+            <button class="btn btn-outline-danger" @onclick="() => RemoveFollower.InvokeAsync()">
+                <i class="bi bi-trash" aria-hidden="true"></i>
+            </button>
+        }
+        else if (IsPendingFollower)
+        {
+            <button class="btn btn-outline-success" @onclick="() => AcceptFollower.InvokeAsync()">
+                <i class="bi bi-check-circle" aria-hidden="true"></i>
+            </button>
+            <button class="btn btn-outline-danger" @onclick="() => DeclineFollower.InvokeAsync()">
+                <i class="bi bi-x-circle" aria-hidden="true"></i>
+            </button>
+        }
+        else
+        {
+            <button class="btn btn-outline-danger invisible" disabled>
+                <i class="bi bi-trash" aria-hidden="true"></i>
+            </button>
+            <button class="btn btn-outline-danger invisible" disabled>
+                <i class="bi bi-x-circle" aria-hidden="true"></i>
+            </button>
         }
 
         <div class="d-flex flex-row align-items-center strava-link column-gap-1">

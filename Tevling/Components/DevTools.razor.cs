@@ -147,12 +147,43 @@ public partial class DevTools : ComponentBase
                 CreatedBy = Athlete.Id,
             });
     }
+    
+    private async Task AddFollower()
+    {
+        int id = Random.Shared.Next(100, 1000);
+        Athlete follower = await AthleteService.UpsertAthleteAsync(
+            Random.Shared.Next(10000, 100000),
+            $"Athlete {id}",
+            null,
+            "",
+            "",
+            default);
+        _athletes = await AthleteService.GetAthletesAsync();
+        
+        
+        if (Athlete is null)
+            throw new ArgumentException(nameof(Athlete));
+        
+        await AthleteService.ToggleFollowingAsync(
+             follower, Athlete.Id);
+    }
 
     private async Task ClearChallengeWinner()
     {
         if (ClearChallengeWinnerId > 0)
         {
             await ChallengeService.ClearChallengeWinnerAsync(ClearChallengeWinnerId);
+        }
+    }
+
+    private async Task AcceptAllFollowerRequests()
+    {
+        if (Athlete is null)
+            throw new ArgumentException(nameof(Athlete));
+
+        foreach (Athlete followRequest in Athlete.PendingFollowing ?? [])
+        {
+            await AthleteService.AcceptFollowerAsync(followRequest, Athlete.Id);            
         }
     }
 }

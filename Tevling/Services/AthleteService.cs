@@ -20,6 +20,8 @@ public class AthleteService(
             .Include(a => a.Challenges)
             .Include(a => a.Following)
             .Include(a => a.Followers)
+            .Include(a => a.PendingFollowing)
+            .Include(a => a.PendingFollowers)
             .AsSplitQuery()
             .FirstOrDefaultAsync(a => a.Id == athleteId, ct);
 
@@ -111,13 +113,25 @@ public class AthleteService(
 
         if (existing is null)
         {
-            await dataContext.AddFollowingAsync(
-                new Following
-                {
-                    FollowerId = athlete.Id,
-                    FolloweeId = followingId,
-                },
-                ct);
+            
+            FollowRequest? pending = await dataContext.FollowRequests
+                .Where(fr => fr.FollowerId == athlete.Id && fr.FolloweeId == followingId)
+                .FirstOrDefaultAsync(ct);
+
+            if (pending is null)
+            {
+                await dataContext.AddFollowerRequestAsync(
+                    new FollowRequest
+                    {
+                        FollowerId = athlete.Id,
+                        FolloweeId = followingId,
+                    },
+                    ct);
+            }
+            else
+            {
+                await dataContext.RemoveFollowRequestAsync(pending, ct);
+            }
         }
         else
         {
@@ -125,6 +139,70 @@ public class AthleteService(
         }
 
         // Get an updated version of the athlete
+        athlete = await GetAthleteByIdAsync(athlete.Id, ct) ?? throw new Exception("Athlete is gone");
+
+        return athlete;
+    }
+
+    public async Task<Athlete> RemoveFollowerAsync(Athlete athlete, int followerId, CancellationToken ct = default)
+    {
+        await using DataContext dataContext = await dataContextFactory.CreateDbContextAsync(ct);
+
+        Following? existing = await dataContext.Following
+            .Where(f => f.FollowerId == followerId && f.FolloweeId == athlete.Id)
+            .FirstOrDefaultAsync(ct);
+
+        if (existing is not null)
+        {
+            await dataContext.RemoveFollowingAsync(existing, ct);
+        }
+
+        // Get an updated version of the athlete
+        athlete = await GetAthleteByIdAsync(athlete.Id, ct) ?? throw new Exception("Athlete is gone");
+
+        return athlete;
+    }
+
+    public async Task<Athlete> AcceptFollowerAsync(Athlete athlete, int followerId, CancellationToken ct = default)
+    {
+        await using DataContext dataContext = await dataContextFactory.CreateDbContextAsync(ct);
+        
+        FollowRequest? pending = await dataContext.FollowRequests
+            .Where(fr => fr.FollowerId == followerId && fr.FolloweeId == athlete.Id)
+            .FirstOrDefaultAsync(ct);
+
+        if (pending is not null)
+        {
+            await dataContext.RemoveFollowRequestAsync(pending, ct);
+        }
+        
+        
+        await dataContext.AddFollowingAsync(
+            new Following
+            {
+                FollowerId = followerId,
+                FolloweeId = athlete.Id,
+            },
+            ct);
+
+        athlete = await GetAthleteByIdAsync(athlete.Id, ct) ?? throw new Exception("Athlete is gone");
+
+        return athlete;
+    }
+    
+    public async Task<Athlete> DeclineFollowerAsync(Athlete athlete, int followerId, CancellationToken ct = default)
+    {
+        await using DataContext dataContext = await dataContextFactory.CreateDbContextAsync(ct);
+        
+        FollowRequest? pending = await dataContext.FollowRequests
+            .Where(fr => fr.FollowerId == followerId && fr.FolloweeId == athlete.Id)
+            .FirstOrDefaultAsync(ct);
+
+        if (pending is not null)
+        {
+            await dataContext.RemoveFollowRequestAsync(pending, ct);
+        }
+
         athlete = await GetAthleteByIdAsync(athlete.Id, ct) ?? throw new Exception("Athlete is gone");
 
         return athlete;

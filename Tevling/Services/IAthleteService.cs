@@ -19,6 +19,9 @@ public interface IAthleteService
         CancellationToken ct = default);
 
     Task<Athlete> ToggleFollowingAsync(Athlete athlete, int followingId, CancellationToken ct = default);
+    Task<Athlete> RemoveFollowerAsync(Athlete athlete, int followerId, CancellationToken ct = default);
+    Task<Athlete> AcceptFollowerAsync(Athlete athlete, int followerId, CancellationToken ct = default);
+    Task<Athlete> DeclineFollowerAsync(Athlete athlete, int followerId, CancellationToken ct = default);
 
     Task<Athlete> SetHasImportedActivities(int athleteId, CancellationToken ct = default);
 
