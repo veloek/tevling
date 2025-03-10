@@ -83,6 +83,8 @@ builder.Services.AddScoped<IBrowserTime, BrowserTime>();
 
 builder.Services.AddStravaClient();
 
+builder.Services.AddHostedService<BatchImportService>();
+
 WebApplication app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -114,16 +116,9 @@ try
     {
         IDbContextFactory<DataContext> dataContextFactory =
             serviceScope.ServiceProvider.GetRequiredService<IDbContextFactory<DataContext>>();
-        await InitDb(dataContextFactory);
 
-        if (args.FirstOrDefault() is "import")
-        {
-            IAthleteService athleteService = serviceScope.ServiceProvider.GetRequiredService<IAthleteService>();
-            IActivityService activityService = serviceScope.ServiceProvider.GetRequiredService<IActivityService>();
-
-            await BatchImport(athleteService, activityService, args.ElementAtOrDefault(1));
-            return;
-        }
+        await using DataContext dataContext = await dataContextFactory.CreateDbContextAsync();
+        await dataContext.Database.MigrateAsync();
     }
 
     await app.RunAsync();
@@ -135,41 +130,6 @@ catch (Exception e)
 finally
 {
     Log.CloseAndFlush();
-}
-
-return;
-
-static async Task InitDb(IDbContextFactory<DataContext> dataContextFactory)
-{
-    await using DataContext dataContext = await dataContextFactory.CreateDbContextAsync();
-    await dataContext.Database.MigrateAsync();
-}
-
-static async Task BatchImport(IAthleteService athleteService, IActivityService activityService, string? timeSpan)
-{
-    TimeSpan maxSpan = TimeSpan.FromDays(7);
-    TimeSpan span = TimeSpan.FromDays(1);
-
-    if (timeSpan != null)
-    {
-        if (!TimeSpan.TryParse(timeSpan, out span))
-            throw new ArgumentException("invalid timespan: " + timeSpan);
-
-        if (span > maxSpan)
-            throw new ArgumentException("timespan too long, max: " + maxSpan);
-    }
-
-    DateTimeOffset from = DateTimeOffset.Now - span;
-    Athlete[] athletes = await athleteService.GetAthletesAsync();
-
-    Log.Information("Batch importing activities for {AthleteCount} athletes from {From}", athletes.Length, from);
-
-    foreach (Athlete athlete in athletes)
-    {
-        await activityService.ImportActivitiesForAthleteAsync(athlete.Id, from);
-    }
-
-    Log.Information("Batch import done");
 }
 
 // Workaround to make Program public for tests
