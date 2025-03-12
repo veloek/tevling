@@ -29,8 +29,7 @@ builder.Host.UseSerilog(
     (context, services, configuration) => configuration
         .ReadFrom.Configuration(context.Configuration)
         .ReadFrom.Services(services)
-        .Enrich.FromLogContext()
-        .WriteTo.Console());
+        .Enrich.FromLogContext());
 
 // Add services to the container.
 builder.Services.AddRazorPages();
