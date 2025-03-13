@@ -12,7 +12,6 @@ public class StravaClient : IStravaClient
     private readonly StravaConfig _stravaConfig;
     private readonly HttpClient _httpClient;
 
-
     public StravaClient(
         ILogger<StravaClient> logger,
         StravaConfig stravaConfig,
@@ -52,8 +51,7 @@ public class StravaClient : IStravaClient
 
         HttpResponseMessage response = await _httpClient.PostAsync(_stravaConfig.TokenUri, content, ct);
 
-        // TODO: Handle error properly
-        _ = response.EnsureSuccessStatusCode();
+        await ThrowIfUnsuccessful(response, ct);
 
         string responseBody = await response.Content.ReadAsStringAsync(ct);
         TokenResponse tokenResponse = JsonSerializer.Deserialize<TokenResponse>(responseBody) ??
@@ -77,8 +75,7 @@ public class StravaClient : IStravaClient
 
         HttpResponseMessage response = await _httpClient.PostAsync(_stravaConfig.TokenUri, content, ct);
 
-        // TODO: Handle error properly
-        _ = response.EnsureSuccessStatusCode();
+        await ThrowIfUnsuccessful(response, ct);
 
         string responseBody = await response.Content.ReadAsStringAsync(ct);
         TokenResponse tokenResponse = JsonSerializer.Deserialize<TokenResponse>(responseBody) ??
@@ -97,8 +94,7 @@ public class StravaClient : IStravaClient
 
         HttpResponseMessage response = await _httpClient.SendAsync(request, ct);
 
-        // TODO: Handle error properly
-        _ = response.EnsureSuccessStatusCode();
+        await ThrowIfUnsuccessful(response, ct);
 
         string responseBody = await response.Content.ReadAsStringAsync(ct);
         try
@@ -136,8 +132,7 @@ public class StravaClient : IStravaClient
 
         HttpResponseMessage response = await _httpClient.SendAsync(request, ct);
 
-        // TODO: Handle error properly
-        _ = response.EnsureSuccessStatusCode();
+        await ThrowIfUnsuccessful(response, ct);
 
         string responseBody = await response.Content.ReadAsStringAsync(ct);
         try
@@ -162,5 +157,19 @@ public class StravaClient : IStravaClient
         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
 
         await _httpClient.SendAsync(request, ct);
+    }
+
+    // Similar to HttpResponseMessage.EnsureSuccessStatusCode, but with a more descriptive error message.
+    private static async Task ThrowIfUnsuccessful(HttpResponseMessage response, CancellationToken cancellationToken)
+    {
+        if (!response.IsSuccessStatusCode)
+        {
+            string content = await response.Content.ReadAsStringAsync(cancellationToken);
+
+            throw new HttpRequestException(
+                message: $"Strava API returned {(int)response.StatusCode} ({response.ReasonPhrase}) with content: {content}",
+                inner: null,
+                statusCode: response.StatusCode);
+        }
     }
 }
