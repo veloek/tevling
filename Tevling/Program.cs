@@ -86,12 +86,6 @@ builder.Services.AddHostedService<BatchImportService>();
 
 WebApplication app = builder.Build();
 
-// Configure the HTTP request pipeline.
-if (!app.Environment.IsDevelopment())
-{
-    app.UseExceptionHandler("/Error");
-}
-
 app.UseStaticFiles();
 app.UseSerilogRequestLogging();
 app.UseRouting();
