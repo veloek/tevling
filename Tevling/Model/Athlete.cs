@@ -24,7 +24,7 @@ public class Athlete
         bool? result = Following?.Select(athlete => athlete.Id).Contains(athleteId);
         return result == true;
     }
-    
+
     public bool IsFollower(int athleteId)
     {
         bool? result = Followers?.Select(athlete => athlete.Id).Contains(athleteId);

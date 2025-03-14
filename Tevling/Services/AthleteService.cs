@@ -113,7 +113,6 @@ public class AthleteService(
 
         if (existing is null)
         {
-            
             FollowRequest? pending = await dataContext.FollowRequests
                 .Where(fr => fr.FollowerId == athlete.Id && fr.FolloweeId == followingId)
                 .FirstOrDefaultAsync(ct);
@@ -166,7 +165,7 @@ public class AthleteService(
     public async Task<Athlete> AcceptFollowerAsync(Athlete athlete, int followerId, CancellationToken ct = default)
     {
         await using DataContext dataContext = await dataContextFactory.CreateDbContextAsync(ct);
-        
+
         FollowRequest? pending = await dataContext.FollowRequests
             .Where(fr => fr.FollowerId == followerId && fr.FolloweeId == athlete.Id)
             .FirstOrDefaultAsync(ct);
@@ -175,8 +174,7 @@ public class AthleteService(
         {
             await dataContext.RemoveFollowRequestAsync(pending, ct);
         }
-        
-        
+
         await dataContext.AddFollowingAsync(
             new Following
             {
@@ -189,11 +187,11 @@ public class AthleteService(
 
         return athlete;
     }
-    
+
     public async Task<Athlete> DeclineFollowerAsync(Athlete athlete, int followerId, CancellationToken ct = default)
     {
         await using DataContext dataContext = await dataContextFactory.CreateDbContextAsync(ct);
-        
+
         FollowRequest? pending = await dataContext.FollowRequests
             .Where(fr => fr.FollowerId == followerId && fr.FolloweeId == athlete.Id)
             .FirstOrDefaultAsync(ct);

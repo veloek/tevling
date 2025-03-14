@@ -26,7 +26,7 @@ public partial class Athletes : ComponentBase, IDisposable
             OnFilterChange();
         }
     }
-    
+
     private bool ShowOnlyFollowers
     {
         get => _showOnlyFollowers;

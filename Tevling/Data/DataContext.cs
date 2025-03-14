@@ -10,7 +10,6 @@ public class DataContext(DbContextOptions<DataContext> options) : DbContext(opti
     public DbSet<Athlete> Athletes { get; set; }
     public DbSet<Challenge> Challenges { get; set; }
     public DbSet<Following> Following { get; set; }
-    
     public DbSet<FollowRequest> FollowRequests { get; set; }
 
 #pragma warning disable CS8618
@@ -42,7 +41,7 @@ public class DataContext(DbContextOptions<DataContext> options) : DbContext(opti
             .UsingEntity<Following>(
                 e => e.HasOne<Athlete>().WithMany().HasForeignKey(e => e.FolloweeId),
                 e => e.HasOne<Athlete>().WithMany().HasForeignKey(e => e.FollowerId));
-        
+
         modelBuilder.Entity<Athlete>()
             .HasMany(a => a.PendingFollowing)
             .WithMany(a => a.PendingFollowers)
@@ -173,7 +172,7 @@ public class DataContext(DbContextOptions<DataContext> options) : DbContext(opti
         entry.State = EntityState.Detached;
         return entry.Entity;
     }
-    
+
     public async Task<FollowRequest> RemoveFollowRequestAsync(FollowRequest followRequest, CancellationToken ct = default)
     {
         EntityEntry<FollowRequest> entry = FollowRequests.Remove(followRequest);

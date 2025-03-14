@@ -147,7 +147,7 @@ public partial class DevTools : ComponentBase
                 CreatedBy = Athlete.Id,
             });
     }
-    
+
     private async Task AddFollower()
     {
         int id = Random.Shared.Next(100, 1000);
@@ -159,11 +159,10 @@ public partial class DevTools : ComponentBase
             "",
             default);
         _athletes = await AthleteService.GetAthletesAsync();
-        
-        
+
         if (Athlete is null)
             throw new ArgumentException(nameof(Athlete));
-        
+
         await AthleteService.ToggleFollowingAsync(
              follower, Athlete.Id);
     }
@@ -183,7 +182,7 @@ public partial class DevTools : ComponentBase
 
         foreach (Athlete followRequest in Athlete.PendingFollowing ?? [])
         {
-            await AthleteService.AcceptFollowerAsync(followRequest, Athlete.Id);            
+            await AthleteService.AcceptFollowerAsync(followRequest, Athlete.Id);
         }
     }
 }
