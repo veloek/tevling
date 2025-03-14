@@ -12,9 +12,6 @@ public class DataContext(DbContextOptions<DataContext> options) : DbContext(opti
     public DbSet<Following> Following { get; set; }
     public DbSet<FollowRequest> FollowRequests { get; set; }
 
-#pragma warning disable CS8618
-#pragma warning restore CS8618
-
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         optionsBuilder.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
