@@ -5,7 +5,7 @@ using RouteAttribute = Microsoft.AspNetCore.Mvc.RouteAttribute;
 namespace Tevling.Controllers;
 
 /// <summary>
-/// Callback API used for authentication flow and Strava subscription.
+/// Callback API used for authentication flow and Strava webhook subscription.
 /// (No endpoints used by webapp)
 /// </summary>
 [ApiController]
@@ -40,20 +40,31 @@ public class StravaController(
     }
 
     /// <summary>
-    /// Callback endpoint for Strava subscription.
+    /// Callback endpoint for Strava webhook subscription.
     /// </summary>
-    /// <param name="activity"></param>
-    /// <param name="ct"></param>
-    /// <returns></returns>
-    /// <exception cref="Exception"></exception>
     [HttpPost]
     [Route("activity")]
-    public async Task OnActivity([FromBody] WebhookEvent activity, CancellationToken ct)
+    public IActionResult OnActivity([FromBody] WebhookEvent activity)
     {
         if (activity.SubscriptionId != stravaConfig.SubscriptionId)
-            throw new Exception("Invalid subscription ID");
+        {
+            logger.LogWarning("Invalid subscription ID: {SubscriptionId}", activity.SubscriptionId);
+            return BadRequest();
+        }
 
         logger.LogDebug("Activity: {@Activity}", activity);
+
+        // Handle activity in the background to make sure we return within the 2s limit
+        // that Strava imposes on us: https://developers.strava.com/docs/webhooks/
+        _ = HandleActivity(activity);
+
+        return Ok();
+    }
+
+    private async Task HandleActivity(WebhookEvent activity)
+    {
+        using CancellationTokenSource cts = new(TimeSpan.FromMinutes(1));
+        CancellationToken ct = cts.Token;
 
         try
         {
@@ -94,10 +105,6 @@ public class StravaController(
     /// Creates or updates athlete on login. Stores access/refresh token
     /// so we can fetch information from Strava API on the user's behalf.
     /// </summary>
-    /// <param name="code"></param>
-    /// <param name="ct"></param>
-    /// <returns></returns>
-    /// <exception cref="Exception"></exception>
     [HttpGet]
     [Route("authorize")]
     public async Task<IActionResult> Authorize(
