@@ -272,6 +272,7 @@ public class AthleteService(
                 .FirstOrDefaultAsync(a => a.StravaId == stravaId, ct) ??
             throw new Exception("Unknown Strava athlete id: " + stravaId);
 
+        logger.LogInformation("Deleting athlete: {Name}", athlete.Name);
         await dataContext.RemoveAthleteAsync(athlete, ct);
     }
 
