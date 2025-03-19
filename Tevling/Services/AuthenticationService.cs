@@ -49,13 +49,9 @@ public class AuthenticationService(
         AuthenticationState authenticationState = await authenticationStateProvider
             .GetAuthenticationStateAsync();
 
-        string athleteIdStr = authenticationState.User.FindFirst(
-                    ClaimTypes.NameIdentifier)
-                ?.Value ??
-            string.Empty;
-
         Athlete? athlete = null;
 
+        string? athleteIdStr = authenticationState.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         if (int.TryParse(athleteIdStr, out int athleteId))
         {
             athlete = await athleteService.GetAthleteByIdAsync(athleteId, ct);
@@ -74,11 +70,8 @@ public class AuthenticationService(
         HttpContext httpContext = httpContextAccessor.HttpContext ??
             throw new InvalidOperationException("No active HttpContext");
 
-        string? athleteIdStr = httpContext.User.Claims
-            .FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)
-            ?.Value;
-
-        int athleteId = int.TryParse(athleteIdStr, out int parsed) ? parsed : default;
+        string? athleteIdStr = httpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        _ = int.TryParse(athleteIdStr, out int athleteId);
 
         if (deauthorizeApp)
         {

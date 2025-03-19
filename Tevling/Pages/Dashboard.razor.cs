@@ -18,11 +18,12 @@ public partial class Dashboard : ComponentBase
     {
         // Redirect from / to /activities making this the default page
         string relativePath = NavigationManager.ToBaseRelativePath(NavigationManager.Uri);
-
-        if (!relativePath.StartsWith("dashboard")) NavigationManager.NavigateTo("dashboard", replace: true);
+        if (!relativePath.StartsWith("dashboard"))
+        {
+            NavigationManager.NavigateTo("dashboard", replace: true);
+        }
 
         Athlete = await AuthenticationService.GetCurrentAthleteAsync();
-
 
         await FetchActiveChallenges();
         await FetchRecentOutdatedChallenges();

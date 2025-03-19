@@ -53,10 +53,9 @@ public class ChallengeService(
             // .Where(challenge => filter.IncludeOutdatedChallenges
             //     || challenge.End.UtcDateTime.Date >= DateTimeOffset.UtcNow.Date)
             .Where(
-                c => string.IsNullOrWhiteSpace(filter.SearchText)
+                c => string.IsNullOrWhiteSpace(filter.SearchText) ||
                     // TODO: Use EF.Functions.ILike when switching to PostgreSQL
                     //       to keep the search text case-insensitive
-                    ||
                     EF.Functions.Like(c.Title, $"%{filter.SearchText}%"))
             .OrderByDescending(challenge => challenge.Start)
             .ThenBy(challenge => challenge.Title)
