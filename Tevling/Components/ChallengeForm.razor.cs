@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Tevling.Shared;
 using Tevling.Strava;
 using Athlete = Tevling.Model.Athlete;
@@ -8,6 +9,7 @@ public partial class ChallengeForm : ComponentBase
 {
     [Inject] private IAuthenticationService AuthenticationService { get; set; } = null!;
     [Inject] private IAthleteService AthleteService { get; set; } = null!;
+    [Inject] private IChallengeService ChallengeService { get; set; } = null!;
 
     [Parameter] public string SubmitLabel { get; set; } = "Submit";
     [Parameter] public string CancelLabel { get; set; } = "Cancel";
@@ -19,6 +21,8 @@ public partial class ChallengeForm : ComponentBase
 
     [SupplyParameterFromForm] public ChallengeFormModel Challenge { get; set; } = new();
 
+    private List<ChallengeTemplate> _templates = [];
+    private Dictionary<int, bool> _templatesSelectedForDeletion = [];
     private const int MaximumSuggestions = 10;
     private DropdownSearch<ActivityType>? _dropdownSearchRefActivityTypes;
     private DropdownSearch<Athlete>? _dropdownSearchRefAthletes;
@@ -29,8 +33,88 @@ public partial class ChallengeForm : ComponentBase
     protected override async Task OnInitializedAsync()
     {
         Athlete = await AuthenticationService.GetCurrentAthleteAsync();
+        var templates = await ChallengeService.GetChallengeTemplatesAsync(Athlete.Id);
+        _templates = [.. await ChallengeService.GetChallengeTemplatesAsync(Athlete.Id)];
+        foreach (ChallengeTemplate challengeTemplate in templates)
+        {
+            _templatesSelectedForDeletion[challengeTemplate.Id] = false;
+        }
     }
 
+
+    private void ToggleSelection(int id)
+    {
+        _templatesSelectedForDeletion[id] = !_templatesSelectedForDeletion[id];
+    }
+
+    private void DeleteTemplates()
+    {
+        var keysToDelete = _templatesSelectedForDeletion.Where(t => t.Value).Select(t => t.Key).ToArray();
+        foreach (int key in keysToDelete)
+        {
+            _ = DeleteTemplate(key);
+            _templatesSelectedForDeletion.Remove(key);
+        }
+    }
+
+    private async Task DeleteTemplate(int templateId)
+    {
+        await ChallengeService.DeleteChallengeTemplateAsync(templateId);
+        _templates = [.. await ChallengeService.GetChallengeTemplatesAsync(Athlete.Id)];
+        var templates = await ChallengeService.GetChallengeTemplatesAsync(Athlete.Id);
+
+        foreach (ChallengeTemplate challengeTemplate in templates)
+        {
+            _templatesSelectedForDeletion[challengeTemplate.Id] = false;
+        }
+    }
+
+    private void LoadSelectedTemplate(object? value)
+    {
+        if (value is not null && int.TryParse(value.ToString(), out int index) && index < _templates.Count)
+        {
+            LoadTemplate(_templates[index]);
+        }
+    }
+
+    private void LoadTemplate(ChallengeTemplate template)
+    {
+        Challenge = new ChallengeFormModel
+        {
+            Start = DateTimeOffset.Now,
+            End = DateTimeOffset.Now.AddMonths(1),
+            CreatedBy = Athlete.Id,
+            Title = template.Title,
+            Description = template.Description,
+            Measurement = template.Measurement,
+            ActivityTypes = template.ActivityTypes,
+            IsPrivate = template.IsPrivate,
+            InvitedAthletes = [],
+        };
+    }
+
+    private async Task CreateChallengeTemplate()
+    {
+        ChallengeTemplate newChallengeTemplate = new()
+        {
+            Title = Challenge.Title,
+            Description = Challenge.Description,
+            Measurement = Challenge.Measurement,
+            ActivityTypes = [.. Challenge.ActivityTypes],
+            IsPrivate = Challenge.IsPrivate,
+            Created = DateTimeOffset.Now,
+            CreatedById = Challenge.CreatedBy,
+        };
+        await ChallengeService.CreateChallengeTemplateAsync(newChallengeTemplate);
+        _templates = [.. await ChallengeService.GetChallengeTemplatesAsync(Athlete.Id)];
+        var templates = await ChallengeService.GetChallengeTemplatesAsync(Athlete.Id);
+
+        foreach (ChallengeTemplate challengeTemplate in templates)
+        {
+            _templatesSelectedForDeletion[challengeTemplate.Id] = false;
+        }
+    }
+    
     protected override void OnParametersSet()
     {
         if (EditChallenge != null)

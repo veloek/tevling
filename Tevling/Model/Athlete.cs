@@ -14,6 +14,7 @@ public class Athlete
 
     public ICollection<Activity>? Activities { get; set; }
     public ICollection<Challenge>? Challenges { get; set; }
+    public ICollection<ChallengeTemplate>? ChallengeTemplates { get; set; }
     public ICollection<Athlete>? Following { get; set; }
     public ICollection<Athlete>? Followers { get; set; }
     public ICollection<Athlete>? PendingFollowing { get; set; }

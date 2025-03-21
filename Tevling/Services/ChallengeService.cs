@@ -68,6 +68,20 @@ public class ChallengeService(
         return challenges;
     }
 
+    public async Task<ChallengeTemplate[]> GetChallengeTemplatesAsync(
+        int currentAthleteId,
+        CancellationToken ct = default)
+    {
+        await using DataContext dataContext = await dataContextFactory.CreateDbContextAsync(ct);
+
+        ChallengeTemplate[] challengeTemplates = await dataContext.ChallengeTemplates
+            .Include(challengeTemplate => challengeTemplate.CreatedBy)
+            .Where(challengeTemplate => challengeTemplate.CreatedById == currentAthleteId)
+            .ToArrayAsync(ct);
+
+        return challengeTemplates;
+    }
+
     public IObservable<FeedUpdate<Challenge>> GetChallengeFeed()
     {
         return _challengeFeed.AsObservable();
@@ -103,6 +117,20 @@ public class ChallengeService(
         _challengeFeed.OnNext(new FeedUpdate<Challenge> { Item = challenge, Action = FeedAction.Create });
 
         return challenge;
+    }
+
+    public async Task<ChallengeTemplate> CreateChallengeTemplateAsync(ChallengeTemplate newChallengeTemplate,
+        CancellationToken ct = default)
+    {
+        await using DataContext dataContext = await dataContextFactory.CreateDbContextAsync(ct);
+
+        logger.LogInformation("Adding new challengeTemplate: {Title}", newChallengeTemplate.Title);
+
+        ChallengeTemplate challengeTemplate = await dataContext.AddChallengeTemplateAsync(
+            newChallengeTemplate,
+            ct);
+
+        return challengeTemplate;
     }
 
     public async Task<Challenge> UpdateChallengeAsync(
@@ -213,6 +241,20 @@ public class ChallengeService(
         _ = await dataContext.RemoveChallengeAsync(challenge, ct);
 
         _challengeFeed.OnNext(new FeedUpdate<Challenge> { Item = challenge, Action = FeedAction.Delete });
+    }
+
+    public async Task DeleteChallengeTemplateAsync(int templateId, CancellationToken ct = default)
+    {
+        await using DataContext dataContext = await dataContextFactory.CreateDbContextAsync(ct);
+
+        logger.LogInformation("Deleting challenge template: {id}", templateId);
+
+        ChallengeTemplate challengeTemplate = await dataContext.ChallengeTemplates
+                .Include(c => c.CreatedBy) // TODO: Is this necessary?
+                .FirstOrDefaultAsync(c => c.Id == templateId, ct) ??
+            throw new Exception($"Unknown challenge template ID {templateId}");
+
+        _ = await dataContext.RemoveChallengeTemplateAsync(challengeTemplate, ct);
     }
 
     public async Task<ScoreBoard> GetScoreBoardAsync(int challengeId, CancellationToken ct = default)
