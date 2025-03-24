@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using Tevling.Shared;
 using Tevling.Strava;
 using Athlete = Tevling.Model.Athlete;
@@ -33,23 +32,17 @@ public partial class ChallengeForm : ComponentBase
     protected override async Task OnInitializedAsync()
     {
         Athlete = await AuthenticationService.GetCurrentAthleteAsync();
-        var templates = await ChallengeService.GetChallengeTemplatesAsync(Athlete.Id);
-        _templates = [.. await ChallengeService.GetChallengeTemplatesAsync(Athlete.Id)];
+        ChallengeTemplate[] templates = await ChallengeService.GetChallengeTemplatesAsync(Athlete.Id);
+        _templates = [.. templates];
         foreach (ChallengeTemplate challengeTemplate in templates)
         {
             _templatesSelectedForDeletion[challengeTemplate.Id] = false;
         }
     }
 
-
-    private void ToggleSelection(int id)
-    {
-        _templatesSelectedForDeletion[id] = !_templatesSelectedForDeletion[id];
-    }
-
     private void DeleteTemplates()
     {
-        var keysToDelete = _templatesSelectedForDeletion.Where(t => t.Value).Select(t => t.Key).ToArray();
+        int[] keysToDelete = [.. _templatesSelectedForDeletion.Where(t => t.Value).Select(t => t.Key)];
         foreach (int key in keysToDelete)
         {
             _ = DeleteTemplate(key);
@@ -61,12 +54,6 @@ public partial class ChallengeForm : ComponentBase
     {
         await ChallengeService.DeleteChallengeTemplateAsync(templateId);
         _templates = [.. await ChallengeService.GetChallengeTemplatesAsync(Athlete.Id)];
-        var templates = await ChallengeService.GetChallengeTemplatesAsync(Athlete.Id);
-
-        foreach (ChallengeTemplate challengeTemplate in templates)
-        {
-            _templatesSelectedForDeletion[challengeTemplate.Id] = false;
-        }
     }
 
     private void LoadSelectedTemplate(object? value)
@@ -107,9 +94,8 @@ public partial class ChallengeForm : ComponentBase
         };
         await ChallengeService.CreateChallengeTemplateAsync(newChallengeTemplate);
         _templates = [.. await ChallengeService.GetChallengeTemplatesAsync(Athlete.Id)];
-        var templates = await ChallengeService.GetChallengeTemplatesAsync(Athlete.Id);
 
-        foreach (ChallengeTemplate challengeTemplate in templates)
+        foreach (ChallengeTemplate challengeTemplate in _templates)
         {
             _templatesSelectedForDeletion[challengeTemplate.Id] = false;
         }
