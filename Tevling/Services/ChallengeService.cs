@@ -233,7 +233,6 @@ public class ChallengeService(
         await using DataContext dataContext = await dataContextFactory.CreateDbContextAsync(ct);
 
         Challenge challenge = await dataContext.Challenges
-                .Include(c => c.Athletes) // TODO: Is this necessary?
                 .FirstOrDefaultAsync(c => c.Id == challengeId, ct) ??
             throw new Exception($"Unknown challenge ID {challengeId}");
 
