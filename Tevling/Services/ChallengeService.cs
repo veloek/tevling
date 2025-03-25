@@ -250,7 +250,6 @@ public class ChallengeService(
         logger.LogInformation("Deleting challenge template: {id}", templateId);
 
         ChallengeTemplate challengeTemplate = await dataContext.ChallengeTemplates
-                .Include(c => c.CreatedBy) // TODO: Is this necessary?
                 .FirstOrDefaultAsync(c => c.Id == templateId, ct) ??
             throw new Exception($"Unknown challenge template ID {templateId}");
 
