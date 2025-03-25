@@ -84,7 +84,8 @@
                     </select>
                     <div class="form-row">
                         <label>
-                            <a class="btn btn-primary selected-activity-type py-1" type="button"
+                            <a class="btn btn-primary selected-activity-type py-1" type="button" data-bs-toggle="modal"
+                               data-bs-target="#templateCreated"
                                @onclick="CreateChallengeTemplate">Save as template</a>
                         </label>
                         <label>
@@ -154,5 +155,15 @@
                 @onclick="DeleteTemplates">Delete selected
         </button>
         <button class="btn btn-secondary mt-1 delete-account-modal-button" data-bs-dismiss="modal">Cancel</button>
+    </FooterContent>
+</Modal>
+
+<Modal Id="templateCreated" Size="sm">
+    <BodyContent>
+        <i class="bi bi-clipboard2-check-fill delete-account-modal-icon" aria-hidden="true"></i>
+        <span class="text-center delete-account-modal-text">Template "@Challenge.Title" created!</span>
+    </BodyContent>
+    <FooterContent>
+        <button class="btn btn-secondary mt-1 delete-account-modal-button" data-bs-dismiss="modal">Nice</button>
     </FooterContent>
 </Modal>
