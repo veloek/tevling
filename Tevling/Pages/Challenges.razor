@@ -30,8 +30,17 @@
     <div class="d-flex flex-column rg-3 challenge-filters mb-4">
         <h2>Filters</h2>
         <div class="d-flex flex-column row-gap-1">
-            <label><input @bind="ShowAllChallenges" class="form-check-input me-2" type="checkbox" />Show all challenges</label>
-            <label><input @bind="ShowOutdatedChallenges" class="form-check-input me-2" type="checkbox" />Show outdated challenges </label>
+            <label><input @bind="ShowAllChallenges" class="form-check-input me-2" type="checkbox"/>Show all
+                challenges</label>
+            <label><input @bind="ShowOutdatedChallenges" class="form-check-input me-2" type="checkbox"/>Show outdated
+                challenges </label>
+        </div>
+        <h4>Measurement</h4>
+        <div class="d-flex flex-column row-gap-1">
+            <label><input @bind="ShowTimeChallenges" class="form-check-input me-2" type="checkbox"/>Time</label>
+            <label><input @bind="ShowElevationChallenges" class="form-check-input me-2"
+                          type="checkbox"/>Elevation</label>
+            <label><input @bind="ShowDistanceChallenges" class="form-check-input me-2" type="checkbox"/>Distance</label>
         </div>
     </div>
 </div>
