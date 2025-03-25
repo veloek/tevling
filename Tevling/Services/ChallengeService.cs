@@ -124,7 +124,7 @@ public class ChallengeService(
     {
         await using DataContext dataContext = await dataContextFactory.CreateDbContextAsync(ct);
 
-        logger.LogInformation("Adding new challengeTemplate: {Title}", newChallengeTemplate.Title);
+        logger.LogInformation("Adding new challenge template: {Title}", newChallengeTemplate.Title);
 
         ChallengeTemplate challengeTemplate = await dataContext.AddChallengeTemplateAsync(
             newChallengeTemplate,
