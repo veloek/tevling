@@ -1,4 +1,6 @@
 using System.Reactive.Subjects;
+using Tevling.Shared;
+using Tevling.Strava;
 
 namespace Tevling.Pages;
 
@@ -22,9 +24,27 @@ public partial class Challenges : ComponentBase, IDisposable
     private bool _showAllChallenges = true;
 
     private bool _showOutdatedChallenges;
+    private bool _showTimeChallenges = true;
+    private bool _showElevationChallenges = true;
+    private bool _showDistanceChallenges = true;
+    private ICollection<ActivityType> _activityTypes= [];
+    private DropdownSearch<ActivityType>? _dropdownSearchRefActivityTypes;
+    private static IEnumerable<ActivityType> ActivityTypes => Enum.GetValues<ActivityType>();
+
+
     private int AthleteId { get; set; }
     private bool HasMore { get; set; } = true;
     private Challenge[] ChallengeList { get; set; } = [];
+
+    private ICollection<ActivityType> SelectedActivityTypes
+    {
+        get => _activityTypes;
+        set
+        {
+            _activityTypes = value;
+            OnFilterChange();
+        }
+    }
 
     private bool ShowAllChallenges
     {
@@ -45,6 +65,33 @@ public partial class Challenges : ComponentBase, IDisposable
             OnFilterChange();
         }
     }
+    private bool ShowTimeChallenges
+    {
+        get => _showTimeChallenges;
+        set
+        {
+            _showTimeChallenges = value;
+            OnFilterChange();
+        }
+    }
+    private bool ShowElevationChallenges
+    {
+        get => _showElevationChallenges;
+        set
+        {
+            _showElevationChallenges = value;
+            OnFilterChange();
+        }
+    }
+    private bool ShowDistanceChallenges
+    {
+        get => _showDistanceChallenges;
+        set
+        {
+            _showDistanceChallenges = value;
+            OnFilterChange();
+        }
+    }
 
     private string FilterText
     {
@@ -55,7 +102,14 @@ public partial class Challenges : ComponentBase, IDisposable
             OnFilterChange();
         }
     }
+    
+    private async Task DeselectActivityType(ActivityType item)
+    {
+        if (_dropdownSearchRefActivityTypes is null) return;
 
+        await _dropdownSearchRefActivityTypes.DeselectItemAsync(item);
+    }
+    
     public void Dispose()
     {
         _filterTextSubscription?.Dispose();
@@ -167,18 +221,27 @@ public partial class Challenges : ComponentBase, IDisposable
 
     private void UpdateChallenges()
     {
-        ChallengeList = _challenges
-            .Where(
-                c => _showAllChallenges ||
-                    c.Athletes?.Any(athlete => athlete.Id == AthleteId) == true ||
-                    c.CreatedById == AthleteId)
-            .Where(c => _showOutdatedChallenges || c.End.UtcDateTime.Date >= DateTimeOffset.UtcNow.Date)
-            .Where(
-                c => string.IsNullOrWhiteSpace(_filterText) ||
-                    c.Title.Contains(_filterText, StringComparison.OrdinalIgnoreCase))
-            .OrderByDescending(c => c.Start)
-            .ThenBy(c => c.Title)
-            .ToArray();
+        ChallengeList =
+        [
+            .. _challenges
+                .Where(
+                    c => _showAllChallenges ||
+                        c.Athletes?.Any(athlete => athlete.Id == AthleteId) == true ||
+                        c.CreatedById == AthleteId)
+                .Where(c => _showOutdatedChallenges || c.End.UtcDateTime.Date >= DateTimeOffset.UtcNow.Date)
+                .Where(
+                    c =>
+                        (_showTimeChallenges && c.Measurement == ChallengeMeasurement.Time) ||
+                        (_showElevationChallenges && c.Measurement == ChallengeMeasurement.Elevation) ||
+                        (_showDistanceChallenges && c.Measurement == ChallengeMeasurement.Distance))
+                .Where(
+                    c => _activityTypes.Count <= 0 || _activityTypes.Intersect(c.ActivityTypes).Any())
+                .Where(
+                    c => string.IsNullOrWhiteSpace(_filterText) ||
+                        c.Title.Contains(_filterText, StringComparison.OrdinalIgnoreCase))
+                .OrderByDescending(c => c.Start)
+                .ThenBy(c => c.Title),
+        ];
 
         InvokeAsync(StateHasChanged);
     }

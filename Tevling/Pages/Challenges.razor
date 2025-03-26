@@ -1,4 +1,5 @@
 @page "/challenges"
+@using Tevling.Strava
 
 <PageTitle>Tevling - Challenges</PageTitle>
 
@@ -30,8 +31,39 @@
     <div class="d-flex flex-column rg-3 challenge-filters mb-4">
         <h2>Filters</h2>
         <div class="d-flex flex-column row-gap-1">
-            <label><input @bind="ShowAllChallenges" class="form-check-input me-2" type="checkbox" />Show all challenges</label>
-            <label><input @bind="ShowOutdatedChallenges" class="form-check-input me-2" type="checkbox" />Show outdated challenges </label>
+            <label><input @bind="ShowAllChallenges" class="form-check-input me-2" type="checkbox"/>Show all
+                challenges</label>
+            <label><input @bind="ShowOutdatedChallenges" class="form-check-input me-2" type="checkbox"/>Show outdated
+                challenges </label>
+        </div>
+        <h4>Measurement</h4>
+        <div class="d-flex flex-column row-gap-1">
+            <label><input @bind="ShowTimeChallenges" class="form-check-input me-2" type="checkbox"/>Time</label>
+            <label><input @bind="ShowElevationChallenges" class="form-check-input me-2"
+                          type="checkbox"/>Elevation</label>
+            <label><input @bind="ShowDistanceChallenges" class="form-check-input me-2" type="checkbox"/>Distance</label>
+        </div>
+        <h4>Activity types</h4>
+        <div class="d-flex flex-column row-gap-1 activity-types-selection">
+            <div class="mb-3">
+                <DropdownSearch Items="@ActivityTypes" T="ActivityType"
+                                DisplayFunc="@ActivityTypeExt.ToString"
+                                @bind-SelectedItems="@SelectedActivityTypes"
+                                @ref="_dropdownSearchRefActivityTypes">
+                </DropdownSearch>
+            </div>
+            @if (_activityTypes.Count == 0)
+            {
+                <a type="button" class="btn btn-primary selected-activity-type py-1">All activities</a>
+            }
+            <div class="d-flex flex-wrap column-gap-2 row-gap-1">
+                @foreach (ActivityType item in SelectedActivityTypes)
+                {
+                    <a @onclick="() => DeselectActivityType(item)" type="button" class="btn btn-primary selected-activity-type">
+                        @ActivityTypeExt.ToString(item)<i class="bi bi-x ms-1"></i>
+                    </a>
+                }
+            </div>
         </div>
     </div>
 </div>
