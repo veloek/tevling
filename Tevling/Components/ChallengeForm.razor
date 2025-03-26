@@ -77,9 +77,9 @@
                 <div class="mb-5">
                     <select class="form-select mb-3" @onchange="e => LoadSelectedTemplate(e.Value)">
                         <option value="">Select a template to load</option>
-                        @for (int i = 0; i < _templates.Count; i++)
+                        @for (int i = 0; i < Templates.Count; i++)
                         {
-                            <option value="@i">@_templates[i].Title</option>
+                            <option value="@i">@Templates[i].Title</option>
                         }
                     </select>
                     <div class="form-row">
@@ -141,10 +141,10 @@
         <i class="bi bi-trash delete-account-modal-icon" aria-hidden="true"></i>
         <span class="text-center delete-account-modal-text">Select template(s) to delete:</span>
         <div class="d-flex flex-column align-items-start">
-            @foreach (var template in _templates)
+            @foreach (ChallengeTemplate template in Templates)
             {
                 <div class="form-check d-flex align-items-start">
-                    <input class="form-check-input" type="checkbox" @bind="_templatesSelectedForDeletion[template.Id]"/>
+                    <input class="form-check-input" type="checkbox" @bind="TemplatesSelectedForDeletion[template.Id]"/>
                     <label class="form-check-label">@template.Title</label>
                 </div>
             }

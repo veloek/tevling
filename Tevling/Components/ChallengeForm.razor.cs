@@ -20,8 +20,8 @@ public partial class ChallengeForm : ComponentBase
 
     [SupplyParameterFromForm] public ChallengeFormModel Challenge { get; set; } = new();
 
-    private List<ChallengeTemplate> _templates = [];
-    private Dictionary<int, bool> _templatesSelectedForDeletion = [];
+    private List<ChallengeTemplate> Templates { get; set; } = [];
+    private Dictionary<int, bool> TemplatesSelectedForDeletion { get; set; } = [];
     private const int MaximumSuggestions = 10;
     private DropdownSearch<ActivityType>? _dropdownSearchRefActivityTypes;
     private DropdownSearch<Athlete>? _dropdownSearchRefAthletes;
@@ -33,34 +33,34 @@ public partial class ChallengeForm : ComponentBase
     {
         Athlete = await AuthenticationService.GetCurrentAthleteAsync();
         ChallengeTemplate[] templates = await ChallengeService.GetChallengeTemplatesAsync(Athlete.Id);
-        _templates = [.. templates];
+        Templates = [.. templates];
         foreach (ChallengeTemplate challengeTemplate in templates)
         {
-            _templatesSelectedForDeletion[challengeTemplate.Id] = false;
+            TemplatesSelectedForDeletion[challengeTemplate.Id] = false;
         }
     }
 
     private void DeleteTemplates()
     {
-        int[] keysToDelete = [.. _templatesSelectedForDeletion.Where(t => t.Value).Select(t => t.Key)];
+        int[] keysToDelete = [.. TemplatesSelectedForDeletion.Where(t => t.Value).Select(t => t.Key)];
         foreach (int key in keysToDelete)
         {
             _ = DeleteTemplate(key);
-            _templatesSelectedForDeletion.Remove(key);
+            TemplatesSelectedForDeletion.Remove(key);
         }
     }
 
     private async Task DeleteTemplate(int templateId)
     {
         await ChallengeService.DeleteChallengeTemplateAsync(templateId);
-        _templates = [.. await ChallengeService.GetChallengeTemplatesAsync(Athlete.Id)];
+        Templates = [.. await ChallengeService.GetChallengeTemplatesAsync(Athlete.Id)];
     }
 
     private void LoadSelectedTemplate(object? value)
     {
-        if (value is not null && int.TryParse(value.ToString(), out int index) && index < _templates.Count)
+        if (value is not null && int.TryParse(value.ToString(), out int index) && index < Templates.Count)
         {
-            LoadTemplate(_templates[index]);
+            LoadTemplate(Templates[index]);
         }
     }
 
@@ -93,11 +93,11 @@ public partial class ChallengeForm : ComponentBase
             CreatedById = Challenge.CreatedBy,
         };
         await ChallengeService.CreateChallengeTemplateAsync(newChallengeTemplate);
-        _templates = [.. await ChallengeService.GetChallengeTemplatesAsync(Athlete.Id)];
+        Templates = [.. await ChallengeService.GetChallengeTemplatesAsync(Athlete.Id)];
 
-        foreach (ChallengeTemplate challengeTemplate in _templates)
+        foreach (ChallengeTemplate challengeTemplate in Templates)
         {
-            _templatesSelectedForDeletion[challengeTemplate.Id] = false;
+            TemplatesSelectedForDeletion[challengeTemplate.Id] = false;
         }
     }
     
