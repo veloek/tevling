@@ -11,6 +11,8 @@ public class DataContext(DbContextOptions<DataContext> options) : DbContext(opti
     public DbSet<Challenge> Challenges { get; set; }
     public DbSet<Following> Following { get; set; }
     public DbSet<FollowRequest> FollowRequests { get; set; }
+    
+    public DbSet<ChallengeTemplate> ChallengeTemplates { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
@@ -31,7 +33,11 @@ public class DataContext(DbContextOptions<DataContext> options) : DbContext(opti
         modelBuilder.Entity<Athlete>()
             .HasMany(a => a.Challenges)
             .WithMany(c => c.Athletes);
-
+        
+        modelBuilder.Entity<Athlete>()
+            .HasMany(a => a.ChallengeTemplates)
+            .WithOne(c => c.CreatedBy);
+        
         modelBuilder.Entity<Athlete>()
             .HasMany(a => a.Following)
             .WithMany(a => a.Followers)
@@ -67,6 +73,13 @@ public class DataContext(DbContextOptions<DataContext> options) : DbContext(opti
         modelBuilder.Entity<Challenge>()
             .HasMany(a => a.InvitedAthletes)
             .WithMany();
+
+        modelBuilder.Entity<ChallengeTemplate>()
+            .HasOne(ct => ct.CreatedBy);
+
+        modelBuilder.Entity<ChallengeTemplate>()
+            .Property(ct => ct.Created)
+            .HasConversion(new DateTimeOffsetToBinaryConverter());
     }
 
     public Task InitAsync()
@@ -131,6 +144,15 @@ public class DataContext(DbContextOptions<DataContext> options) : DbContext(opti
         return entry.Entity;
     }
 
+    public async Task<ChallengeTemplate> AddChallengeTemplateAsync(ChallengeTemplate challengeTemplate,
+        CancellationToken ct = default)
+    {
+        EntityEntry<ChallengeTemplate> entry = await ChallengeTemplates.AddAsync(challengeTemplate, ct);
+        _ = await SaveChangesAsync(ct);
+        entry.State = EntityState.Detached;
+        return entry.Entity;
+    }
+
     public async Task<Challenge> UpdateChallengeAsync(Challenge challenge, CancellationToken ct = default)
     {
         EntityEntry<Challenge> entry = Challenges.Update(challenge);
@@ -142,6 +164,15 @@ public class DataContext(DbContextOptions<DataContext> options) : DbContext(opti
     public async Task<Challenge> RemoveChallengeAsync(Challenge challenge, CancellationToken ct = default)
     {
         EntityEntry<Challenge> entry = Challenges.Remove(challenge);
+        _ = await SaveChangesAsync(ct);
+        entry.State = EntityState.Detached;
+        return entry.Entity;
+    }
+
+    public async Task<ChallengeTemplate> RemoveChallengeTemplateAsync(ChallengeTemplate challengeTemplate,
+        CancellationToken ct = default)
+    {
+        EntityEntry<ChallengeTemplate> entry = ChallengeTemplates.Remove(challengeTemplate);
         _ = await SaveChangesAsync(ct);
         entry.State = EntityState.Detached;
         return entry.Entity;

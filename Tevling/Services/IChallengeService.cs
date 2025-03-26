@@ -14,6 +14,15 @@ public interface IChallengeService
 
     Task<Challenge> CreateChallengeAsync(ChallengeFormModel challenge, CancellationToken ct = default);
 
+    Task<ChallengeTemplate> CreateChallengeTemplateAsync(ChallengeTemplate newChallengeTemplate,
+        CancellationToken ct = default);
+
+    Task<ChallengeTemplate[]> GetChallengeTemplatesAsync(
+        int currentAthleteId,
+        CancellationToken ct = default);
+
+    Task DeleteChallengeTemplateAsync(int templateId, CancellationToken ct = default);
+
     Task<Challenge> UpdateChallengeAsync(
         int challengeId,
         ChallengeFormModel editChallenge,
