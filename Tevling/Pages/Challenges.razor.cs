@@ -1,4 +1,6 @@
 using System.Reactive.Subjects;
+using Tevling.Shared;
+using Tevling.Strava;
 
 namespace Tevling.Pages;
 
@@ -25,10 +27,24 @@ public partial class Challenges : ComponentBase, IDisposable
     private bool _showTimeChallenges = true;
     private bool _showElevationChallenges = true;
     private bool _showDistanceChallenges = true;
+    private ICollection<ActivityType> _activityTypes= [];
+    private DropdownSearch<ActivityType>? _dropdownSearchRefActivityTypes;
+    private static IEnumerable<ActivityType> ActivityTypes => Enum.GetValues<ActivityType>();
+
 
     private int AthleteId { get; set; }
     private bool HasMore { get; set; } = true;
     private Challenge[] ChallengeList { get; set; } = [];
+
+    private ICollection<ActivityType> SelectedActivityTypes
+    {
+        get => _activityTypes;
+        set
+        {
+            _activityTypes = value;
+            OnFilterChange();
+        }
+    }
 
     private bool ShowAllChallenges
     {
@@ -86,7 +102,14 @@ public partial class Challenges : ComponentBase, IDisposable
             OnFilterChange();
         }
     }
+    
+    private async Task DeselectActivityType(ActivityType item)
+    {
+        if (_dropdownSearchRefActivityTypes is null) return;
 
+        await _dropdownSearchRefActivityTypes.DeselectItemAsync(item);
+    }
+    
     public void Dispose()
     {
         _filterTextSubscription?.Dispose();
@@ -211,6 +234,8 @@ public partial class Challenges : ComponentBase, IDisposable
                         (_showTimeChallenges && c.Measurement == ChallengeMeasurement.Time) ||
                         (_showElevationChallenges && c.Measurement == ChallengeMeasurement.Elevation) ||
                         (_showDistanceChallenges && c.Measurement == ChallengeMeasurement.Distance))
+                .Where(
+                    c => _activityTypes.Count <= 0 || _activityTypes.Intersect(c.ActivityTypes).Any())
                 .Where(
                     c => string.IsNullOrWhiteSpace(_filterText) ||
                         c.Title.Contains(_filterText, StringComparison.OrdinalIgnoreCase))
