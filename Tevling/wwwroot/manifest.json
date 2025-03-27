@@ -1,0 +1,13 @@
+{
+    "short_name": "Tevling",
+    "name": "Tevling",
+    "icons": [
+        {
+            "src": "/arm-wrestling.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        }
+    ],
+    "start_url": "/",
+    "display": "standalone"
+}
