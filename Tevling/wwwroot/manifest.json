@@ -1,6 +1,7 @@
 {
     "short_name": "Tevling",
     "name": "Tevling",
+    "theme_color": "#222222",
     "icons": [
         {
             "src": "/arm-wrestling.png",
@@ -8,6 +9,6 @@
             "type": "image/png"
         }
     ],
-    "start_url": "/",
+    "start_url": "/activities",
     "display": "standalone"
 }
