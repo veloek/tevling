@@ -17,6 +17,9 @@ public interface IChallengeService
     Task<ChallengeTemplate> CreateChallengeTemplateAsync(ChallengeTemplate newChallengeTemplate,
         CancellationToken ct = default);
 
+    Task<ChallengeGroup> CreateChallengeGroupAsync(ChallengeGroup challengeGroup, CancellationToken ct = default);
+    Task DeleteChallengeGroupAsync(int challengeGroupId, CancellationToken ct = default);
+    Task<ChallengeGroup[]> GetChallengeGroupsAsync(int currentAthleteId, CancellationToken ct = default); 
     Task<ChallengeTemplate[]> GetChallengeTemplatesAsync(
         int currentAthleteId,
         CancellationToken ct = default);
