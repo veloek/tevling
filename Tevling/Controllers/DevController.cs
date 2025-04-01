@@ -45,7 +45,7 @@ public class DevController : ControllerBase
             TotalElevationGain = 124.0f,
             Calories = 0.0f,
             Type = ActivityType.Run,
-            StartDate = DateTimeOffset.UtcNow,
+            StartDate = DateTimeOffset.UtcNow.AddMonths(-1),
             Manual = true,
         };
 
