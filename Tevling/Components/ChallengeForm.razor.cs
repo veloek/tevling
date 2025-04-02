@@ -149,7 +149,7 @@ public partial class ChallengeForm : ComponentBase
         ChallengeGroups = [.. await ChallengeService.GetChallengeGroupsAsync(Athlete.Id)];
     }
 
-    private async Task CreateGroup()
+    private async Task CreateChallengeGroup()
     {
         await ChallengeService.CreateChallengeGroupAsync(
             new ChallengeGroup
