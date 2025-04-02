@@ -20,7 +20,6 @@ public class Athlete
     public ICollection<Athlete>? PendingFollowing { get; set; }
     public ICollection<Athlete>? PendingFollowers { get; set; }
     public ICollection<ChallengeGroup>? ChallengeGroups { get; set; }
-    public ICollection<ChallengeGroup>? JoinedChallengeGroups { get; set; }
 
     public bool IsFollowing(int athleteId)
     {

@@ -90,7 +90,6 @@ public class ChallengeService(
         await using DataContext dataContext = await dataContextFactory.CreateDbContextAsync(ct);
 
         ChallengeGroup[] groups = await dataContext.ChallengeGroups
-            .Include(group => group.CreatedBy)
             .Include(group => group.Members)
             .Where(group => group.CreatedById == currentAthleteId)
             .ToArrayAsync(ct);
