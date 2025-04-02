@@ -12,6 +12,7 @@ public class DataContext(DbContextOptions<DataContext> options) : DbContext(opti
     public DbSet<Following> Following { get; set; }
     public DbSet<FollowRequest> FollowRequests { get; set; }
     
+    public DbSet<ChallengeGroup> ChallengeGroups { get; set; }
     public DbSet<ChallengeTemplate> ChallengeTemplates { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -80,6 +81,16 @@ public class DataContext(DbContextOptions<DataContext> options) : DbContext(opti
         modelBuilder.Entity<ChallengeTemplate>()
             .Property(ct => ct.Created)
             .HasConversion(new DateTimeOffsetToBinaryConverter());
+        
+        modelBuilder.Entity<ChallengeGroup>()
+            .HasOne<Athlete>()
+            .WithMany()
+            .HasForeignKey(g => g.CreatedById)
+            .IsRequired();
+
+        modelBuilder.Entity<ChallengeGroup>()
+            .HasMany(g => g.Members)
+            .WithMany();
     }
 
     public Task InitAsync()
@@ -204,6 +215,22 @@ public class DataContext(DbContextOptions<DataContext> options) : DbContext(opti
     public async Task<FollowRequest> RemoveFollowRequestAsync(FollowRequest followRequest, CancellationToken ct = default)
     {
         EntityEntry<FollowRequest> entry = FollowRequests.Remove(followRequest);
+        _ = await SaveChangesAsync(ct);
+        entry.State = EntityState.Detached;
+        return entry.Entity;
+    }
+    
+    public async Task<ChallengeGroup> AddChallengeGroupAsync(ChallengeGroup challengeGroup, CancellationToken ct = default)
+    {
+        EntityEntry<ChallengeGroup> entry = await ChallengeGroups.AddAsync(challengeGroup, ct);
+        _ = await SaveChangesAsync(ct);
+        entry.State = EntityState.Detached;
+        return entry.Entity;
+    }
+    public async Task<ChallengeGroup> RemoveChallengeGroupAsync(ChallengeGroup challengeGroup,
+        CancellationToken ct = default)
+    {
+        EntityEntry<ChallengeGroup> entry = ChallengeGroups.Remove(challengeGroup);
         _ = await SaveChangesAsync(ct);
         entry.State = EntityState.Detached;
         return entry.Entity;
