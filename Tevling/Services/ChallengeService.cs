@@ -67,6 +67,49 @@ public class ChallengeService(
         return challenges;
     }
 
+    public async Task<ChallengeGroup> CreateChallengeGroupAsync(ChallengeGroup newChallengeGroup, CancellationToken ct = default)
+    {
+        await using DataContext dataContext = await dataContextFactory.CreateDbContextAsync(ct);
+
+        logger.LogInformation("Adding new challenge group: {Name}", newChallengeGroup.Name);
+        
+        foreach (Athlete member in newChallengeGroup.Members ?? [])
+        {
+            dataContext.Attach(member);
+        }
+
+        ChallengeGroup challengeGroup = await dataContext.AddChallengeGroupAsync(
+            newChallengeGroup,
+            ct);
+
+        return challengeGroup;
+    }
+
+    public async Task<ChallengeGroup[]> GetChallengeGroupsAsync(int currentAthleteId, CancellationToken ct = default)
+    {
+        await using DataContext dataContext = await dataContextFactory.CreateDbContextAsync(ct);
+
+        ChallengeGroup[] groups = await dataContext.ChallengeGroups
+            .Include(group => group.Members)
+            .Where(group => group.CreatedById == currentAthleteId)
+            .ToArrayAsync(ct);
+
+        return groups;
+    }
+    
+    public async Task DeleteChallengeGroupAsync(int challengeGroupId, CancellationToken ct = default)
+    {
+        await using DataContext dataContext = await dataContextFactory.CreateDbContextAsync(ct);
+
+        logger.LogInformation("Deleting challenge group: {id}", challengeGroupId);
+
+        ChallengeGroup challengeGroup = await dataContext.ChallengeGroups
+                .FirstOrDefaultAsync(g => g.Id == challengeGroupId, ct) ??
+            throw new Exception($"Unknown challenge group ID {challengeGroupId}");
+
+        _ = await dataContext.RemoveChallengeGroupAsync(challengeGroup, ct);
+    }
+
     public async Task<ChallengeTemplate[]> GetChallengeTemplatesAsync(
         int currentAthleteId,
         CancellationToken ct = default)

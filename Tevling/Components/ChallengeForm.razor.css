@@ -11,6 +11,15 @@ a.selected-activity-type {
   width: fit-content;
 }
 
+button.selected-group {
+  font-size: smaller;
+  padding-top: 0;
+  padding-bottom: 0;
+  align-items: center;
+  display: flex;
+  width: fit-content;
+}
+
 a.selected-activity-type i {
   font-size: large;
 }
