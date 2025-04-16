@@ -16,7 +16,7 @@ window.drawChart = function (activityData, labels, chartName, chartTitle) {
     }
 
     window.myChart = new Chart(ctx, {
-        type: 'line', // Change to 'line', 'pie', etc. if needed
+        type: 'line',
         data: {
             labels: labels, datasets: datasets
         }, options: {

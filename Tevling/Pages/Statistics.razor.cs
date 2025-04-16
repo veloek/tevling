@@ -10,21 +10,16 @@ public partial class Statistics : ComponentBase
     [Inject] private IAuthenticationService AuthenticationService { get; set; } = null!;
     [Inject] private IActivityService ActivityService { get; set; } = null!;
 
-    private Athlete _athlete { get; set; } = default!;
-    private Activity[] _activities { get; set; } = [];
-
-    private DateTimeOffset _startTime;
-    private DateTimeOffset _endTime;
+    private Athlete Athlete { get; set; } = default!;
+    private Activity[] Activities { get; set; } = [];
 
 
     protected override async Task OnInitializedAsync()
     {
-        _athlete = await AuthenticationService.GetCurrentAthleteAsync();
-        _endTime = DateTimeOffset.UtcNow;
-        _startTime = DateTimeOffset.UtcNow.AddMonths(-3);
+        Athlete = await AuthenticationService.GetCurrentAthleteAsync();
 
-        ActivityFilter filter = new(_athlete.Id, false);
-        _activities = await ActivityService.GetActivitiesAsync(filter);
+        ActivityFilter filter = new(Athlete.Id, false);
+        Activities = await ActivityService.GetActivitiesAsync(filter);
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -38,7 +33,7 @@ public partial class Statistics : ComponentBase
                 DateTimeOffset.Now.Month,
             ];
 
-            Dictionary<string, float[]> distancesLastThreeMonths = _activities
+            Dictionary<string, float[]> distancesLastThreeMonths = Activities
                 .Where(a => a.Details.StartDate >= DateTimeOffset.Now.AddMonths(-2))
                 .GroupBy(a => a.Details.Type)
                 .ToDictionary(
@@ -57,7 +52,7 @@ public partial class Statistics : ComponentBase
                             .ToArray();
                     }
                 );
-            Dictionary<string, float[]> elevationLastThreeMonths = _activities
+            Dictionary<string, float[]> elevationLastThreeMonths = Activities
                 .Where(a => a.Details.StartDate >= DateTimeOffset.Now.AddMonths(-2))
                 .GroupBy(a => a.Details.Type)
                 .ToDictionary(
@@ -77,9 +72,29 @@ public partial class Statistics : ComponentBase
                     }
                 );
 
+            Dictionary<string, float[]> timeLastThreeMonths = Activities
+                .Where(a => a.Details.StartDate >= DateTimeOffset.Now.AddMonths(-2))
+                .GroupBy(a => a.Details.Type)
+                .ToDictionary(
+                    g => g.Key.ToString(),
+                    g =>
+                    {
+                        var movingTime = g
+                            .GroupBy(a => a.Details.StartDate.Month)
+                            .ToDictionary(
+                                g => g.Key,
+                                g => (float)g.Sum(a => a.Details.MovingTimeInSeconds) / 3600);
+
+                        var now = DateTimeOffset.UtcNow;
+                        return Enumerable.Range(-2, 3)
+                            .Select(m => movingTime.GetValueOrDefault(now.AddMonths(m).Month, 0))
+                            .ToArray();
+                    }
+                );
+
             if (distancesLastThreeMonths.Count > 0)
             {
-                distancesLastThreeMonths["total"] =
+                distancesLastThreeMonths["Total"] =
                 [
                     ..
                     distancesLastThreeMonths.Values.Aggregate((sum, next) => [.. sum.Zip(next, (a, b) => a + b)]),
@@ -88,15 +103,23 @@ public partial class Statistics : ComponentBase
 
             if (elevationLastThreeMonths.Count > 0)
             {
-                elevationLastThreeMonths["total"] =
+                elevationLastThreeMonths["Total"] =
                 [
                     ..
                     elevationLastThreeMonths.Values.Aggregate((sum, next) => [.. sum.Zip(next, (a, b) => a + b)]),
                 ];
             }
 
+            if (timeLastThreeMonths.Count > 0)
+            {
+                timeLastThreeMonths["Total"] =
+                [
+                    ..
+                    timeLastThreeMonths.Values.Aggregate((sum, next) => [.. sum.Zip(next, (a, b) => a + b)]),
+                ];
+            }
 
-            // Call JavaScript function to draw chart
+
             await JS.InvokeVoidAsync(
                 "drawChart",
                 distancesLastThreeMonths,
@@ -109,6 +132,12 @@ public partial class Statistics : ComponentBase
                 lastThreeMonths.Select(m => CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(m)).ToList(),
                 "totalElevationChart",
                 "Total Elevation [m]");
+            await JS.InvokeVoidAsync(
+                "drawChart",
+                timeLastThreeMonths,
+                lastThreeMonths.Select(m => CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(m)).ToList(),
+                "totalTimeChart",
+                "Total Time [h]");
         }
     }
 }
