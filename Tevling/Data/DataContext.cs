@@ -87,6 +87,10 @@ public class DataContext(DbContextOptions<DataContext> options) : DbContext(opti
             .WithMany()
             .HasForeignKey(g => g.CreatedById)
             .IsRequired();
+        
+        modelBuilder.Entity<ChallengeGroup>()
+            .Property(ct => ct.Created)
+            .HasConversion(new DateTimeOffsetToBinaryConverter());
 
         modelBuilder.Entity<ChallengeGroup>()
             .HasMany(g => g.Members)
