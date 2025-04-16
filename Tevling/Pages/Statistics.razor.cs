@@ -85,7 +85,7 @@ public partial class Statistics : ComponentBase
                     distancesLastThreeMonths.Values.Aggregate((sum, next) => [.. sum.Zip(next, (a, b) => a + b)]),
                 ];
             }
-            
+
             if (elevationLastThreeMonths.Count > 0)
             {
                 elevationLastThreeMonths["total"] =
@@ -101,13 +101,13 @@ public partial class Statistics : ComponentBase
                 "drawChart",
                 distancesLastThreeMonths,
                 lastThreeMonths.Select(m => CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(m)).ToList(),
-                "myChart",
+                "totalDistanceChart",
                 "Total Distance [m]");
             await JS.InvokeVoidAsync(
                 "drawChart",
                 elevationLastThreeMonths,
                 lastThreeMonths.Select(m => CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(m)).ToList(),
-                "myChart2",
+                "totalElevationChart",
                 "Total Elevation [m]");
         }
     }
