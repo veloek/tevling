@@ -1,6 +1,5 @@
 using System.Globalization;
 using Microsoft.JSInterop;
-using Tevling.Strava;
 
 namespace Tevling.Pages;
 
