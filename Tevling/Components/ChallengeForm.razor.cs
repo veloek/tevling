@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Http.HttpResults;
 using Tevling.Shared;
 using Tevling.Strava;
 using Athlete = Tevling.Model.Athlete;
