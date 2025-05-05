@@ -21,28 +21,24 @@ public partial class Statistics : ComponentBase
         _activities = await ActivityService.GetActivitiesAsync(filter);
     }
 
-    private Dictionary<string, float[]> GetAggregatedData(Func<Activity, float> selector, int monthCount = 3)
+    private Dictionary<string, float[]> GetAggregatedMeasurementData(Func<Activity, float> selector, int monthCount = 3)
     {
         DateTimeOffset now = DateTimeOffset.Now;
+
         Dictionary<string, float[]> aggregatedData = _activities
-            .GroupBy(a => a.Details.Type)
+            .GroupBy(a => new { a.Details.Type, a.Details.StartDate.Month })
             .ToDictionary(
-                g => g.Key.ToString(),
+                g => g.Key.Type.ToString(),
                 g =>
                 {
-                    Dictionary<int, float> monthlyTotals = g
-                        .GroupBy(a => a.Details.StartDate.Month)
-                        .ToDictionary(
-                            g => g.Key,
-                            g => g.Sum(selector));
                     return Enumerable.Range(-monthCount + 1, monthCount)
                         .Select(
-                            m => monthlyTotals.GetValueOrDefault(now.AddMonths(m).Month, 0f)
+                            m => now.AddMonths(m).Month == g.Key.Month ? g.Sum(selector) : 0f
                         )
                         .ToArray();
                 });
 
-        if (aggregatedData.Any())
+        if (aggregatedData.Count != 0)
         {
             aggregatedData["Total"] =
             [
@@ -64,10 +60,12 @@ public partial class Statistics : ComponentBase
                 DateTimeOffset.Now.Month,
             ];
 
-            Dictionary<string, float[]> distancesLastThreeMonths = GetAggregatedData(a => a.Details.DistanceInMeters);
-            Dictionary<string, float[]> elevationLastThreeMonths = GetAggregatedData(a => a.Details.TotalElevationGain);
+            Dictionary<string, float[]> distancesLastThreeMonths =
+                GetAggregatedMeasurementData(a => a.Details.DistanceInMeters);
+            Dictionary<string, float[]> elevationLastThreeMonths =
+                GetAggregatedMeasurementData(a => a.Details.TotalElevationGain);
             Dictionary<string, float[]> timeLastThreeMonths =
-                GetAggregatedData(a => (float)a.Details.MovingTimeInSeconds / 3600);
+                GetAggregatedMeasurementData(a => (float)a.Details.MovingTimeInSeconds / 3600);
 
 
             await Js.InvokeVoidAsync(
