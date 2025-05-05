@@ -9,22 +9,22 @@ public partial class Statistics : ComponentBase
     [Inject] private IAuthenticationService AuthenticationService { get; set; } = null!;
     [Inject] private IActivityService ActivityService { get; set; } = null!;
 
-    private Athlete Athlete { get; set; } = null!;
-    private Activity[] Activities { get; set; } = [];
+    private Athlete _athlete = null!;
+    private Activity[] _activities = [];
 
 
     protected override async Task OnInitializedAsync()
     {
-        Athlete = await AuthenticationService.GetCurrentAthleteAsync();
+        _athlete = await AuthenticationService.GetCurrentAthleteAsync();
 
-        ActivityFilter filter = new(Athlete.Id, false);
-        Activities = await ActivityService.GetActivitiesAsync(filter);
+        ActivityFilter filter = new(_athlete.Id, false);
+        _activities = await ActivityService.GetActivitiesAsync(filter);
     }
 
     private Dictionary<string, float[]> GetAggregatedData(Func<Activity, float> selector, int monthCount = 3)
     {
         DateTimeOffset now = DateTimeOffset.Now;
-        Dictionary<string, float[]> aggregatedData = Activities
+        Dictionary<string, float[]> aggregatedData = _activities
             .Where(a => a.Details.StartDate >= now.AddMonths(-monthCount + 1))
             .GroupBy(a => a.Details.Type)
             .ToDictionary(
