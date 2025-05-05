@@ -17,7 +17,7 @@ public partial class Statistics : ComponentBase
     {
         _athlete = await AuthenticationService.GetCurrentAthleteAsync();
 
-        ActivityFilter filter = new(_athlete.Id, false);
+        ActivityFilter filter = new(_athlete.Id, false, 2);
         _activities = await ActivityService.GetActivitiesAsync(filter);
     }
 
@@ -25,7 +25,6 @@ public partial class Statistics : ComponentBase
     {
         DateTimeOffset now = DateTimeOffset.Now;
         Dictionary<string, float[]> aggregatedData = _activities
-            .Where(a => a.Details.StartDate >= now.AddMonths(-monthCount + 1))
             .GroupBy(a => a.Details.Type)
             .ToDictionary(
                 g => g.Key.ToString(),
