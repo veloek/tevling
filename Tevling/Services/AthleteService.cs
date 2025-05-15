@@ -28,6 +28,15 @@ public class AthleteService(
         return athlete;
     }
 
+    public async Task<Athlete?> GetAthleteByStravaIdAsync(long stravaId, CancellationToken ct = default)
+    {
+        await using DataContext dataContext = await dataContextFactory.CreateDbContextAsync(ct);
+
+        Athlete? athlete = await dataContext.Athletes.FirstOrDefaultAsync(a => a.StravaId == stravaId, ct);
+
+        return athlete;
+    }
+
     public async Task<Athlete[]> GetAthletesAsync(
         AthleteFilter? filter = null,
         Paging? paging = null,
