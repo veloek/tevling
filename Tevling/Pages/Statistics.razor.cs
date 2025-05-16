@@ -17,7 +17,7 @@ public partial class Statistics : ComponentBase
     {
         _athlete = await AuthenticationService.GetCurrentAthleteAsync();
 
-        ActivityFilter filter = new(_athlete.Id, false, 2);
+        ActivityFilter filter = new(_athlete.Id, false, DateTimeOffset.Now.AddMonths(-2));
         _activities = await ActivityService.GetActivitiesAsync(filter);
     }
 
