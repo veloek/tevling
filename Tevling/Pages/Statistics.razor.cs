@@ -26,17 +26,19 @@ public partial class Statistics : ComponentBase
         DateTimeOffset now = DateTimeOffset.Now;
 
         Dictionary<string, float[]> aggregatedData = _activities
-            .GroupBy(a => new { a.Details.Type, a.Details.StartDate.Month })
+            .GroupBy(a => a.Details.Type)
             .ToDictionary(
-                g => g.Key.Type.ToString(),
-                g =>
-                {
-                    return Enumerable.Range(-monthCount + 1, monthCount)
-                        .Select(
-                            m => now.AddMonths(m).Month == g.Key.Month ? g.Sum(selector) : 0f
-                        )
-                        .ToArray();
-                });
+                g => g.Key.ToString(),
+                g => Enumerable.Range(-monthCount + 1, monthCount)
+                    .Select(m =>
+                    {
+                        int month = now.AddMonths(m).Month;
+                        return g
+                            .Where(a => a.Details.StartDate.Month == month)
+                            .Sum(selector);
+                    })
+                    .ToArray()
+            );
 
         if (aggregatedData.Count != 0)
         {
