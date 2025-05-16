@@ -134,7 +134,7 @@ public class ActivityService(
         Activity[] activities = await dataContext.Activities
             .Include(a => a.Athlete)
             .ThenInclude(a => a!.Following)
-            .Where(a => !filter.From.HasValue|| a.Details.StartDate >= filter.From)
+            .If(filter.From.HasValue, q => q.Where(a => a.Details.StartDate >= filter.From), x => x)
             .Where(
                 activity => activity.AthleteId == athlete.Id ||
                     (filter.IncludeFollowing && athlete.Following!.Select(a => a.Id).Contains(activity.AthleteId)))
