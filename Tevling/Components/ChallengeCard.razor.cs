@@ -59,6 +59,19 @@ public partial class ChallengeCard : ComponentBase
         if (Challenge != null) await ChallengeService.DeleteChallengeAsync(Challenge.Id);
     }
 
+    private async Task DrawStats()
+    {
+        List<string> users = ScoreBoard!.Scores.Select(score => score.Name).ToList();
+        List<float> data = ScoreBoard!.Scores.Select(score => score.ScoreUnit).ToList();
+        
+        await JSRuntime.InvokeVoidAsync(
+            "DrawChallengeStats",
+            "distribution-" + Challenge!.Id,
+            data,
+            users,
+            Challenge.Measurement.ToString());
+    }
+
     private async Task DrawWinner()
     {
         if (Challenge is not null)
