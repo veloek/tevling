@@ -95,10 +95,17 @@ public partial class Statistics : ComponentBase, IAsyncDisposable
 
     public async ValueTask DisposeAsync()
     {
-        if (_module != null)
+        try
         {
-            await _module.DisposeAsync();
-            _module = null;
+            if (_module != null)
+            {
+                await _module.DisposeAsync();
+                _module = null;
+            }
+        }
+        catch (JSDisconnectedException)
+        {
+            // Ignore, happens during page reload.
         }
     }
 }
