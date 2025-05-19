@@ -3,8 +3,8 @@ window.drawChart = function (activityData, labels, chartName, chartTitle) {
     var canvas = document.getElementById(chartName);
 
     // Destroy existing chart instance if it exists
-    if (window.chartName instanceof Chart) {
-        window.chartName.destroy();
+    if (window[chartName] instanceof Chart) {
+        window[chartName].destroy();
     }
 
     let datasets = [];
@@ -15,7 +15,7 @@ window.drawChart = function (activityData, labels, chartName, chartTitle) {
         });
     }
 
-    window.myChart = new Chart(ctx, {
+    window[chartName] = new Chart(ctx, {
         type: 'line',
         data: {
             labels: labels, datasets: datasets

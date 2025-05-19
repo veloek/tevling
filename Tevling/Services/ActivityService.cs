@@ -129,10 +129,12 @@ public class ActivityService(
                 .If(filter.IncludeFollowing, q => q.Include(a => a.Following))
                 .FirstOrDefaultAsync(a => a.Id == filter.AthleteId, ct) ??
             throw new Exception($"Unknown athlete ID {filter.AthleteId}");
+        DateTimeOffset now = DateTimeOffset.Now;
 
         Activity[] activities = await dataContext.Activities
             .Include(a => a.Athlete)
             .ThenInclude(a => a!.Following)
+            .If(filter.From.HasValue, q => q.Where(a => a.Details.StartDate >= filter.From), x => x)
             .Where(
                 activity => activity.AthleteId == athlete.Id ||
                     (filter.IncludeFollowing && athlete.Following!.Select(a => a.Id).Contains(activity.AthleteId)))

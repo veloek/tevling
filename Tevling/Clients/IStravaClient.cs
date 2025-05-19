@@ -25,5 +25,9 @@ public interface IStravaClient
         int? pageSize = null,
         CancellationToken ct = default);
 
+    Task<SummaryAthlete> GetAuthenticatedAthleteAsync(
+        string accessToken,
+        CancellationToken ct = default);
+
     Task DeauthorizeAppAsync(string accessToken, CancellationToken ct = default);
 }

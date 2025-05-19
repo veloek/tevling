@@ -3,6 +3,7 @@ namespace Tevling.Services;
 public interface IAthleteService
 {
     Task<Athlete?> GetAthleteByIdAsync(int athleteId, CancellationToken ct = default);
+    Task<Athlete?> GetAthleteByStravaIdAsync(long stravaId, CancellationToken ct = default);
 
     Task<Athlete[]> GetAthletesAsync(
         AthleteFilter? filter = null,

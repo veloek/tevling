@@ -21,14 +21,17 @@ public partial class ChallengeForm : ComponentBase
     [SupplyParameterFromForm] public ChallengeFormModel Challenge { get; set; } = new();
 
     private List<ChallengeTemplate> Templates { get; set; } = [];
+    private List<ChallengeGroup> ChallengeGroups { get; set; } = [];
+    private string ChallengeGroupName { get; set; } = string.Empty;
     private Dictionary<int, bool> TemplatesSelectedForDeletion { get; set; } = [];
+    private Dictionary<int, bool> ChallengeGroupsSelectedForDeletion { get; set; } = [];
+    
     private const int MaximumSuggestions = 10;
     private DropdownSearch<ActivityType>? _dropdownSearchRefActivityTypes;
     private DropdownSearch<Athlete>? _dropdownSearchRefAthletes;
     private Athlete Athlete { get; set; } = default!;
     private static IEnumerable<ActivityType> ActivityTypes => Enum.GetValues(typeof(ActivityType)).Cast<ActivityType>();
     private static Func<Athlete, string> AthletesDisplayFunc => athlete => athlete.Name;
-
     protected override async Task OnInitializedAsync()
     {
         Athlete = await AuthenticationService.GetCurrentAthleteAsync();
@@ -37,6 +40,12 @@ public partial class ChallengeForm : ComponentBase
         foreach (ChallengeTemplate challengeTemplate in templates)
         {
             TemplatesSelectedForDeletion[challengeTemplate.Id] = false;
+        }
+        
+        ChallengeGroups = [.. await ChallengeService.GetChallengeGroupsAsync(Athlete.Id)];
+        foreach (ChallengeGroup group in ChallengeGroups)
+        {
+            ChallengeGroupsSelectedForDeletion[group.Id] = false;
         }
     }
 
@@ -98,6 +107,62 @@ public partial class ChallengeForm : ComponentBase
         foreach (ChallengeTemplate challengeTemplate in Templates)
         {
             TemplatesSelectedForDeletion[challengeTemplate.Id] = false;
+        }
+    }
+
+    private void ResetChallengeGroupName()
+    {
+        ChallengeGroupName = string.Empty;
+    }
+
+    private void LoadSelectedChallengeGroup(object? value)
+    {
+        if (value is not null && int.TryParse(value.ToString(), out int index) && index < ChallengeGroups.Count)
+        {
+            LoadChallengeGroup(ChallengeGroups[index]);
+        }
+    }
+
+    private void LoadChallengeGroup(ChallengeGroup challengeGroup)
+    {
+        foreach (Athlete member in challengeGroup.Members ?? [])
+        {
+            if (Challenge.InvitedAthletes.Any(a => a.Id == member.Id)) continue;
+            Challenge.InvitedAthletes.Add(member);
+        }
+    }
+
+    private void DeleteChallengeGroups()
+    {
+        int[] keysToDelete = [.. ChallengeGroupsSelectedForDeletion.Where(t => t.Value).Select(t => t.Key)];
+        foreach (int key in keysToDelete)
+        {
+            _ = DeleteChallengeGroup(key);
+            ChallengeGroupsSelectedForDeletion.Remove(key);
+        }
+    }
+
+    private async Task DeleteChallengeGroup(int groupId)
+    {
+        await ChallengeService.DeleteChallengeGroupAsync(groupId);
+        ChallengeGroups = [.. await ChallengeService.GetChallengeGroupsAsync(Athlete.Id)];
+    }
+
+    private async Task CreateChallengeGroup()
+    {
+        await ChallengeService.CreateChallengeGroupAsync(
+            new ChallengeGroup
+            {
+                Created = DateTimeOffset.Now,
+                Name = ChallengeGroupName,
+                CreatedById = Athlete.Id,
+                Members = Challenge.InvitedAthletes,
+            });
+        ChallengeGroups = [.. await ChallengeService.GetChallengeGroupsAsync(Athlete.Id)];
+
+        foreach (ChallengeGroup challengeGroup in ChallengeGroups)
+        {
+            ChallengeGroupsSelectedForDeletion[challengeGroup.Id] = false;
         }
     }
     

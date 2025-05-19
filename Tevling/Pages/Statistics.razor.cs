@@ -9,41 +9,38 @@ public partial class Statistics : ComponentBase
     [Inject] private IAuthenticationService AuthenticationService { get; set; } = null!;
     [Inject] private IActivityService ActivityService { get; set; } = null!;
 
-    private Athlete Athlete { get; set; } = null!;
-    private Activity[] Activities { get; set; } = [];
+    private Athlete _athlete = null!;
+    private Activity[] _activities = [];
 
 
     protected override async Task OnInitializedAsync()
     {
-        Athlete = await AuthenticationService.GetCurrentAthleteAsync();
+        _athlete = await AuthenticationService.GetCurrentAthleteAsync();
 
-        ActivityFilter filter = new(Athlete.Id, false);
-        Activities = await ActivityService.GetActivitiesAsync(filter);
+        ActivityFilter filter = new(_athlete.Id, false, DateTimeOffset.Now.AddMonths(-2));
+        _activities = await ActivityService.GetActivitiesAsync(filter);
     }
 
-    private Dictionary<string, float[]> GetAggregatedData(Func<Activity, float> selector, int monthCount = 3)
+    private Dictionary<string, float[]> GetAggregatedMeasurementData(Func<Activity, float> selector, int monthCount = 3)
     {
         DateTimeOffset now = DateTimeOffset.Now;
-        Dictionary<string, float[]> aggregatedData = Activities
-            .Where(a => a.Details.StartDate >= now.AddMonths(-monthCount + 1))
+
+        Dictionary<string, float[]> aggregatedData = _activities
             .GroupBy(a => a.Details.Type)
             .ToDictionary(
                 g => g.Key.ToString(),
-                g =>
-                {
-                    Dictionary<int, float> monthlyTotals = g
-                        .GroupBy(a => a.Details.StartDate.Month)
-                        .ToDictionary(
-                            g => g.Key,
-                            g => g.Sum(selector));
-                    return Enumerable.Range(-monthCount + 1, monthCount)
-                        .Select(
-                            m => monthlyTotals.GetValueOrDefault(now.AddMonths(m).Month, 0f)
-                        )
-                        .ToArray();
-                });
+                g => Enumerable.Range(-monthCount + 1, monthCount)
+                    .Select(m =>
+                    {
+                        int month = now.AddMonths(m).Month;
+                        return g
+                            .Where(a => a.Details.StartDate.Month == month)
+                            .Sum(selector);
+                    })
+                    .ToArray()
+            );
 
-        if (aggregatedData.Any())
+        if (aggregatedData.Count != 0)
         {
             aggregatedData["Total"] =
             [
@@ -65,10 +62,12 @@ public partial class Statistics : ComponentBase
                 DateTimeOffset.Now.Month,
             ];
 
-            Dictionary<string, float[]> distancesLastThreeMonths = GetAggregatedData(a => a.Details.DistanceInMeters);
-            Dictionary<string, float[]> elevationLastThreeMonths = GetAggregatedData(a => a.Details.TotalElevationGain);
+            Dictionary<string, float[]> distancesLastThreeMonths =
+                GetAggregatedMeasurementData(a => a.Details.DistanceInMeters);
+            Dictionary<string, float[]> elevationLastThreeMonths =
+                GetAggregatedMeasurementData(a => a.Details.TotalElevationGain);
             Dictionary<string, float[]> timeLastThreeMonths =
-                GetAggregatedData(a => (float)a.Details.MovingTimeInSeconds / 3600);
+                GetAggregatedMeasurementData(a => (float)a.Details.MovingTimeInSeconds / 3600);
 
 
             await Js.InvokeVoidAsync(

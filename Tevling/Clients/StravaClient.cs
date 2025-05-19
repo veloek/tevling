@@ -151,6 +151,24 @@ public class StravaClient : IStravaClient
         }
     }
 
+    public async Task<SummaryAthlete> GetAuthenticatedAthleteAsync(
+        string accessToken,
+        CancellationToken ct = default)
+    {
+        HttpRequestMessage request = new(HttpMethod.Get, "athlete");
+        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+
+        HttpResponseMessage response = await _httpClient.SendAsync(request, ct);
+
+        await ThrowIfUnsuccessful(response, ct);
+
+        string responseBody = await response.Content.ReadAsStringAsync(ct);
+        SummaryAthlete athlete = JsonSerializer.Deserialize<SummaryAthlete>(responseBody) ??
+            throw new Exception("Error deserializing athlete");
+
+        return athlete;
+    }
+
     public async Task DeauthorizeAppAsync(string accessToken, CancellationToken ct = default)
     {
         HttpRequestMessage request = new(HttpMethod.Post, _stravaConfig.DeauthorizeUri);
