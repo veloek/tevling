@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.FeatureManagement;
 using Serilog;
 using Serilog.Events;
+using Tevling.Authentication;
 
 Log.Logger = new LoggerConfiguration()
     .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
@@ -50,7 +51,8 @@ builder.Services
         {
             options.LoginPath = "/login";
             options.ReturnUrlParameter = "returnUrl";
-        });
+        })
+    .AddStravaAuthentication();
 
 // Make sure our data directoy used to store the SQLite DB file exists.
 string dataDir = Path.Join(Environment.CurrentDirectory, "storage");
