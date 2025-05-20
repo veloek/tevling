@@ -11,7 +11,7 @@ namespace Tevling.Controllers;
 [Route("challenges")]
 [FeatureGate(FeatureFlag.EnableChallengeApi)]
 [Authorize(AuthenticationSchemes = StravaAuthenticationDefaults.AuthenticationScheme)]
-public class ChallengeController(IChallengeService challengeService) : ControllerBase
+public class ChallengesController(IChallengeService challengeService) : ControllerBase
 {
     [HttpGet]
     [Route("scoreboard")]
