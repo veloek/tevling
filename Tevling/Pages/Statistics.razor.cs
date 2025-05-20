@@ -3,7 +3,7 @@ using Microsoft.JSInterop;
 
 namespace Tevling.Pages;
 
-public partial class Statistics : ComponentBase
+public partial class Statistics : ComponentBase, IAsyncDisposable
 {
     [Inject] private IJSRuntime Js { get; set; } = null!;
     [Inject] private IAuthenticationService AuthenticationService { get; set; } = null!;
@@ -11,7 +11,7 @@ public partial class Statistics : ComponentBase
 
     private Athlete _athlete = null!;
     private Activity[] _activities = [];
-
+    private IJSObjectReference? _module;
 
     protected override async Task OnInitializedAsync()
     {
@@ -55,6 +55,8 @@ public partial class Statistics : ComponentBase
     {
         if (firstRender)
         {
+            _module = await Js.InvokeAsync<IJSObjectReference>("import", "./Pages/Statistics.razor.js");
+
             List<int> lastThreeMonths =
             [
                 DateTimeOffset.Now.AddMonths(-2).Month,
@@ -70,24 +72,40 @@ public partial class Statistics : ComponentBase
                 GetAggregatedMeasurementData(a => (float)a.Details.MovingTimeInSeconds / 3600);
 
 
-            await Js.InvokeVoidAsync(
+            await _module.InvokeVoidAsync(
                 "drawChart",
                 distancesLastThreeMonths,
                 lastThreeMonths.Select(m => CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(m)).ToList(),
                 "totalDistanceChart",
                 "Total Distance [m]");
-            await Js.InvokeVoidAsync(
+            await _module.InvokeVoidAsync(
                 "drawChart",
                 elevationLastThreeMonths,
                 lastThreeMonths.Select(m => CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(m)).ToList(),
                 "totalElevationChart",
                 "Total Elevation [m]");
-            await Js.InvokeVoidAsync(
+            await _module.InvokeVoidAsync(
                 "drawChart",
                 timeLastThreeMonths,
                 lastThreeMonths.Select(m => CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(m)).ToList(),
                 "totalTimeChart",
                 "Total Time [h]");
+        }
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        try
+        {
+            if (_module != null)
+            {
+                await _module.DisposeAsync();
+                _module = null;
+            }
+        }
+        catch (JSDisconnectedException)
+        {
+            // Ignore, happens during page reload.
         }
     }
 }

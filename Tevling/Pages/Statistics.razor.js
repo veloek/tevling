@@ -1,4 +1,4 @@
-window.drawChart = function (activityData, labels, chartName, chartTitle) {
+export function drawChart (activityData, labels, chartName, chartTitle) {
     var ctx = document.getElementById(chartName).getContext('2d');
     var canvas = document.getElementById(chartName);
 
