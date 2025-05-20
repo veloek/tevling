@@ -9,7 +9,7 @@ namespace Tevling.Controllers;
 
 [ApiController]
 [Route("api/challenges")]
-[FeatureGate(FeatureFlag.EnableChallengeApi)]
+[FeatureGate(FeatureFlag.ChallengesApi)]
 [Authorize(AuthenticationSchemes = StravaAuthenticationDefaults.AuthenticationScheme)]
 public class ChallengesController(IChallengeService challengeService) : ControllerBase
 {
