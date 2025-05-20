@@ -8,7 +8,7 @@ using RouteAttribute = Microsoft.AspNetCore.Mvc.RouteAttribute;
 namespace Tevling.Controllers;
 
 [ApiController]
-[Route("challenges")]
+[Route("api/challenges")]
 [FeatureGate(FeatureFlag.EnableChallengeApi)]
 [Authorize(AuthenticationSchemes = StravaAuthenticationDefaults.AuthenticationScheme)]
 public class ChallengesController(IChallengeService challengeService) : ControllerBase
