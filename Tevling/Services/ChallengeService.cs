@@ -64,6 +64,13 @@ public class ChallengeService(
             .If(paging != null, x => x.Take(paging!.Value.PageSize))
             .ToArrayAsync(ct);
 
+        // TODO: Filter this in query when DB supports it
+        if (!filter.IncludeOutdatedChallenges)
+        {
+            Challenge[] activeChallenges = [.. challenges.Where(c => c.End.UtcDateTime.Date >= DateTimeOffset.UtcNow.Date)];
+            return activeChallenges;
+        }
+
         return challenges;
     }
 
@@ -72,7 +79,7 @@ public class ChallengeService(
         await using DataContext dataContext = await dataContextFactory.CreateDbContextAsync(ct);
 
         logger.LogInformation("Adding new challenge group: {Name}", newChallengeGroup.Name);
-        
+
         foreach (Athlete member in newChallengeGroup.Members ?? [])
         {
             dataContext.Attach(member);
@@ -96,7 +103,7 @@ public class ChallengeService(
 
         return groups;
     }
-    
+
     public async Task DeleteChallengeGroupAsync(int challengeGroupId, CancellationToken ct = default)
     {
         await using DataContext dataContext = await dataContextFactory.CreateDbContextAsync(ct);
