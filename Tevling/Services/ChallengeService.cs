@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Reactive.Subjects;
 using Microsoft.EntityFrameworkCore;
 
@@ -308,48 +309,31 @@ public class ChallengeService(
     {
         await using DataContext dataContext = await dataContextFactory.CreateDbContextAsync(ct);
 
-        var result = await dataContext.Challenges
-            .Select(
-                c => new
-                {
-                    Challenge = c,
-                    Athletes = c.Athletes!
-                        .Select(
-                            a => new
-                            {
-                                Athlete = a.Name,
-                                /*
-                                This is not possible with the SQLite provider as it has no support for the APPLY
-                                operation which EFCore requires.
-                                Leaving the idea in here in case a different DB provider is used in the future.
+        Challenge challenge = await GetChallengeByIdAsync(challengeId, ct)
+            ?? throw new Exception($"Challenge ID {challengeId} not found");
 
-                                Score = a.Activities!
-                                    .Where(a => c.ActivityTypes.Length == 0 || c.ActivityTypes.Contains(a.Details.Type))
-                                    .Select(a => a.Details.DistanceInMeters).Sum()
-                                */
-                                a.Activities,
-                            }),
-                })
-            .AsSplitQuery()
-            .FirstAsync(x => x.Challenge.Id == challengeId, ct);
+        int[] athleteIds = [.. challenge.Athletes!.Select(a => a.Id)];
 
-        AthleteScore[] scores = result.Athletes
+        Activity[] activities = await dataContext.Activities
+            .Where(activity =>
+                activity.Details.StartDate >= challenge.Start &&
+                activity.Details.StartDate < challenge.End &&
+                (challenge.ActivityTypes.Count == 0 || challenge.ActivityTypes.Contains(activity.Details.Type)) &&
+                athleteIds.Contains(activity.AthleteId))
+            .ToArrayAsync(ct);
+
+        AthleteScore[] scores = [.. challenge.Athletes!
             .Select(
-                a => new
+                athlete => new
                 {
-                    a.Athlete,
-                    Activities = a.Activities!
-                        .Where(
-                            a => a.Details.StartDate >= result.Challenge.Start &&
-                                a.Details.StartDate < result.Challenge.End &&
-                                (result.Challenge.ActivityTypes.Count == 0 ||
-                                    result.Challenge.ActivityTypes.Contains(a.Details.Type))),
+                    Athlete = athlete.Name,
+                    Activities = activities.Where(activity => activity.AthleteId == athlete.Id),
                 })
             .Select(
                 a => new
                 {
                     a.Athlete,
-                    Sum = result.Challenge.Measurement switch
+                    Sum = challenge.Measurement switch
                     {
                         ChallengeMeasurement.Distance => a.Activities.Select(x => x.Details.DistanceInMeters).Sum(),
                         ChallengeMeasurement.Time => a.Activities.Select(x => x.Details.MovingTimeInSeconds).Sum(),
@@ -361,17 +345,16 @@ public class ChallengeService(
             .Select(
                 s =>
                 {
-                    string score = result.Challenge.Measurement switch
+                    string score = challenge.Measurement switch
                     {
                         ChallengeMeasurement.Distance => $"{s.Sum / 1000:0.##} km",
                         ChallengeMeasurement.Time => TimeSpan.FromSeconds(s.Sum).ToString("g"),
                         ChallengeMeasurement.Elevation => $"{s.Sum:0.##} m",
-                        _ => s.Sum.ToString(),
+                        _ => s.Sum.ToString(CultureInfo.InvariantCulture),
                     };
 
                     return new AthleteScore(s.Athlete, score);
-                })
-            .ToArray();
+                })];
 
         return new ScoreBoard(scores);
     }
