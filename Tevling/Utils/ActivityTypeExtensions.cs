@@ -20,6 +20,7 @@ public static class ActivityTypeExt
             ActivityType.StandUpPaddling => "SUP",
             ActivityType.VirtualRide => "Virtual ride",
             ActivityType.VirtualRun => "Virtual run",
+            ActivityType.WaterSport => "Water sport",
             ActivityType.WeightTraining => "Weight training",
             _ => activityType.ToString(),
         };
