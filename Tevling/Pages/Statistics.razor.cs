@@ -17,7 +17,7 @@ public partial class Statistics : ComponentBase, IAsyncDisposable
     {
         _athlete = await AuthenticationService.GetCurrentAthleteAsync();
 
-        ActivityFilter filter = new(_athlete.Id, false, DateTimeOffset.Now.AddMonths(-2));
+        ActivityFilter filter = new(_athlete.Id, false, DateTimeOffset.Now.AddMonths(-2).ToFirstOfTheMonth());
         _activities = await ActivityService.GetActivitiesAsync(filter);
     }
 
@@ -38,59 +38,62 @@ public partial class Statistics : ComponentBase, IAsyncDisposable
                             .Sum(selector);
                     })
                     .ToArray()
-            );
+            )
+            .Where(d => d.Value.Length > 0)
+            .ToDictionary();
 
-        if (aggregatedData.Count != 0)
-        {
-            aggregatedData["Total"] =
-            [
-                .. aggregatedData.Values.Aggregate((sum, next) => [.. sum.Zip(next, (a, b) => a + b)]),
-            ];
-        }
+        // if (aggregatedData.Count != 0)
+        // {
+        //     aggregatedData["Total"] =
+        //     [
+        //         .. aggregatedData.Values.Aggregate((sum, next) => [.. sum.Zip(next, (a, b) => a + b)]),
+        //     ];
+        // }
 
         return aggregatedData;
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (firstRender)
-        {
-            _module = await Js.InvokeAsync<IJSObjectReference>("import", "./Pages/Statistics.razor.js");
+        if (!firstRender)
+            return;
 
-            List<int> lastThreeMonths =
-            [
+        _module = await Js.InvokeAsync<IJSObjectReference>("import", "./Pages/Statistics.razor.js");
+
+        string[] lastThreeMonths = new int[]
+            {
                 DateTimeOffset.Now.AddMonths(-2).Month,
                 DateTimeOffset.Now.AddMonths(-1).Month,
                 DateTimeOffset.Now.Month,
-            ];
+            }
+            .Select(CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName)
+            .ToArray();
 
-            Dictionary<string, float[]> distancesLastThreeMonths =
-                GetAggregatedMeasurementData(a => a.Details.DistanceInMeters);
-            Dictionary<string, float[]> elevationLastThreeMonths =
-                GetAggregatedMeasurementData(a => a.Details.TotalElevationGain);
-            Dictionary<string, float[]> timeLastThreeMonths =
-                GetAggregatedMeasurementData(a => (float)a.Details.MovingTimeInSeconds / 3600);
+        Dictionary<string, float[]> distanceLastThreeMonths =
+            GetAggregatedMeasurementData(a => (float)a.Details.DistanceInMeters / 1000);
+        Dictionary<string, float[]> elevationLastThreeMonths =
+            GetAggregatedMeasurementData(a => a.Details.TotalElevationGain);
+        Dictionary<string, float[]> timeLastThreeMonths =
+            GetAggregatedMeasurementData(a => (float)a.Details.MovingTimeInSeconds / 3600);
 
-
-            await _module.InvokeVoidAsync(
-                "drawChart",
-                distancesLastThreeMonths,
-                lastThreeMonths.Select(m => CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(m)).ToList(),
-                "totalDistanceChart",
-                "Total Distance [m]");
-            await _module.InvokeVoidAsync(
-                "drawChart",
-                elevationLastThreeMonths,
-                lastThreeMonths.Select(m => CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(m)).ToList(),
-                "totalElevationChart",
-                "Total Elevation [m]");
-            await _module.InvokeVoidAsync(
-                "drawChart",
-                timeLastThreeMonths,
-                lastThreeMonths.Select(m => CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(m)).ToList(),
-                "totalTimeChart",
-                "Total Time [h]");
-        }
+        await _module.InvokeVoidAsync(
+            "drawChart",
+            distanceLastThreeMonths,
+            lastThreeMonths,
+            "totalDistanceChart",
+            "Total Distance [km]");
+        await _module.InvokeVoidAsync(
+            "drawChart",
+            elevationLastThreeMonths,
+            lastThreeMonths,
+            "totalElevationChart",
+            "Total Elevation [m]");
+        await _module.InvokeVoidAsync(
+            "drawChart",
+            timeLastThreeMonths,
+            lastThreeMonths,
+            "totalTimeChart",
+            "Total Time [h]");
     }
 
     public async ValueTask DisposeAsync()
