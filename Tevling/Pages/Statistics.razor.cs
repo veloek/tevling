@@ -26,7 +26,7 @@ public partial class Statistics : ComponentBase, IAsyncDisposable
         DateTimeOffset now = DateTimeOffset.Now;
 
         Dictionary<string, float[]> aggregatedData = _activities
-            .GroupBy(a => a.Details.Type)
+            .GroupBy(a => ActivityTypeExt.ToString(a.Details.Type))
             .ToDictionary(
                 g => g.Key.ToString(),
                 g => Enumerable.Range(-monthCount + 1, monthCount)
@@ -81,19 +81,22 @@ public partial class Statistics : ComponentBase, IAsyncDisposable
             distanceLastThreeMonths,
             lastThreeMonths,
             "totalDistanceChart",
-            "Total Distance [km]");
+            "Total Distance [km]",
+            "km");
         await _module.InvokeVoidAsync(
             "drawChart",
             elevationLastThreeMonths,
             lastThreeMonths,
             "totalElevationChart",
-            "Total Elevation [m]");
+            "Total Elevation [m]",
+            "m");
         await _module.InvokeVoidAsync(
             "drawChart",
             timeLastThreeMonths,
             lastThreeMonths,
             "totalTimeChart",
-            "Total Time [h]");
+            "Total Time [h]",
+            "h");
     }
 
     public async ValueTask DisposeAsync()

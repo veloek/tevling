@@ -1,4 +1,4 @@
-export function drawChart(activityData, labels, chartName, chartTitle) {
+export function drawChart(activityData, labels, chartName, chartTitle, unit) {
   var ctx = document.getElementById(chartName).getContext("2d");
 
   // Destroy existing chart instance if it exists
@@ -33,10 +33,25 @@ export function drawChart(activityData, labels, chartName, chartTitle) {
         },
         tooltip: {
           callbacks: {
-            label: (ctx) =>
-              Number.isInteger(ctx.parsed.y)
-                ? ctx.parsed.y
-                : ctx.parsed.y.toFixed(1),
+            label: (context) => {
+              let label = context.dataset.label || "";
+
+              if (label) {
+                label += ": ";
+              }
+
+              if (context.parsed.y !== null) {
+                label += Number.isInteger(context.parsed.y)
+                  ? context.parsed.y
+                  : context.parsed.y.toFixed(1);
+              }
+
+              if (unit) {
+                label += " " + unit;
+              }
+
+              return label;
+            },
           },
         },
       },
