@@ -39,7 +39,7 @@ public partial class Statistics : ComponentBase, IAsyncDisposable
                     })
                     .ToArray()
             )
-            .Where(d => d.Value.Length > 0)
+            .Where(d => d.Value.Any(v => v > 0))
             .ToDictionary();
 
         // if (aggregatedData.Count != 0)

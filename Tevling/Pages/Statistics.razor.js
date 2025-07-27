@@ -31,6 +31,14 @@ export function drawChart(activityData, labels, chartName, chartTitle) {
             size: 20,
           },
         },
+        tooltip: {
+          callbacks: {
+            label: (ctx) =>
+              Number.isInteger(ctx.parsed.y)
+                ? ctx.parsed.y
+                : ctx.parsed.y.toFixed(1),
+          },
+        },
       },
       responsive: true,
       scales: {
