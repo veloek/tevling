@@ -12,7 +12,8 @@ public partial class Statistics : ComponentBase, IAsyncDisposable
     private Athlete _athlete = null!;
     private Activity[] _activities = [];
     private IJSObjectReference? _module;
-    private int _numberOfMonthsToReview = 5;
+    private int _numberOfMonthsToReview = 3;
+    private ChallengeMeasurement _measurement = ChallengeMeasurement.Distance;
 
     protected override async Task OnInitializedAsync()
     {
@@ -42,7 +43,7 @@ public partial class Statistics : ComponentBase, IAsyncDisposable
             )
             .Where(d => d.Value.Any(v => v > 0))
             .ToDictionary();
-        
+
         return aggregatedData;
     }
 
@@ -80,27 +81,38 @@ public partial class Statistics : ComponentBase, IAsyncDisposable
         Dictionary<string, float[]> timeLastThreeMonths =
             GetAggregatedMeasurementData(a => (float)a.Details.MovingTimeInSeconds / 3600, _numberOfMonthsToReview);
 
-        await _module.InvokeVoidAsync(
-            "drawChart",
-            distanceLastThreeMonths,
-            months,
-            "totalDistanceChart",
-            "Total Distance [km]",
-            "km");
-        await _module.InvokeVoidAsync(
-            "drawChart",
-            elevationLastThreeMonths,
-            months,
-            "totalElevationChart",
-            "Total Elevation [m]",
-            "m");
-        await _module.InvokeVoidAsync(
-            "drawChart",
-            timeLastThreeMonths,
-            months,
-            "totalTimeChart",
-            "Total Time [h]",
-            "h");
+        switch (_measurement)
+        {
+            case ChallengeMeasurement.Distance:
+                await _module.InvokeVoidAsync(
+                    "drawChart",
+                    distanceLastThreeMonths,
+                    months,
+                    "TheChart",
+                    "Total Distance [km]",
+                    "km");
+                break;
+            case ChallengeMeasurement.Elevation:
+                await _module.InvokeVoidAsync(
+                    "drawChart",
+                    elevationLastThreeMonths,
+                    months,
+                    "TheChart",
+                    "Total Elevation [m]",
+                    "m");
+                break;
+            case ChallengeMeasurement.Time:
+                await _module.InvokeVoidAsync(
+                    "drawChart",
+                    timeLastThreeMonths,
+                    months,
+                    "TheChart",
+                    "Total Time [h]",
+                    "h");
+                break;
+            default:
+                throw new Exception("Unknown challenge measurement");
+        }
     }
 
     public async ValueTask DisposeAsync()
