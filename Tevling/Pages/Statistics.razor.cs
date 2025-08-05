@@ -12,12 +12,13 @@ public partial class Statistics : ComponentBase, IAsyncDisposable
     private Athlete _athlete = null!;
     private Activity[] _activities = [];
     private IJSObjectReference? _module;
+    private int _numberOfMonthsToReview = 5;
 
     protected override async Task OnInitializedAsync()
     {
         _athlete = await AuthenticationService.GetCurrentAthleteAsync();
 
-        ActivityFilter filter = new(_athlete.Id, false, DateTimeOffset.Now.AddMonths(-2).ToFirstOfTheMonth());
+        ActivityFilter filter = new(_athlete.Id, false, DateTimeOffset.Now.AddMonths(-12).ToFirstOfTheMonth());
         _activities = await ActivityService.GetActivitiesAsync(filter);
     }
 
@@ -53,47 +54,58 @@ public partial class Statistics : ComponentBase, IAsyncDisposable
         return aggregatedData;
     }
 
+    private string[] CreateMonthArray(int monthCount)
+    {
+        List<int> months = [];
+
+        for (int i = 0; i < monthCount; i++)
+        {
+            months.Insert(0, DateTime.Now.AddMonths(-i).Month);
+        }
+
+        return [.. months.Select(CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName)];
+    }
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (!firstRender)
             return;
 
+        await DrawChart();
+    }
+
+
+    public async Task DrawChart()
+    {
         _module = await Js.InvokeAsync<IJSObjectReference>("import", "./Pages/Statistics.razor.js");
 
-        string[] lastThreeMonths = new int[]
-            {
-                DateTimeOffset.Now.AddMonths(-2).Month,
-                DateTimeOffset.Now.AddMonths(-1).Month,
-                DateTimeOffset.Now.Month,
-            }
-            .Select(CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName)
-            .ToArray();
+        string[] months = CreateMonthArray(_numberOfMonthsToReview);
 
         Dictionary<string, float[]> distanceLastThreeMonths =
-            GetAggregatedMeasurementData(a => (float)a.Details.DistanceInMeters / 1000);
+            GetAggregatedMeasurementData(a => (float)a.Details.DistanceInMeters / 1000, _numberOfMonthsToReview);
         Dictionary<string, float[]> elevationLastThreeMonths =
-            GetAggregatedMeasurementData(a => a.Details.TotalElevationGain);
+            GetAggregatedMeasurementData(a => a.Details.TotalElevationGain, _numberOfMonthsToReview);
         Dictionary<string, float[]> timeLastThreeMonths =
-            GetAggregatedMeasurementData(a => (float)a.Details.MovingTimeInSeconds / 3600);
+            GetAggregatedMeasurementData(a => (float)a.Details.MovingTimeInSeconds / 3600, _numberOfMonthsToReview);
 
         await _module.InvokeVoidAsync(
             "drawChart",
             distanceLastThreeMonths,
-            lastThreeMonths,
+            months,
             "totalDistanceChart",
             "Total Distance [km]",
             "km");
         await _module.InvokeVoidAsync(
             "drawChart",
             elevationLastThreeMonths,
-            lastThreeMonths,
+            months,
             "totalElevationChart",
             "Total Elevation [m]",
             "m");
         await _module.InvokeVoidAsync(
             "drawChart",
             timeLastThreeMonths,
-            lastThreeMonths,
+            months,
             "totalTimeChart",
             "Total Time [h]",
             "h");

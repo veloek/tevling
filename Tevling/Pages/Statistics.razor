@@ -3,6 +3,16 @@
 
 <h1 class="title mb-5">Statistics</h1>
 
+
+
+<label for="numberOfMonths">Months:</label>
+<InputSelect @bind-Value="@_numberOfMonthsToReview" @oninput="DrawChart">
+    @for (int i = 1; i <= 12; i++)
+    {
+        <option value="@i">@i</option>
+    }
+</InputSelect>
+
 <div class="d-flex flex-wrap p-2">
     <canvas id="totalDistanceChart"></canvas>
 </div>
