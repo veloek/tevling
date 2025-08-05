@@ -1,0 +1,12 @@
+@typeparam T
+
+<div class="ButtonGroup">
+    @foreach (T item in Items)
+    {
+        <button type="button"
+                class="@GetButtonCssClass(item)"
+                @onclick="() => HandleButtonClick(item)">
+            @item
+        </button>
+    }
+</div>
