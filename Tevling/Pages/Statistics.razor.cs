@@ -42,15 +42,7 @@ public partial class Statistics : ComponentBase, IAsyncDisposable
             )
             .Where(d => d.Value.Any(v => v > 0))
             .ToDictionary();
-
-        // if (aggregatedData.Count != 0)
-        // {
-        //     aggregatedData["Total"] =
-        //     [
-        //         .. aggregatedData.Values.Aggregate((sum, next) => [.. sum.Zip(next, (a, b) => a + b)]),
-        //     ];
-        // }
-
+        
         return aggregatedData;
     }
 
