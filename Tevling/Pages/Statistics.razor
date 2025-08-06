@@ -29,7 +29,7 @@
     case ChallengeMeasurement.Distance:
         @foreach (KeyValuePair<string, float[]> kvp in _distances)
         {
-            <p>- Traversed <b>@Math.Round(kvp.Value.Sum(), 1)</b>km by @kvp.Key: </p>
+            <p>- Traversed <b>@Math.Round(kvp.Value.Sum(), 1)</b>km by @kvp.Key</p>
         }
 
         <p>A total of <b>@Math.Round(_distances.Sum(kvp => kvp.Value.Sum()), 1)</b>km</p>
@@ -37,7 +37,7 @@
     case ChallengeMeasurement.Elevation:
         @foreach (KeyValuePair<string, float[]> kvp in _elevations)
         {
-            <p>- Ascended <b>@Math.Round(kvp.Value.Sum(), 1)</b>m by @kvp.Key: </p>
+            <p>- Ascended <b>@Math.Round(kvp.Value.Sum(), 1)</b>m by @kvp.Key</p>
         }
 
         <p>A total of <b>@Math.Round(_elevations.Sum(kvp => kvp.Value.Sum()), 1)</b>m</p>
@@ -45,7 +45,7 @@
     case ChallengeMeasurement.Time:
         @foreach (KeyValuePair<string, float[]> kvp in _durations)
         {
-            <p>- Spent <b>@Math.Round(kvp.Value.Sum(), 1)</b> hours on @kvp.Key: </p>
+            <p>- Spent <b>@Math.Round(kvp.Value.Sum(), 1)</b> hours on @kvp.Key</p>
         }
 
         <p>A total of <b>@Math.Round(_durations.Sum(kvp => kvp.Value.Sum()), 1)</b> hours</p>
