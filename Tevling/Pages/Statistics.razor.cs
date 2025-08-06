@@ -19,7 +19,7 @@ public partial class Statistics : ComponentBase, IAsyncDisposable
     {
         _athlete = await AuthenticationService.GetCurrentAthleteAsync();
 
-        ActivityFilter filter = new(_athlete.Id, false, DateTimeOffset.Now.AddMonths(-12).ToFirstOfTheMonth());
+        ActivityFilter filter = new(_athlete.Id, false);
         _activities = await ActivityService.GetActivitiesAsync(filter);
     }
 
@@ -35,8 +35,9 @@ public partial class Statistics : ComponentBase, IAsyncDisposable
                     .Select(m =>
                     {
                         int month = now.AddMonths(m).Month;
+                        int year = now.AddMonths(m).Year;
                         return g
-                            .Where(a => a.Details.StartDate.Month == month)
+                            .Where(a => a.Details.StartDate.Month == month && a.Details.StartDate.Year == year)
                             .Sum(selector);
                     })
                     .ToArray()
@@ -47,16 +48,13 @@ public partial class Statistics : ComponentBase, IAsyncDisposable
         return aggregatedData;
     }
 
-    private string[] CreateMonthArray(int monthCount)
+    private static string[] CreateMonthArray(int monthCount)
     {
-        List<int> months = [];
-
-        for (int i = 0; i < monthCount; i++)
+        return [.. Enumerable.Range(0, monthCount).Select(i =>
         {
-            months.Insert(0, DateTime.Now.AddMonths(-i).Month);
-        }
-
-        return [.. months.Select(CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName)];
+            DateTime month = DateTime.Now.AddMonths(-i);
+            return month.ToString(month.Month == 1 ? "MMM-yy" : "MMM");
+        }).Reverse()];
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -68,7 +66,7 @@ public partial class Statistics : ComponentBase, IAsyncDisposable
     }
 
 
-    public async Task DrawChart()
+    private async Task DrawChart()
     {
         _module = await Js.InvokeAsync<IJSObjectReference>("import", "./Pages/Statistics.razor.js");
 

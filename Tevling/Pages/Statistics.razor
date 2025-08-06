@@ -6,8 +6,8 @@
 
 
 <label>Months:</label>
-<InputSelect @bind-Value="@_numberOfMonthsToReview" @oninput="DrawChart">
-    @for (int i = 1; i <= 12; i++)
+<InputSelect @bind-Value="@_numberOfMonthsToReview" @oninput="DrawChart" class="mb-2">
+    @for (int i = 1; i <= 36; i++)
     {
         <option value="@i">@i</option>
     }
