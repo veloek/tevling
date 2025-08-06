@@ -14,6 +14,9 @@ public partial class Statistics : ComponentBase, IAsyncDisposable
     private IJSObjectReference? _module;
     private int _numberOfMonthsToReview = 3;
     private ChallengeMeasurement _measurement = ChallengeMeasurement.Distance;
+    private Dictionary<string, float[]> _distances = [];
+    private Dictionary<string, float[]> _elevations = [];
+    private Dictionary<string, float[]> _durations = [];
 
     protected override async Task OnInitializedAsync()
     {
@@ -21,6 +24,8 @@ public partial class Statistics : ComponentBase, IAsyncDisposable
 
         ActivityFilter filter = new(_athlete.Id, false);
         _activities = await ActivityService.GetActivitiesAsync(filter);
+        
+        UpdateMeasurementData();
     }
 
     private Dictionary<string, float[]> GetAggregatedMeasurementData(Func<Activity, float> selector, int monthCount = 3)
@@ -50,11 +55,16 @@ public partial class Statistics : ComponentBase, IAsyncDisposable
 
     private static string[] CreateMonthArray(int monthCount)
     {
-        return [.. Enumerable.Range(0, monthCount).Select(i =>
-        {
-            DateTime month = DateTime.Now.AddMonths(-i);
-            return month.ToString(month.Month == 1 ? "MMMM-yy" : "MMMM");
-        }).Reverse()];
+        return
+        [
+            .. Enumerable.Range(0, monthCount)
+                .Select(i =>
+                {
+                    DateTime month = DateTime.Now.AddMonths(-i);
+                    return month.ToString(month.Month == 1 ? "MMMM-yy" : "MMMM");
+                })
+                .Reverse()
+        ];
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -65,6 +75,16 @@ public partial class Statistics : ComponentBase, IAsyncDisposable
         await DrawChart();
     }
 
+    private void UpdateMeasurementData()
+    {
+        _distances = GetAggregatedMeasurementData(
+            a => a.Details.DistanceInMeters / 1000,
+            _numberOfMonthsToReview);
+        _elevations = GetAggregatedMeasurementData(a => a.Details.TotalElevationGain, _numberOfMonthsToReview);
+        _durations = GetAggregatedMeasurementData(
+            a => (float)a.Details.MovingTimeInSeconds / 3600,
+            _numberOfMonthsToReview);
+    }
 
     private async Task DrawChart()
     {
@@ -72,19 +92,14 @@ public partial class Statistics : ComponentBase, IAsyncDisposable
 
         string[] months = CreateMonthArray(_numberOfMonthsToReview);
 
-        Dictionary<string, float[]> distanceLastThreeMonths =
-            GetAggregatedMeasurementData(a => (float)a.Details.DistanceInMeters / 1000, _numberOfMonthsToReview);
-        Dictionary<string, float[]> elevationLastThreeMonths =
-            GetAggregatedMeasurementData(a => a.Details.TotalElevationGain, _numberOfMonthsToReview);
-        Dictionary<string, float[]> timeLastThreeMonths =
-            GetAggregatedMeasurementData(a => (float)a.Details.MovingTimeInSeconds / 3600, _numberOfMonthsToReview);
+        UpdateMeasurementData();
 
         switch (_measurement)
         {
             case ChallengeMeasurement.Distance:
                 await _module.InvokeVoidAsync(
                     "drawChart",
-                    distanceLastThreeMonths,
+                    _distances,
                     months,
                     "TheChart",
                     "Total Distance [km]",
@@ -93,7 +108,7 @@ public partial class Statistics : ComponentBase, IAsyncDisposable
             case ChallengeMeasurement.Elevation:
                 await _module.InvokeVoidAsync(
                     "drawChart",
-                    elevationLastThreeMonths,
+                    _elevations,
                     months,
                     "TheChart",
                     "Total Elevation [m]",
@@ -102,7 +117,7 @@ public partial class Statistics : ComponentBase, IAsyncDisposable
             case ChallengeMeasurement.Time:
                 await _module.InvokeVoidAsync(
                     "drawChart",
-                    timeLastThreeMonths,
+                    _durations,
                     months,
                     "TheChart",
                     "Total Time [h]",
