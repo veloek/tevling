@@ -53,7 +53,7 @@ public partial class Statistics : ComponentBase, IAsyncDisposable
         return [.. Enumerable.Range(0, monthCount).Select(i =>
         {
             DateTime month = DateTime.Now.AddMonths(-i);
-            return month.ToString(month.Month == 1 ? "MMM-yy" : "MMM");
+            return month.ToString(month.Month == 1 ? "MMMM-yy" : "MMMM");
         }).Reverse()];
     }
 
