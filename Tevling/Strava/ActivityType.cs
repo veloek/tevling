@@ -37,6 +37,7 @@ public enum ActivityType
     VirtualRide,
     VirtualRun,
     Walk,
+    WaterSport,
     WeightTraining,
     Wheelchair,
     Windsurf,

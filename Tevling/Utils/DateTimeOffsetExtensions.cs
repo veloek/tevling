@@ -46,4 +46,10 @@ public static class DateTimeOffsetExt
     {
         return dto.UtcDateTime.Year == DateTimeOffset.UtcNow.Year;
     }
+
+    public static DateTimeOffset ToFirstOfTheMonth(this DateTimeOffset dto)
+    {
+        DateTimeOffset firstOfTheMonth = new(dto.Year, dto.Month, 1, 0, 0, 0, dto.Offset);
+        return firstOfTheMonth;
+    }
 }

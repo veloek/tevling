@@ -7,12 +7,14 @@ public partial class ChallengeCard : ComponentBase
     [Inject] private IChallengeService ChallengeService { get; set; } = null!;
     [Inject] private IJSRuntime JSRuntime { get; set; } = null!;
     [Inject] private IBrowserTime BrowserTime { get; set; } = null!;
+    [Inject] private IConfiguration Configuration { get; set; } = null!;
 
     [Parameter] public int AthleteId { get; set; }
     [Parameter] public Challenge? Challenge { get; set; }
 
     private DateTimeOffset? CurrentBrowserTime { get; set; }
     private ScoreBoard? ScoreBoard { get; set; }
+    private bool IsAdmin => Configuration.GetSection("AdminIds").Get<int[]>()?.Contains(AthleteId) ?? false;
 
     private string MeasurementIcon
     {
