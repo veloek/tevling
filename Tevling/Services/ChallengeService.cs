@@ -353,7 +353,7 @@ public class ChallengeService(
                         _ => s.Sum.ToString(CultureInfo.InvariantCulture),
                     };
                     
-                    float scoreUnit = challenge.Measurement switch
+                    float scoreValue = challenge.Measurement switch
                     {
                         ChallengeMeasurement.Distance => s.Sum / 1000,
                         ChallengeMeasurement.Time => TimeSpan.FromSeconds(s.Sum).Hours,
@@ -361,7 +361,7 @@ public class ChallengeService(
                         _ => s.Sum,
                     };
 
-                    return new AthleteScore(s.Athlete, score, scoreUnit);
+                    return new AthleteScore(s.Athlete, score, scoreValue);
                 })];
 
         return new ScoreBoard(scores);
