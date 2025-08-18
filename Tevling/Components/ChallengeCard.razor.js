@@ -3,12 +3,12 @@
     var canvas = document.getElementById(canvasId);
 
     // Destroy existing chart instance if it exists
-    if (window.canvasId instanceof Chart) {
-        window.canvasId.destroy();
+    if (window[canvasId] instanceof Chart) {
+        window[canvasId].destroy();
     }
 
 
-    window.canvasId = new Chart(ctx, {
+    window[canvasId] = new Chart(ctx, {
         type: 'bar',
         data: {
             labels: labels,
