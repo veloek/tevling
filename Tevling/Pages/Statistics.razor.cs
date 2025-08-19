@@ -22,10 +22,6 @@ public partial class Statistics : ComponentBase, IAsyncDisposable
     protected override async Task OnInitializedAsync()
     {
         _athlete = await AuthenticationService.GetCurrentAthleteAsync();
-
-        ActivityFilter filter = new(_athlete.Id, false);
-        _activities = await ActivityService.GetActivitiesAsync(filter);
-        
         UpdateMeasurementData();
     }
 
@@ -76,8 +72,14 @@ public partial class Statistics : ComponentBase, IAsyncDisposable
         await DrawChart();
     }
 
-    private void UpdateMeasurementData()
+    private async Task UpdateMeasurementData()
     {
+        ActivityFilter filter = new(
+            _athlete.Id,
+            false,
+            DateTimeOffset.Now.AddMonths(-NumberOfMonthsToReview + 1).ToFirstOfTheMonth());
+        _activities = await ActivityService.GetActivitiesAsync(filter);
+        
         Distances = GetAggregatedMeasurementData(
             a => a.Details.DistanceInMeters / 1000,
             NumberOfMonthsToReview);
