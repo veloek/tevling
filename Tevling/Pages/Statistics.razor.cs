@@ -12,11 +12,12 @@ public partial class Statistics : ComponentBase, IAsyncDisposable
     private Athlete _athlete = null!;
     private Activity[] _activities = [];
     private IJSObjectReference? _module;
-    private int _numberOfMonthsToReview = 3;
-    private ChallengeMeasurement _measurement = ChallengeMeasurement.Distance;
-    private Dictionary<string, float[]> _distances = [];
-    private Dictionary<string, float[]> _elevations = [];
-    private Dictionary<string, float[]> _durations = [];
+
+    private int NumberOfMonthsToReview { get; set; } = 3;
+    private ChallengeMeasurement Measurement { get; set; } = ChallengeMeasurement.Distance;
+    private Dictionary<string, float[]> Distances { get; set; } = [];
+    private Dictionary<string, float[]> Elevations { get; set; } = [];
+    private Dictionary<string, float[]> Durations { get; set; } = [];
 
     protected override async Task OnInitializedAsync()
     {
@@ -77,29 +78,29 @@ public partial class Statistics : ComponentBase, IAsyncDisposable
 
     private void UpdateMeasurementData()
     {
-        _distances = GetAggregatedMeasurementData(
+        Distances = GetAggregatedMeasurementData(
             a => a.Details.DistanceInMeters / 1000,
-            _numberOfMonthsToReview);
-        _elevations = GetAggregatedMeasurementData(a => a.Details.TotalElevationGain, _numberOfMonthsToReview);
-        _durations = GetAggregatedMeasurementData(
+            NumberOfMonthsToReview);
+        Elevations = GetAggregatedMeasurementData(a => a.Details.TotalElevationGain, NumberOfMonthsToReview);
+        Durations = GetAggregatedMeasurementData(
             a => (float)a.Details.MovingTimeInSeconds / 3600,
-            _numberOfMonthsToReview);
+            NumberOfMonthsToReview);
     }
 
     private async Task DrawChart()
     {
         _module = await Js.InvokeAsync<IJSObjectReference>("import", "./Pages/Statistics.razor.js");
 
-        string[] months = CreateMonthArray(_numberOfMonthsToReview);
+        string[] months = CreateMonthArray(NumberOfMonthsToReview);
 
         UpdateMeasurementData();
 
-        switch (_measurement)
+        switch (Measurement)
         {
             case ChallengeMeasurement.Distance:
                 await _module.InvokeVoidAsync(
                     "drawChart",
-                    _distances,
+                    Distances,
                     months,
                     "TheChart",
                     "Total Distance [km]",
@@ -108,7 +109,7 @@ public partial class Statistics : ComponentBase, IAsyncDisposable
             case ChallengeMeasurement.Elevation:
                 await _module.InvokeVoidAsync(
                     "drawChart",
-                    _elevations,
+                    Elevations,
                     months,
                     "TheChart",
                     "Total Elevation [m]",
@@ -117,7 +118,7 @@ public partial class Statistics : ComponentBase, IAsyncDisposable
             case ChallengeMeasurement.Time:
                 await _module.InvokeVoidAsync(
                     "drawChart",
-                    _durations,
+                    Durations,
                     months,
                     "TheChart",
                     "Total Time [h]",
