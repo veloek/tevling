@@ -64,7 +64,7 @@ public partial class ChallengeCard : ComponentBase
     private async Task DrawStats()
     {
         List<string> users = ScoreBoard!.Scores.Select(score => score.Name).ToList();
-        List<float> data = ScoreBoard!.Scores.Select(score => score.ScoreUnit).ToList();
+        List<float> data = ScoreBoard!.Scores.Select(score => score.ScoreValue).ToList();
         
         await JSRuntime.InvokeVoidAsync(
             "DrawChallengeStats",
