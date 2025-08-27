@@ -352,8 +352,16 @@ public class ChallengeService(
                         ChallengeMeasurement.Elevation => $"{s.Sum:0.##} m",
                         _ => s.Sum.ToString(CultureInfo.InvariantCulture),
                     };
+                    
+                    float scoreValue = challenge.Measurement switch
+                    {
+                        ChallengeMeasurement.Distance => s.Sum / 1000,
+                        ChallengeMeasurement.Time => TimeSpan.FromSeconds(s.Sum).Hours,
+                        ChallengeMeasurement.Elevation => s.Sum,
+                        _ => s.Sum,
+                    };
 
-                    return new AthleteScore(s.Athlete, score);
+                    return new AthleteScore(s.Athlete, score, scoreValue);
                 })];
 
         return new ScoreBoard(scores);
