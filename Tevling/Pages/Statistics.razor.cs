@@ -13,12 +13,16 @@ public partial class Statistics : ComponentBase, IAsyncDisposable
     private Activity[] _activities = [];
     private IJSObjectReference? _module;
 
+    private int NumberOfMonthsToReview { get; set; } = 3;
+    private ChallengeMeasurement Measurement { get; set; } = ChallengeMeasurement.Distance;
+    private Dictionary<string, float[]> Distances { get; set; } = [];
+    private Dictionary<string, float[]> Elevations { get; set; } = [];
+    private Dictionary<string, float[]> Durations { get; set; } = [];
+
     protected override async Task OnInitializedAsync()
     {
         _athlete = await AuthenticationService.GetCurrentAthleteAsync();
-
-        ActivityFilter filter = new(_athlete.Id, false, DateTimeOffset.Now.AddMonths(-2).ToFirstOfTheMonth());
-        _activities = await ActivityService.GetActivitiesAsync(filter);
+        UpdateMeasurementData();
     }
 
     private Dictionary<string, float[]> GetAggregatedMeasurementData(Func<Activity, float> selector, int monthCount = 3)
@@ -33,8 +37,9 @@ public partial class Statistics : ComponentBase, IAsyncDisposable
                     .Select(m =>
                     {
                         int month = now.AddMonths(m).Month;
+                        int year = now.AddMonths(m).Year;
                         return g
-                            .Where(a => a.Details.StartDate.Month == month)
+                            .Where(a => a.Details.StartDate.Month == month && a.Details.StartDate.Year == year)
                             .Sum(selector);
                     })
                     .ToArray()
@@ -42,15 +47,21 @@ public partial class Statistics : ComponentBase, IAsyncDisposable
             .Where(d => d.Value.Any(v => v > 0))
             .ToDictionary();
 
-        // if (aggregatedData.Count != 0)
-        // {
-        //     aggregatedData["Total"] =
-        //     [
-        //         .. aggregatedData.Values.Aggregate((sum, next) => [.. sum.Zip(next, (a, b) => a + b)]),
-        //     ];
-        // }
-
         return aggregatedData;
+    }
+
+    private static string[] CreateMonthArray(int monthCount)
+    {
+        return
+        [
+            .. Enumerable.Range(0, monthCount)
+                .Select(i =>
+                {
+                    DateTime month = DateTime.Now.AddMonths(-i);
+                    return month.ToString(month.Month == 1 ? "MMMM-yy" : "MMMM");
+                })
+                .Reverse()
+        ];
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -58,45 +69,66 @@ public partial class Statistics : ComponentBase, IAsyncDisposable
         if (!firstRender)
             return;
 
+        await DrawChart();
+    }
+
+    private async Task UpdateMeasurementData()
+    {
+        ActivityFilter filter = new(
+            _athlete.Id,
+            false,
+            DateTimeOffset.Now.AddMonths(-NumberOfMonthsToReview + 1).ToFirstOfTheMonth());
+        _activities = await ActivityService.GetActivitiesAsync(filter);
+        
+        Distances = GetAggregatedMeasurementData(
+            a => a.Details.DistanceInMeters / 1000,
+            NumberOfMonthsToReview);
+        Elevations = GetAggregatedMeasurementData(a => a.Details.TotalElevationGain, NumberOfMonthsToReview);
+        Durations = GetAggregatedMeasurementData(
+            a => (float)a.Details.MovingTimeInSeconds / 3600,
+            NumberOfMonthsToReview);
+    }
+
+    private async Task DrawChart()
+    {
         _module = await Js.InvokeAsync<IJSObjectReference>("import", "./Pages/Statistics.razor.js");
 
-        string[] lastThreeMonths = new int[]
-            {
-                DateTimeOffset.Now.AddMonths(-2).Month,
-                DateTimeOffset.Now.AddMonths(-1).Month,
-                DateTimeOffset.Now.Month,
-            }
-            .Select(CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName)
-            .ToArray();
+        string[] months = CreateMonthArray(NumberOfMonthsToReview);
 
-        Dictionary<string, float[]> distanceLastThreeMonths =
-            GetAggregatedMeasurementData(a => (float)a.Details.DistanceInMeters / 1000);
-        Dictionary<string, float[]> elevationLastThreeMonths =
-            GetAggregatedMeasurementData(a => a.Details.TotalElevationGain);
-        Dictionary<string, float[]> timeLastThreeMonths =
-            GetAggregatedMeasurementData(a => (float)a.Details.MovingTimeInSeconds / 3600);
+        UpdateMeasurementData();
 
-        await _module.InvokeVoidAsync(
-            "drawChart",
-            distanceLastThreeMonths,
-            lastThreeMonths,
-            "totalDistanceChart",
-            "Total Distance [km]",
-            "km");
-        await _module.InvokeVoidAsync(
-            "drawChart",
-            elevationLastThreeMonths,
-            lastThreeMonths,
-            "totalElevationChart",
-            "Total Elevation [m]",
-            "m");
-        await _module.InvokeVoidAsync(
-            "drawChart",
-            timeLastThreeMonths,
-            lastThreeMonths,
-            "totalTimeChart",
-            "Total Time [h]",
-            "h");
+        switch (Measurement)
+        {
+            case ChallengeMeasurement.Distance:
+                await _module.InvokeVoidAsync(
+                    "drawChart",
+                    Distances,
+                    months,
+                    "TheChart",
+                    "Total Distance [km]",
+                    "km");
+                break;
+            case ChallengeMeasurement.Elevation:
+                await _module.InvokeVoidAsync(
+                    "drawChart",
+                    Elevations,
+                    months,
+                    "TheChart",
+                    "Total Elevation [m]",
+                    "m");
+                break;
+            case ChallengeMeasurement.Time:
+                await _module.InvokeVoidAsync(
+                    "drawChart",
+                    Durations,
+                    months,
+                    "TheChart",
+                    "Total Time [h]",
+                    "h");
+                break;
+            default:
+                throw new Exception("Unknown challenge measurement");
+        }
     }
 
     public async ValueTask DisposeAsync()
