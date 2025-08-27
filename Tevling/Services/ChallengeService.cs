@@ -356,7 +356,7 @@ public class ChallengeService(
                     float scoreValue = challenge.Measurement switch
                     {
                         ChallengeMeasurement.Distance => s.Sum / 1000,
-                        ChallengeMeasurement.Time => TimeSpan.FromSeconds(s.Sum).Hours,
+                        ChallengeMeasurement.Time => (float)TimeSpan.FromSeconds(s.Sum).TotalHours,
                         ChallengeMeasurement.Elevation => s.Sum,
                         _ => s.Sum,
                     };
