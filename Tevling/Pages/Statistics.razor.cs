@@ -22,7 +22,7 @@ public partial class Statistics : ComponentBase, IAsyncDisposable
     protected override async Task OnInitializedAsync()
     {
         _athlete = await AuthenticationService.GetCurrentAthleteAsync();
-        UpdateMeasurementData();
+        await UpdateMeasurementData();
     }
 
     private Dictionary<string, float[]> GetAggregatedMeasurementData(Func<Activity, float> selector, int monthCount = 3)
@@ -95,7 +95,7 @@ public partial class Statistics : ComponentBase, IAsyncDisposable
 
         string[] months = CreateMonthArray(NumberOfMonthsToReview);
 
-        UpdateMeasurementData();
+        await UpdateMeasurementData();
 
         switch (Measurement)
         {
