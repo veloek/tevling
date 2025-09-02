@@ -43,6 +43,7 @@ builder.Services.AddLocalization();
 IConfigurationSection section = builder.Configuration.GetSection(nameof(StravaConfig));
 StravaConfig stravaConfig = section.Get<StravaConfig>() ?? new StravaConfig();
 builder.Services.AddSingleton(stravaConfig);
+builder.Services.AddSingleton<IRandomToggleService>(new RandomToggleService());
 
 builder.Services
     .AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)

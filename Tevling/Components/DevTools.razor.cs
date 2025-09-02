@@ -1,6 +1,3 @@
-using Microsoft.EntityFrameworkCore;
-using Tevling.Strava;
-
 namespace Tevling.Components;
 
 public partial class DevTools : ComponentBase
@@ -8,8 +5,7 @@ public partial class DevTools : ComponentBase
     [Inject] private IActivityService ActivityService { get; set; } = null!;
     [Inject] private IAthleteService AthleteService { get; set; } = null!;
     [Inject] private IChallengeService ChallengeService { get; set; } = null!;
-
-    [Inject] private IDbContextFactory<DataContext> DataContextFactory { get; set; } = null!;
+    [Inject] private IRandomToggleService RandomToggleService { get; set; } = null!;
 
     [Parameter] public Athlete? Athlete { get; set; }
 
@@ -32,50 +28,16 @@ public partial class DevTools : ComponentBase
 
     private async Task AddLoadsOfActivities()
     {
-        await AddActivities();
-    }
-    private async Task AddActivities(CancellationToken ct = default)
-    {
-        if (Athlete is null)
-            throw new ArgumentException(nameof(Athlete));
-
-        await using DataContext dataContext = await DataContextFactory.CreateDbContextAsync(ct);
-        
         for (int i = 0; i < 100; i++)
         {
-            int activityId = Random.Shared.Next(1000, 10000);
-            ActivityType[] activityTypes = Enum.GetValues<ActivityType>();
-            ActivityType type = activityTypes[Random.Shared.Next(activityTypes.Length)];
-            
-            DateTime start =  DateTime.Now.AddYears(-1);
-            DateTime end =  DateTime.Now;
-            
-            long range = end.Ticks - start.Ticks;
-            DateTime startDate = new(start.Ticks + Random.Shared.NextInt64(range));
-            
-            Activity activity = new()
-            {
-                AthleteId = Athlete.Id,
-                StravaId = activityId,
-                Details = new ActivityDetails
-                {
-                    Name = "Activity_" + activityId,
-                    Description = "Description_" + activityId,
-                    DistanceInMeters = Random.Shared.Next(1000, 10000),
-                    MovingTimeInSeconds = Random.Shared.Next(1000, 10000),
-                    ElapsedTimeInSeconds = Random.Shared.Next(1000, 10000),
-                    TotalElevationGain = Random.Shared.Next(1000, 10000),
-                    Calories = 1337,
-                    Type = type,
-                    StartDate = startDate,
-                    Manual = false,
-                }
-            };
-
-            await dataContext.AddActivityAsync(activity, ct);
+            await AddActivity();
         }
     }
 
+    private void ToggleRandom()
+    {
+        RandomToggleService.ToggleRandom();
+    }
     private Task AddOthersActivity()
     {
         long randomAthleteStravaId;

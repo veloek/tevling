@@ -9,11 +9,8 @@ namespace Tevling.Controllers;
 [ApiController]
 [Route("dev")]
 [FeatureGate(FeatureFlag.DevTools)]
-public class DevController : ControllerBase
+public class DevController(IRandomToggleService randomToggleService) : ControllerBase
 {
-    public DevController()
-    {
-    }
 
     [HttpGet]
     [Route("strava/authorize")]
@@ -34,22 +31,51 @@ public class DevController : ControllerBase
     [Route("strava/activities/{stravaId}")]
     public IActionResult GetActivity(long stravaId)
     {
-        DetailedActivity activity = new()
+        if (randomToggleService.IsEnabled())
         {
-            Id = stravaId,
-            Name = "Activity_" + stravaId,
-            Description = "Description_" + stravaId,
-            Distance = 1234,
-            MovingTime = 631,
-            ElapsedTime = 963,
-            TotalElevationGain = 124.0f,
-            Calories = 0.0f,
-            Type = ActivityType.Run,
-            StartDate = DateTimeOffset.UtcNow,
-            Manual = true,
-        };
+            ActivityType[] activityTypes = Enum.GetValues<ActivityType>();
+            ActivityType type = activityTypes[Random.Shared.Next(activityTypes.Length)];
 
-        return new JsonResult(activity);
+            DateTime start = DateTime.Now.AddYears(-1);
+            DateTime end = DateTime.Now;
+
+            long range = end.Ticks - start.Ticks;
+            DateTime startDate = new(start.Ticks + Random.Shared.NextInt64(range));
+
+            DetailedActivity activity = new()
+            {
+                Id = stravaId,
+                Name = "Activity_" + stravaId,
+                Description = "Description_" + stravaId,
+                Distance = Random.Shared.Next(1000, 10000),
+                MovingTime = Random.Shared.Next(1000, 10000),
+                ElapsedTime = Random.Shared.Next(1000, 10000),
+                TotalElevationGain = Random.Shared.Next(1000, 10000),
+                Calories = 0.0f,
+                Type = type,
+                StartDate = startDate,
+                Manual = true,
+            };
+            return new JsonResult(activity);
+        }
+        else
+        {
+            DetailedActivity activity = new()
+            {
+                Id = stravaId,
+                Name = "Activity_" + stravaId,
+                Description = "Description_" + stravaId,
+                Distance = 1234,
+                MovingTime = 631,
+                ElapsedTime = 963,
+                TotalElevationGain = 124.0f,
+                Calories = 0.0f,
+                Type = ActivityType.Run,
+                StartDate = DateTimeOffset.UtcNow,
+                Manual = true,
+            };
+            return new JsonResult(activity);
+        }
     }
 
     [HttpGet]
