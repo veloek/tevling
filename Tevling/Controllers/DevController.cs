@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.FeatureManagement.Mvc;
+using Tevling.Bogus;
 using Tevling.Strava;
 using RouteAttribute = Microsoft.AspNetCore.Mvc.RouteAttribute;
 
@@ -31,36 +32,9 @@ public class DevController(IRandomToggleService randomToggleService) : Controlle
     [Route("strava/activities/{stravaId}")]
     public IActionResult GetActivity(long stravaId)
     {
-        if (randomToggleService.IsEnabled())
-        {
-            ActivityType[] activityTypes = Enum.GetValues<ActivityType>();
-            ActivityType type = activityTypes[Random.Shared.Next(activityTypes.Length)];
-
-            DateTime start = DateTime.Now.AddYears(-1);
-            DateTime end = DateTime.Now;
-
-            long range = end.Ticks - start.Ticks;
-            DateTime startDate = new(start.Ticks + Random.Shared.NextInt64(range));
-
-            DetailedActivity activity = new()
-            {
-                Id = stravaId,
-                Name = "Activity_" + stravaId,
-                Description = "Description_" + stravaId,
-                Distance = Random.Shared.Next(1000, 10000),
-                MovingTime = Random.Shared.Next(1000, 10000),
-                ElapsedTime = Random.Shared.Next(1000, 10000),
-                TotalElevationGain = Random.Shared.Next(1000, 10000),
-                Calories = 0.0f,
-                Type = type,
-                StartDate = startDate,
-                Manual = true,
-            };
-            return new JsonResult(activity);
-        }
-        else
-        {
-            DetailedActivity activity = new()
+        DetailedActivity activity = randomToggleService.IsEnabled()
+            ? new DetailedActivityFaker(name: "Activity " + stravaId, stravaId: stravaId).Generate()
+            : new()
             {
                 Id = stravaId,
                 Name = "Activity_" + stravaId,
@@ -74,8 +48,7 @@ public class DevController(IRandomToggleService randomToggleService) : Controlle
                 StartDate = DateTimeOffset.UtcNow,
                 Manual = true,
             };
-            return new JsonResult(activity);
-        }
+        return new JsonResult(activity);
     }
 
     [HttpGet]
