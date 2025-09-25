@@ -1,10 +1,44 @@
-using System.Globalization;
 using Microsoft.JSInterop;
 
 namespace Tevling.Pages;
 
 public partial class Statistics : ComponentBase, IAsyncDisposable
 {
+    private record Stats
+    {
+        public required string Type { get; init; }
+        public required float[] LastMonthsAggregate { get; init; }
+        public double LastMonthsAverage => Math.Round(LastMonthsAggregate.Average(), 1);
+        public double LastMonthsTotal => Math.Round(LastMonthsAggregate.Sum(), 1);
+
+        public float ThisMonth => LastMonthsAggregate[^1];
+
+        public double CurrentMonthComparedToAverage()
+        {
+            if (LastMonthsAverage == 0)
+            {
+                return 100;
+            }
+
+            double difference =
+                100 * (Math.Round(ThisMonth, 1) / LastMonthsAverage);
+            if (difference > 100)
+            {
+                return difference - 100;
+            }
+
+            return 100 - difference;
+        }
+
+        public string IncreaseVsDecrease()
+        {
+            return Math.Round(ThisMonth, 1) / LastMonthsAverage > 1
+                ? "<span style='color:green'>increase</span>"
+                : "<span style='color:red'>decrease</span>";
+        }
+    }
+
+
     [Inject] private IJSRuntime Js { get; set; } = null!;
     [Inject] private IAuthenticationService AuthenticationService { get; set; } = null!;
     [Inject] private IActivityService ActivityService { get; set; } = null!;
@@ -15,9 +49,9 @@ public partial class Statistics : ComponentBase, IAsyncDisposable
 
     private int NumberOfMonthsToReview { get; set; } = 3;
     private ChallengeMeasurement Measurement { get; set; } = ChallengeMeasurement.Distance;
-    private Dictionary<string, float[]> Distances { get; set; } = [];
-    private Dictionary<string, float[]> Elevations { get; set; } = [];
-    private Dictionary<string, float[]> Durations { get; set; } = [];
+    private List<Stats> Distances { get; set; } = [];
+    private List<Stats> Elevations { get; set; } = [];
+    private List<Stats> Durations { get; set; } = [];
 
     protected override async Task OnInitializedAsync()
     {
@@ -25,29 +59,35 @@ public partial class Statistics : ComponentBase, IAsyncDisposable
         await UpdateMeasurementData();
     }
 
-    private Dictionary<string, float[]> GetAggregatedMeasurementData(Func<Activity, float> selector, int monthCount = 3)
+    private List<Stats> GetAggregatedMeasurementData(Func<Activity, float> selector, int monthCount = 3)
     {
         DateTimeOffset now = DateTimeOffset.Now;
 
-        Dictionary<string, float[]> aggregatedData = _activities
-            .GroupBy(a => ActivityTypeExt.ToString(a.Details.Type))
-            .ToDictionary(
-                g => g.Key.ToString(),
-                g => Enumerable.Range(-monthCount + 1, monthCount)
-                    .Select(m =>
+        return
+        [
+            .. _activities
+                .GroupBy(a => ActivityTypeExt.ToString(a.Details.Type))
+                .ToDictionary(
+                    g => g.Key.ToString(),
+                    g => Enumerable.Range(-monthCount + 1, monthCount)
+                        .Select(m =>
+                        {
+                            int month = now.AddMonths(m).Month;
+                            int year = now.AddMonths(m).Year;
+                            return g
+                                .Where(a => a.Details.StartDate.Month == month && a.Details.StartDate.Year == year)
+                                .Sum(selector);
+                        })
+                        .ToArray()
+                )
+                .Where(d => d.Value.Any(v => v > 0))
+                .Select(kvp => new Stats
                     {
-                        int month = now.AddMonths(m).Month;
-                        int year = now.AddMonths(m).Year;
-                        return g
-                            .Where(a => a.Details.StartDate.Month == month && a.Details.StartDate.Year == year)
-                            .Sum(selector);
-                    })
-                    .ToArray()
-            )
-            .Where(d => d.Value.Any(v => v > 0))
-            .ToDictionary();
-
-        return aggregatedData;
+                        Type = kvp.Key,
+                        LastMonthsAggregate = kvp.Value,
+                    }
+                ),
+        ];
     }
 
     private static string[] CreateMonthArray(int monthCount)
@@ -79,14 +119,23 @@ public partial class Statistics : ComponentBase, IAsyncDisposable
             false,
             DateTimeOffset.Now.AddMonths(-NumberOfMonthsToReview + 1).ToFirstOfTheMonth());
         _activities = await ActivityService.GetActivitiesAsync(filter);
-        
-        Distances = GetAggregatedMeasurementData(
-            a => a.Details.DistanceInMeters / 1000,
-            NumberOfMonthsToReview);
-        Elevations = GetAggregatedMeasurementData(a => a.Details.TotalElevationGain, NumberOfMonthsToReview);
-        Durations = GetAggregatedMeasurementData(
-            a => (float)a.Details.MovingTimeInSeconds / 3600,
-            NumberOfMonthsToReview);
+
+        Distances =
+        [
+            .. GetAggregatedMeasurementData(
+                a => a.Details.DistanceInMeters / 1000,
+                NumberOfMonthsToReview),
+        ];
+        Elevations =
+        [
+            .. GetAggregatedMeasurementData(a => a.Details.TotalElevationGain, NumberOfMonthsToReview),
+        ];
+        Durations =
+        [
+            .. GetAggregatedMeasurementData(
+                a => (float)a.Details.MovingTimeInSeconds / 3600,
+                NumberOfMonthsToReview),
+        ];
     }
 
     private async Task DrawChart()
@@ -102,7 +151,7 @@ public partial class Statistics : ComponentBase, IAsyncDisposable
             case ChallengeMeasurement.Distance:
                 await _module.InvokeVoidAsync(
                     "drawChart",
-                    Distances,
+                    Distances.ToDictionary(stat => stat.Type, stat => stat.LastMonthsAggregate),
                     months,
                     "TheChart",
                     "Total Distance [km]",
@@ -111,7 +160,7 @@ public partial class Statistics : ComponentBase, IAsyncDisposable
             case ChallengeMeasurement.Elevation:
                 await _module.InvokeVoidAsync(
                     "drawChart",
-                    Elevations,
+                    Elevations.ToDictionary(stat => stat.Type, stat => stat.LastMonthsAggregate),
                     months,
                     "TheChart",
                     "Total Elevation [m]",
@@ -120,7 +169,7 @@ public partial class Statistics : ComponentBase, IAsyncDisposable
             case ChallengeMeasurement.Time:
                 await _module.InvokeVoidAsync(
                     "drawChart",
-                    Durations,
+                    Durations.ToDictionary(stat => stat.Type, stat => stat.LastMonthsAggregate),
                     months,
                     "TheChart",
                     "Total Time [h]",

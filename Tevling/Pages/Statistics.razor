@@ -5,7 +5,7 @@
 
 <label>Months:</label>
 <InputSelect @bind-Value="@NumberOfMonthsToReview" @oninput="DrawChart" class="mb-2">
-    @for (int i = 3; i <= 36; i+=3)
+    @for (int i = 3; i <= 36; i += 3)
     {
         <option value="@i">@i</option>
     }
@@ -17,40 +17,114 @@
     OnButtonSelected="@DrawChart">
 </ButtonGroup>
 
-<div class="d-flex flex-wrap p-2">
+<div class="d-flex flex-wrap p-2 mb-5">
     <canvas id="TheChart"></canvas>
 </div>
 
-<h2 class="title mb-5">Summary</h2>
-<p>The last <b>@NumberOfMonthsToReview</b> month(s) you've:</p>
+<h2>The last <b>@NumberOfMonthsToReview</b> month(s) you've:</h2>
+<div class="container mt-5">
+    <div class="row text-start">
+        <div class="col">
+            <h4><u>Activity</u></h4>
+        </div>
+        <div class="col">
 
-@switch (Measurement)
-{
-    case ChallengeMeasurement.Distance:
-        @foreach (KeyValuePair<string, float[]> kvp in Distances)
-        {
-            <p>- Traversed <b>@Math.Round(kvp.Value.Sum(), 1)</b>km by @kvp.Key</p>
-        }
+            @switch (Measurement)
+            {
+                case ChallengeMeasurement.Distance:
+                    <h4><u>Traversed</u></h4>
+                    break;
+                case ChallengeMeasurement.Elevation:
+                    <h4><u>Climbed</u></h4>
+                    break;
+                case ChallengeMeasurement.Time:
+                    <h4><u>Spent</u></h4>
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        </div>
+        <div class="col">
+            <h4><u>Averaging</u></h4>
+        </div>
+        <div class="col">
+            <h4><u>Current month</u></h4>
+        </div>
+    </div>
+    @switch (Measurement)
+    {
+        case ChallengeMeasurement.Distance:
+            @foreach (Stats stats in Distances)
+            {
+                <div class="row text-start">
+                    <div class="col">
+                        <b>@stats.Type</b>
+                    </div>
+                    <div class="col">
+                        <b>@stats.LastMonthsTotal km</b>
+                    </div>
+                    <div class="col">
+                        <b>@stats.LastMonthsAverage km </b>
+                    </div>
+                    <div class="col">
+                        <b>@Math.Round(stats.ThisMonth, 1) km</b>
+                        <b>(@Math.Round(stats.CurrentMonthComparedToAverage(), 1)%</b> @((MarkupString)stats.IncreaseVsDecrease()))
+                    </div>
+                </div>
+            }
 
-        <p>A total of <b>@Math.Round(Distances.Sum(kvp => kvp.Value.Sum()), 1)</b>km</p>
-        break;
-    case ChallengeMeasurement.Elevation:
-        @foreach (KeyValuePair<string, float[]> kvp in Elevations)
-        {
-            <p>- Ascended <b>@Math.Round(kvp.Value.Sum(), 1)</b>m by @kvp.Key</p>
-        }
+            <div class="mt-2">
+                <h4><u>A total of <b>@Math.Round(Distances.Sum(stats => stats.LastMonthsTotal), 1) km</b></u></h4>
+            </div>
+            break;
+        case ChallengeMeasurement.Elevation:
+            @foreach (Stats stats in Elevations)
+            {
+                <div class="row text-start">
+                    <div class="col">
+                        <b>@stats.Type</b>
+                    </div>
+                    <div class="col">
+                        <b>@stats.LastMonthsTotal m</b>
+                    </div>
+                    <div class="col">
+                        <b>@stats.LastMonthsAverage m</b>
+                    </div>
+                    <div class="col">
+                        <b>@Math.Round(stats.ThisMonth, 1) m</b>
+                        <b>(@Math.Round(stats.CurrentMonthComparedToAverage(), 1)%</b> @((MarkupString)stats.IncreaseVsDecrease()))
+                    </div>
+                </div>
+            }
 
-        <p>A total of <b>@Math.Round(Elevations.Sum(kvp => kvp.Value.Sum()), 1)</b>m</p>
-        break;
-    case ChallengeMeasurement.Time:
-        @foreach (KeyValuePair<string, float[]> kvp in Durations)
-        {
-            <p>- Spent <b>@Math.Round(kvp.Value.Sum(), 1)</b> hours on @kvp.Key</p>
-        }
-
-        <p>A total of <b>@Math.Round(Durations.Sum(kvp => kvp.Value.Sum()), 1)</b> hours</p>
-        break;
-    default:
-            throw new ArgumentOutOfRangeException();
-}
-
+            <div class="mt-2">
+                <h4><u>A total of <b>@Math.Round(Elevations.Sum(stats => stats.LastMonthsTotal), 1) m</b></u></h4>
+            </div>
+            break;
+        case ChallengeMeasurement.Time:
+            @foreach (Stats stats in Durations)
+            {
+                <div class="row text-start">
+                    <div class="col">
+                        <b>@stats.Type</b>
+                    </div>
+                    <div class="col">
+                        <b>@stats.LastMonthsTotal h</b>
+                    </div>
+                    <div class="col">
+                        <b>@stats.LastMonthsAverage h</b>
+                    </div>
+                    <div class="col">
+                        <b>@Math.Round(stats.ThisMonth, 1) h</b>
+                        <b>(@Math.Round(stats.CurrentMonthComparedToAverage(), 1)%</b> @((MarkupString)stats.IncreaseVsDecrease()))
+                    </div>
+                </div>
+            }
+            <div class="mt-2">
+                <h4><u>A total of <b>@Math.Round(Durations.Sum(stats => stats.LastMonthsTotal), 1) h</b></u></h4>
+            </div>
+            break;
+        default:
+                throw new ArgumentOutOfRangeException();
+    }
+</div>
