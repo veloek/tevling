@@ -8,10 +8,7 @@ public class DetailedActivityFaker : Faker<DetailedActivity>
     public DetailedActivityFaker(string name, long stravaId)
     {
         RuleFor(da => da.Id, f => stravaId);
-        RuleFor(
-            da => da.Name,
-            f => name
-        );
+        RuleFor(da => da.Name, f => name);
         RuleFor(da => da.Description, f => f.Lorem.Sentence());
         RuleFor(da => da.Distance, f => f.Random.Float(1000, 10000));
         RuleFor(da => da.MovingTime, f => f.Random.Int(1000, 10000));
