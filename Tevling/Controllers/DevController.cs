@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.FeatureManagement.Mvc;
-using Tevling.Bogus;
 using Tevling.Strava;
 using RouteAttribute = Microsoft.AspNetCore.Mvc.RouteAttribute;
 
@@ -10,7 +9,7 @@ namespace Tevling.Controllers;
 [ApiController]
 [Route("dev")]
 [FeatureGate(FeatureFlag.DevTools)]
-public class DevController(IRandomToggleService randomToggleService) : ControllerBase
+public class DevController(IDevService devService) : ControllerBase
 {
 
     [HttpGet]
@@ -32,23 +31,7 @@ public class DevController(IRandomToggleService randomToggleService) : Controlle
     [Route("strava/activities/{stravaId}")]
     public IActionResult GetActivity(long stravaId)
     {
-        DetailedActivity activity = randomToggleService.IsEnabled()
-            ? new DetailedActivityFaker(name: "Activity " + stravaId, stravaId: stravaId).Generate()
-            : new()
-            {
-                Id = stravaId,
-                Name = "Activity_" + stravaId,
-                Description = "Description_" + stravaId,
-                Distance = 1234,
-                MovingTime = 631,
-                ElapsedTime = 963,
-                TotalElevationGain = 124.0f,
-                Calories = 0.0f,
-                Type = ActivityType.Run,
-                StartDate = DateTimeOffset.UtcNow,
-                Manual = true,
-            };
-        return new JsonResult(activity);
+        return new JsonResult(devService.GetActivity(stravaId));
     }
 
     [HttpGet]

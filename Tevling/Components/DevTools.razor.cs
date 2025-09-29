@@ -5,7 +5,7 @@ public partial class DevTools : ComponentBase
     [Inject] private IActivityService ActivityService { get; set; } = null!;
     [Inject] private IAthleteService AthleteService { get; set; } = null!;
     [Inject] private IChallengeService ChallengeService { get; set; } = null!;
-    [Inject] private IRandomToggleService RandomToggleService { get; set; } = null!;
+    [Inject] private IDevService DevService { get; set; } = null!;
 
     [Parameter] public Athlete? Athlete { get; set; }
 
@@ -17,12 +17,12 @@ public partial class DevTools : ComponentBase
     protected override async Task OnInitializedAsync()
     {
         _athletes = await AthleteService.GetAthletesAsync();
-        IsRandomEnabled = RandomToggleService.IsEnabled();
+        IsRandomEnabled = DevService.IsRandomEnabled();
     }
 
     private void OnRandomizationChanged()
     {
-        RandomToggleService.SetRandomEnabled(IsRandomEnabled);
+        DevService.SetRandomEnabled(IsRandomEnabled);
     }
 
     private Task AddActivity()
