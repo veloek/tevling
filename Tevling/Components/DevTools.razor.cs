@@ -12,10 +12,17 @@ public partial class DevTools : ComponentBase
     private Athlete[] _athletes = [];
     private bool NoOtherAthletes => _athletes.Length == 1;
     private int ClearChallengeWinnerId { get; set; }
+    public bool IsRandomEnabled { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
         _athletes = await AthleteService.GetAthletesAsync();
+        IsRandomEnabled = RandomToggleService.IsEnabled();
+    }
+
+    private void OnRandomizationChanged()
+    {
+        RandomToggleService.SetRandomEnabled(IsRandomEnabled);
     }
 
     private Task AddActivity()
@@ -34,10 +41,6 @@ public partial class DevTools : ComponentBase
         }
     }
 
-    private void ToggleRandom()
-    {
-        RandomToggleService.ToggleRandom();
-    }
     private Task AddOthersActivity()
     {
         long randomAthleteStravaId;

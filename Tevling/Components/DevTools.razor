@@ -1,12 +1,13 @@
 <div class="d-flex flex-column align-items-start rg-3">
-    @if (RandomToggleService.IsEnabled())
-    {
-    <button class="btn btn-success" @onclick="ToggleRandom">Random Enabled</button>
-    }
-    else
-    {
-    <button class="btn btn-danger" @onclick="ToggleRandom">Random Disabled</button>
-    }
+    <div class="d-flex flex-row cg-3">
+        <InputRadioGroup @bind-Value="IsRandomEnabled" @bind-Value:after="OnRandomizationChanged">
+            <InputRadio class="btn-check" id="disable-random" Value="false"/>
+            <label class="btn btn-outline-success" for="disable-random">Disable randomization</label>
+
+            <InputRadio class="btn-check" id="enable-random" Value="true"/>
+            <label class="btn btn-outline-danger" for="enable-random">Enable randomization</label>
+        </InputRadioGroup>
+    </div>
     <button class="btn btn-primary" @onclick="AddActivity">Add activity</button>
     <button class="btn btn-primary" @onclick="AddLoadsOfActivities">Add loads of activities</button>
     <button class="btn btn-primary" @onclick="AddOthersActivity" disabled="@NoOtherAthletes">Add activity for others</button>

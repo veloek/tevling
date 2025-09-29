@@ -2,7 +2,6 @@ namespace Tevling.Services;
 
 public class RandomToggleService : IRandomToggleService
 {
-    
     private bool _isEnabled = false;
 
     public bool IsEnabled()
@@ -10,8 +9,8 @@ public class RandomToggleService : IRandomToggleService
         return _isEnabled;
     }
 
-    public void ToggleRandom()
+    public void SetRandomEnabled(bool changed)
     {
-        _isEnabled = !_isEnabled;
+        _isEnabled = changed;
     }
 }

@@ -2,6 +2,6 @@ namespace Tevling.Services;
 
 public interface IRandomToggleService
 {
-    public void ToggleRandom();
+    public void SetRandomEnabled(bool changed);
     public bool IsEnabled();
 }
