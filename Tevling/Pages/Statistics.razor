@@ -22,109 +22,121 @@
 </div>
 
 <h2>The last <b>@NumberOfMonthsToReview</b> month(s) you've:</h2>
-<div class="container mt-5">
-    <div class="row text-start">
-        <div class="col">
-            <h4><u>Activity</u></h4>
-        </div>
-        <div class="col">
+<div>
+    <table style="width: 100%">
+        <thead>
+        <tr>
+            <th scope="col">Activity</th>
+            <th scope="col">
+                @switch (Measurement)
+                {
+                    case ChallengeMeasurement.Distance:
+                        <span>Traversed</span>
+                        break;
+                    case ChallengeMeasurement.Elevation:
+                        <span>Climbed</span>
+                        break;
+                    case ChallengeMeasurement.Time:
+                        <span>Spent</span>
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+            </th>
+            <th scope="col">Averaging</th>
+            <th scope="col">Current Month</th>
+        </tr>
+        </thead>
+        <tbody>
+        @switch (Measurement)
+        {
+            case ChallengeMeasurement.Distance:
+                @foreach (Stats stats in Distances)
+                {
+                    <tr>
+                        <td data-label="Activity">
+                            @stats.Type
+                        </td>
+                        <td data-label="Traversed">
+                            @stats.LastMonthsTotal km
+                        </td>
+                        <td data-label="Averaging">
+                            @stats.LastMonthsAverage km
+                        </td>
+                        <td data-label="Current Month">
+                            @Math.Round(stats.ThisMonth, 1) km
+                            <b>(@Math.Round(stats.CurrentMonthComparedToAverage(), 1)%</b> @((MarkupString)stats.IncreaseVsDecrease()))
+                        </td>
+                    </tr>
+                }
 
-            @switch (Measurement)
-            {
-                case ChallengeMeasurement.Distance:
-                    <h4><u>Traversed</u></h4>
-                    break;
-                case ChallengeMeasurement.Elevation:
-                    <h4><u>Climbed</u></h4>
-                    break;
-                case ChallengeMeasurement.Time:
-                    <h4><u>Spent</u></h4>
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
-        </div>
-        <div class="col">
-            <h4><u>Averaging</u></h4>
-        </div>
-        <div class="col">
-            <h4><u>Current month</u></h4>
-        </div>
-    </div>
-    @switch (Measurement)
-    {
-        case ChallengeMeasurement.Distance:
-            @foreach (Stats stats in Distances)
-            {
-                <div class="row text-start">
-                    <div class="col">
-                        <b>@stats.Type</b>
-                    </div>
-                    <div class="col">
-                        <b>@stats.LastMonthsTotal km</b>
-                    </div>
-                    <div class="col">
-                        <b>@stats.LastMonthsAverage km </b>
-                    </div>
-                    <div class="col">
-                        <b>@Math.Round(stats.ThisMonth, 1) km</b>
-                        <b>(@Math.Round(stats.CurrentMonthComparedToAverage(), 1)%</b> @((MarkupString)stats.IncreaseVsDecrease()))
-                    </div>
-                </div>
-            }
+                break;
+            case ChallengeMeasurement.Elevation:
+                @foreach (Stats stats in Elevations)
+                {
+                    <tr>
+                        <td data-label="Activity">
+                            @stats.Type
+                        </td>
+                        <td data-label="Climbed">
+                            @stats.LastMonthsTotal m
+                        </td>
+                        <td data-label="Averaging">
+                            @stats.LastMonthsAverage m
+                        </td>
+                        <td data-label="Current Month">
+                            @Math.Round(stats.ThisMonth, 1) m
+                            <b>(@Math.Round(stats.CurrentMonthComparedToAverage(), 1)%</b> @((MarkupString)stats.IncreaseVsDecrease()))
+                        </td>
+                    </tr>
+                }
 
-            <div class="mt-2">
-                <h4><u>A total of <b>@Math.Round(Distances.Sum(stats => stats.LastMonthsTotal), 1) km</b></u></h4>
-            </div>
-            break;
-        case ChallengeMeasurement.Elevation:
-            @foreach (Stats stats in Elevations)
-            {
-                <div class="row text-start">
-                    <div class="col">
-                        <b>@stats.Type</b>
-                    </div>
-                    <div class="col">
-                        <b>@stats.LastMonthsTotal m</b>
-                    </div>
-                    <div class="col">
-                        <b>@stats.LastMonthsAverage m</b>
-                    </div>
-                    <div class="col">
-                        <b>@Math.Round(stats.ThisMonth, 1) m</b>
-                        <b>(@Math.Round(stats.CurrentMonthComparedToAverage(), 1)%</b> @((MarkupString)stats.IncreaseVsDecrease()))
-                    </div>
-                </div>
-            }
+                break;
+            case ChallengeMeasurement.Time:
+                @foreach (Stats stats in Durations)
+                {
+                    <tr>
+                        <td data-label="Activity">
+                            @stats.Type
+                        </td>
+                        <td data-label="Spent">
+                            @stats.LastMonthsTotal h
+                        </td>
+                        <td data-label="Averaging">
+                            @stats.LastMonthsAverage h
+                        </td>
+                        <td data-label="Current Month">
+                            @Math.Round(stats.ThisMonth, 1) h
+                            <b>(@Math.Round(stats.CurrentMonthComparedToAverage(), 1)%</b> @((MarkupString)stats.IncreaseVsDecrease()))
+                        </td>
+                    </tr>
+                }
 
-            <div class="mt-2">
-                <h4><u>A total of <b>@Math.Round(Elevations.Sum(stats => stats.LastMonthsTotal), 1) m</b></u></h4>
-            </div>
-            break;
-        case ChallengeMeasurement.Time:
-            @foreach (Stats stats in Durations)
-            {
-                <div class="row text-start">
-                    <div class="col">
-                        <b>@stats.Type</b>
-                    </div>
-                    <div class="col">
-                        <b>@stats.LastMonthsTotal h</b>
-                    </div>
-                    <div class="col">
-                        <b>@stats.LastMonthsAverage h</b>
-                    </div>
-                    <div class="col">
-                        <b>@Math.Round(stats.ThisMonth, 1) h</b>
-                        <b>(@Math.Round(stats.CurrentMonthComparedToAverage(), 1)%</b> @((MarkupString)stats.IncreaseVsDecrease()))
-                    </div>
-                </div>
-            }
-            <div class="mt-2">
-                <h4><u>A total of <b>@Math.Round(Durations.Sum(stats => stats.LastMonthsTotal), 1) h</b></u></h4>
-            </div>
-            break;
-        default:
+                break;
+            default:
                 throw new ArgumentOutOfRangeException();
-    }
+        }
+        </tbody>
+    </table>
+    <div class="mt-2">
+        <h4><u>A total of <b>
+        @switch (Measurement)
+        {
+            case ChallengeMeasurement.Distance:
+                <span>@Math.Round(Distances.Sum(stats => stats.LastMonthsTotal), 1) km</span>
+                break;
+            case ChallengeMeasurement.Elevation:
+                <span>@Math.Round(Elevations.Sum(stats => stats.LastMonthsTotal), 1) m</span>
+                break;
+            case ChallengeMeasurement.Time:
+                <span>@Math.Round(Durations.Sum(stats => stats.LastMonthsTotal), 1) h</span>
+                break;
+            default:
+                throw new ArgumentOutOfRangeException();
+        }
+        </b ></u ></h4 >
+    </div>
+
 </div>
+    
+

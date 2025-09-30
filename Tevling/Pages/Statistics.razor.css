@@ -1,0 +1,53 @@
+/* Copied from https://dev.to/turinumugisha_s/the-most-awesome-trick-for-tables-mobile-responsiveness-you-will-ever-need-32cp */
+
+@media screen and (max-width: 600px) {
+  table {
+    border: 0;
+  }
+
+  table caption {
+    font-size: 1.3em;
+  }
+
+  table thead {
+    border: none;
+    clip: rect(0 0 0 0);
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    padding: 0;
+    position: absolute;
+    width: 1px;
+  }
+
+  table tr {
+    border-bottom: 3px solid #ddd;
+    display: block;
+    /*box-shadow: 0 4px 4px 0 rgba(0, 0, 0, 0.25);*/
+    margin-bottom: .625em;
+  }
+
+  /*Here we are setting each td display to block*/
+  table td {
+    border-bottom: 1px solid #ddd;
+    display: block;
+    font-size: .8em;
+    text-align: right;
+  }
+
+  /*
+  Now the other data-label we have added on each td comes into play.
+  */
+
+  table td::before {
+    content: attr(data-label);
+    float: left;
+    font-weight: bold;
+    text-transform: uppercase;
+  }
+
+  table td:last-child {
+    border-bottom: 0;
+  }
+}
+
