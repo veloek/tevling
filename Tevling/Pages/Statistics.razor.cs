@@ -32,6 +32,11 @@ public partial class Statistics : ComponentBase, IAsyncDisposable
 
         public string IncreaseVsDecrease()
         {
+            if (LastMonthsAverage == 0)
+            {
+                return "<span style='color:green'>increase</span>";
+            }
+            
             return Math.Round(ThisMonth, 1) / LastMonthsAverage > 1
                 ? "<span style='color:green'>increase</span>"
                 : "<span style='color:red'>decrease</span>";
