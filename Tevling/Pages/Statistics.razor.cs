@@ -49,9 +49,9 @@ public partial class Statistics : ComponentBase, IAsyncDisposable
 
     private int NumberOfMonthsToReview { get; set; } = 3;
     private ChallengeMeasurement Measurement { get; set; } = ChallengeMeasurement.Distance;
-    private List<Stats> Distances { get; set; } = [];
-    private List<Stats> Elevations { get; set; } = [];
-    private List<Stats> Durations { get; set; } = [];
+    private IReadOnlyList<Stats> Distances { get; set; } = [];
+    private IReadOnlyList<Stats> Elevations { get; set; } = [];
+    private IReadOnlyList<Stats> Durations { get; set; } = [];
 
     protected override async Task OnInitializedAsync()
     {
