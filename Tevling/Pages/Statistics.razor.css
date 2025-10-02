@@ -1,4 +1,4 @@
-/* Copied from https://dev.to/turinumugisha_s/the-most-awesome-trick-for-tables-mobile-responsiveness-you-will-ever-need-32cp */
+/* @Media screen ... clause is copied from https://dev.to/turinumugisha_s/the-most-awesome-trick-for-tables-mobile-responsiveness-you-will-ever-need-32cp */
 
 @media screen and (max-width: 600px) {
   table {
@@ -51,3 +51,8 @@
   }
 }
 
+.title {
+  letter-spacing: 0.2rem;
+  font-variant: all-small-caps;
+  font-size: xxx-large;
+}
