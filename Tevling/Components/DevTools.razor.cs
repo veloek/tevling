@@ -5,16 +5,24 @@ public partial class DevTools : ComponentBase
     [Inject] private IActivityService ActivityService { get; set; } = null!;
     [Inject] private IAthleteService AthleteService { get; set; } = null!;
     [Inject] private IChallengeService ChallengeService { get; set; } = null!;
+    [Inject] private IDevService DevService { get; set; } = null!;
 
     [Parameter] public Athlete? Athlete { get; set; }
 
     private Athlete[] _athletes = [];
     private bool NoOtherAthletes => _athletes.Length == 1;
     private int ClearChallengeWinnerId { get; set; }
+    public bool IsRandomEnabled { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
         _athletes = await AthleteService.GetAthletesAsync();
+        IsRandomEnabled = DevService.IsRandomEnabled();
+    }
+
+    private void OnRandomizationChanged()
+    {
+        DevService.SetRandomEnabled(IsRandomEnabled);
     }
 
     private Task AddActivity()
@@ -23,6 +31,14 @@ public partial class DevTools : ComponentBase
             throw new ArgumentException(nameof(Athlete));
 
         return ActivityService.CreateActivityAsync(Athlete.StravaId, Random.Shared.Next(1000, 10000));
+    }
+
+    private async Task AddLoadsOfActivities()
+    {
+        for (int i = 0; i < 100; i++)
+        {
+            await AddActivity();
+        }
     }
 
     private Task AddOthersActivity()
@@ -164,7 +180,8 @@ public partial class DevTools : ComponentBase
             throw new ArgumentException(nameof(Athlete));
 
         await AthleteService.ToggleFollowingAsync(
-             follower, Athlete.Id);
+            follower,
+            Athlete.Id);
     }
 
     private async Task ClearChallengeWinner()

@@ -9,11 +9,8 @@ namespace Tevling.Controllers;
 [ApiController]
 [Route("dev")]
 [FeatureGate(FeatureFlag.DevTools)]
-public class DevController : ControllerBase
+public class DevController(IDevService devService) : ControllerBase
 {
-    public DevController()
-    {
-    }
 
     [HttpGet]
     [Route("strava/authorize")]
@@ -34,22 +31,7 @@ public class DevController : ControllerBase
     [Route("strava/activities/{stravaId}")]
     public IActionResult GetActivity(long stravaId)
     {
-        DetailedActivity activity = new()
-        {
-            Id = stravaId,
-            Name = "Activity_" + stravaId,
-            Description = "Description_" + stravaId,
-            Distance = 1234,
-            MovingTime = 631,
-            ElapsedTime = 963,
-            TotalElevationGain = 124.0f,
-            Calories = 0.0f,
-            Type = ActivityType.Run,
-            StartDate = DateTimeOffset.UtcNow,
-            Manual = true,
-        };
-
-        return new JsonResult(activity);
+        return new JsonResult(devService.GetActivity(stravaId));
     }
 
     [HttpGet]
