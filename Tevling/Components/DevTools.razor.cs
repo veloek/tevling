@@ -1,3 +1,6 @@
+using Bogus;
+using Tevling.Bogus;
+
 namespace Tevling.Components;
 
 public partial class DevTools : ComponentBase
@@ -54,11 +57,11 @@ public partial class DevTools : ComponentBase
 
     private async Task AddAthlete()
     {
-        int id = Random.Shared.Next(100, 1000);
+        Faker faker = new();
         await AthleteService.UpsertAthleteAsync(
             Random.Shared.Next(10000, 100000),
-            $"Athlete {id}",
-            null,
+            faker.Name.FullName(),
+            "",
             "",
             "",
             default);
@@ -74,17 +77,7 @@ public partial class DevTools : ComponentBase
         } while (randomAthleteId == Athlete?.Id);
 
         return ChallengeService.CreateChallengeAsync(
-            new ChallengeFormModel
-            {
-                Title = $"Challenge {Random.Shared.Next(1000, 10000)}",
-                Description =
-                    "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-                Start = DateTimeOffset.Now,
-                End = DateTimeOffset.Now.AddMonths(1),
-                Measurement = ChallengeMeasurement.Distance,
-                ActivityTypes = [Strava.ActivityType.Run],
-                CreatedBy = randomAthleteId,
-            });
+            new ChallengeFormModelFaker(randomAthleteId, false).Generate());
     }
 
     private Task AddOthersPrivateChallenge()
@@ -96,18 +89,7 @@ public partial class DevTools : ComponentBase
         } while (randomAthleteId == Athlete?.Id);
 
         return ChallengeService.CreateChallengeAsync(
-            new ChallengeFormModel
-            {
-                Title = $"Private Challenge {Random.Shared.Next(1000, 10000)}",
-                Description =
-                    "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-                Start = DateTimeOffset.Now,
-                End = DateTimeOffset.Now.AddMonths(1),
-                Measurement = ChallengeMeasurement.Distance,
-                ActivityTypes = [Strava.ActivityType.Run],
-                IsPrivate = true,
-                CreatedBy = randomAthleteId,
-            });
+            new ChallengeFormModelFaker(randomAthleteId, true).Generate());
     }
 
     private Task AddOthersPrivateChallengeInvited()
@@ -121,20 +103,11 @@ public partial class DevTools : ComponentBase
         if (Athlete is null)
             throw new ArgumentException(nameof(Athlete));
 
+        ChallengeFormModel challengeFormModelMock = new ChallengeFormModelFaker(randomAthleteId, true).Generate();
+        challengeFormModelMock.InvitedAthletes.Add(new Athlete { Id = Athlete.Id });
+
         return ChallengeService.CreateChallengeAsync(
-            new ChallengeFormModel
-            {
-                Title = $"Private Challenge {Random.Shared.Next(1000, 10000)}",
-                Description =
-                    "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-                Start = DateTimeOffset.Now,
-                End = DateTimeOffset.Now.AddMonths(1),
-                Measurement = ChallengeMeasurement.Distance,
-                ActivityTypes = [Strava.ActivityType.Run],
-                IsPrivate = true,
-                CreatedBy = randomAthleteId,
-                InvitedAthletes = [new Athlete() { Id = Athlete.Id }],
-            });
+            challengeFormModelMock);
     }
 
     private async Task ImportAllAthletesActivities(int nDays)
@@ -150,26 +123,15 @@ public partial class DevTools : ComponentBase
             throw new ArgumentException(nameof(Athlete));
 
         await ChallengeService.CreateChallengeAsync(
-            new ChallengeFormModel
-            {
-                Title = $"Challenge {Random.Shared.Next(1000, 10000)}",
-                Description =
-                    "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-                Start = DateTimeOffset.Now,
-                End = DateTimeOffset.Now.AddMonths(1),
-                Measurement = ChallengeMeasurement.Distance,
-                ActivityTypes = [Strava.ActivityType.Run],
-                IsPrivate = false,
-                CreatedBy = Athlete.Id,
-            });
+            new ChallengeFormModelFaker(Athlete.Id, false).Generate());
     }
 
     private async Task AddFollower()
     {
-        int id = Random.Shared.Next(100, 1000);
+        Faker faker  = new();
         Athlete follower = await AthleteService.UpsertAthleteAsync(
             Random.Shared.Next(10000, 100000),
-            $"Athlete {id}",
+            faker.Name.FullName(),
             null,
             "",
             "",
