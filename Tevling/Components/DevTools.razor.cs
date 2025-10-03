@@ -1,3 +1,4 @@
+using Bogus;
 using Tevling.Bogus;
 
 namespace Tevling.Components;
@@ -56,11 +57,11 @@ public partial class DevTools : ComponentBase
 
     private async Task AddAthlete()
     {
-        int id = Random.Shared.Next(100, 1000);
+        Faker faker = new();
         await AthleteService.UpsertAthleteAsync(
             Random.Shared.Next(10000, 100000),
-            $"Athlete {id}",
-            null,
+            faker.Name.FullName(),
+            "",
             "",
             "",
             default);
@@ -127,10 +128,10 @@ public partial class DevTools : ComponentBase
 
     private async Task AddFollower()
     {
-        int id = Random.Shared.Next(100, 1000);
+        Faker faker  = new();
         Athlete follower = await AthleteService.UpsertAthleteAsync(
             Random.Shared.Next(10000, 100000),
-            $"Athlete {id}",
+            faker.Name.FullName(),
             null,
             "",
             "",
