@@ -1,3 +1,5 @@
+using System.Globalization;
+using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
 using Tevling.Strava;
 using RouteAttribute = Microsoft.AspNetCore.Mvc.RouteAttribute;
@@ -16,7 +18,8 @@ public class StravaController(
     IStravaClient stravaClient,
     IAthleteService athleteService,
     IActivityService activityService,
-    IAuthenticationService authenticationService)
+    IAuthenticationService authenticationService,
+    IProvideCulture cultureProvider)
     : ControllerBase
 {
     /// <summary>
@@ -131,6 +134,8 @@ public class StravaController(
         {
             throw new Exception("Missing athlete data");
         }
+
+        cultureProvider.Culture = CultureInfo.CurrentCulture.Name;
 
         return LocalRedirect(returnUrl ?? "/");
     }

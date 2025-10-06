@@ -87,16 +87,22 @@ builder.Services.AddStravaClient();
 
 builder.Services.AddHostedService<BatchImportService>();
 
+builder.Services.AddSingleton<IProvideCulture, CultureProvider>();
+builder.Services.Configure<RequestLocalizationOptions>(options =>
+{
+    string[] supportedCultures = ["en", "no", "nb", "nn"];
+
+    options.AddSupportedCultures(supportedCultures)
+        .AddSupportedUICultures(supportedCultures)
+        .SetDefaultCulture("en");
+});
+
 WebApplication app = builder.Build();
 
 app.UseStaticFiles();
 app.UseSerilogRequestLogging();
 app.UseRouting();
-app.UseRequestLocalization(
-    new RequestLocalizationOptions()
-        .AddSupportedCultures(new[] { "en", "no", "nb", "nn" })
-        .AddSupportedUICultures(new[] { "en", "no", "nb", "nn" })
-        .SetDefaultCulture("en"));
+app.UseRequestLocalization();
 
 app.UseAuthentication();
 app.UseAuthorization();
