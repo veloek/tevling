@@ -5,7 +5,7 @@ namespace Tevling.Bogus;
 
 public sealed class ChallengeFormModelFaker : Faker<ChallengeFormModel>
 {
-    public ChallengeFormModelFaker(int randomAthleteId, bool isPrivate)
+    public ChallengeFormModelFaker(int createdBy, bool isPrivate)
     {
         RuleFor(cfm => cfm.Title, f => "Challenge" + f.UniqueIndex);
         RuleFor(cfm => cfm.Description, f => f.Lorem.Sentence());
@@ -22,6 +22,6 @@ public sealed class ChallengeFormModelFaker : Faker<ChallengeFormModel>
             }
         );
         RuleFor(cfm => cfm.IsPrivate, isPrivate);
-        RuleFor(cfm => cfm.CreatedBy, randomAthleteId);
+        RuleFor(cfm => cfm.CreatedBy, createdBy);
     }
 }
