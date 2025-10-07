@@ -41,6 +41,7 @@ builder.Services.AddHealthChecks();
 builder.Services.AddLocalization();
 
 builder.Services.Configure<StravaConfig>(builder.Configuration.GetSection(nameof(StravaConfig)));
+builder.Services.Configure<CultureByHost>(builder.Configuration.GetSection(nameof(CultureByHost)));
 
 builder.Services
     .AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
@@ -91,11 +92,8 @@ WebApplication app = builder.Build();
 app.UseStaticFiles();
 app.UseSerilogRequestLogging();
 app.UseRouting();
-app.UseRequestLocalization(
-    new RequestLocalizationOptions()
-        .AddSupportedCultures(new[] { "en", "no", "nb", "nn" })
-        .AddSupportedUICultures(new[] { "en", "no", "nb", "nn" })
-        .SetDefaultCulture("en"));
+app.UseRequestLocalization("en");
+app.UseCultureByHost();
 
 app.UseAuthentication();
 app.UseAuthorization();
