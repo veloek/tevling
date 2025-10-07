@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using Tevling.Strava;
 using RouteAttribute = Microsoft.AspNetCore.Mvc.RouteAttribute;
 
@@ -12,7 +13,7 @@ namespace Tevling.Controllers;
 [Route("api")]
 public class StravaController(
     ILogger<StravaController> logger,
-    StravaConfig stravaConfig,
+    IOptions<StravaConfig> stravaConfig,
     IStravaClient stravaClient,
     IAthleteService athleteService,
     IActivityService activityService,
@@ -29,7 +30,7 @@ public class StravaController(
         [FromQuery(Name = "hub.challenge")] string challenge,
         [FromQuery(Name = "hub.verify_token")] string verifyToken)
     {
-        if (mode != "subscribe" || verifyToken != stravaConfig.VerifyToken)
+        if (mode != "subscribe" || verifyToken != stravaConfig.Value.VerifyToken)
             return BadRequest();
 
         return new JsonResult(
@@ -46,7 +47,7 @@ public class StravaController(
     [Route("activity")]
     public IActionResult OnActivity([FromBody] WebhookEvent activity)
     {
-        if (activity.SubscriptionId != stravaConfig.SubscriptionId)
+        if (activity.SubscriptionId != stravaConfig.Value.SubscriptionId)
         {
             logger.LogWarning("Invalid subscription ID: {SubscriptionId}", activity.SubscriptionId);
             return BadRequest();

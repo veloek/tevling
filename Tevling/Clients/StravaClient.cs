@@ -2,6 +2,7 @@ using System.Collections.Specialized;
 using System.Net.Http.Headers;
 using System.Text.Json;
 using System.Web;
+using Microsoft.Extensions.Options;
 using Tevling.Strava;
 
 namespace Tevling.Clients;
@@ -14,11 +15,11 @@ public class StravaClient : IStravaClient
 
     public StravaClient(
         ILogger<StravaClient> logger,
-        StravaConfig stravaConfig,
+        IOptions<StravaConfig> stravaConfig,
         HttpClient httpClient)
     {
         _logger = logger;
-        _stravaConfig = stravaConfig;
+        _stravaConfig = stravaConfig.Value;
         _httpClient = httpClient;
 
         try

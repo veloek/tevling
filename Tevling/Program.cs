@@ -40,10 +40,7 @@ builder.Services.AddFeatureManagement();
 builder.Services.AddHealthChecks();
 builder.Services.AddLocalization();
 
-IConfigurationSection section = builder.Configuration.GetSection(nameof(StravaConfig));
-StravaConfig stravaConfig = section.Get<StravaConfig>() ?? new StravaConfig();
-builder.Services.AddSingleton(stravaConfig);
-builder.Services.AddSingleton<IDevService, DevService>();
+builder.Services.Configure<StravaConfig>(builder.Configuration.GetSection(nameof(StravaConfig)));
 
 builder.Services
     .AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
@@ -84,6 +81,8 @@ builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
 builder.Services.AddScoped<IBrowserTime, BrowserTime>();
 
 builder.Services.AddStravaClient();
+
+builder.Services.AddSingleton<IDevService, DevService>();
 
 builder.Services.AddHostedService<BatchImportService>();
 
