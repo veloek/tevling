@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>2.0</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <!--Data-->
+    <data name="Dashboard" xml:space="preserve">
+        <value>Dashbord</value>
+    </data>
+    <data name="Activities" xml:space="preserve">
+        <value>Aktiviteter</value>
+    </data>
+    <data name="Statistics" xml:space="preserve">
+        <value>Statistikk</value>
+    </data>
+    <data name="Challenges" xml:space="preserve">
+        <value>Konkurranser</value>
+    </data>
+    <data name="Athletes" xml:space="preserve">
+        <value>Utøvere</value>
+    </data>
+    <data name="Profile" xml:space="preserve">
+        <value>Profil</value>
+    </data>
+    <data name="About" xml:space="preserve">
+        <value>Om</value>
+    </data>
+</root>
