@@ -1,8 +1,11 @@
+using Microsoft.Extensions.Localization;
+
 namespace Tevling.Components;
 
 public partial class ActivityCard : ComponentBase
 {
     [Inject] private IBrowserTime BrowserTime { get; set; } = null!;
+    [Inject] private IStringLocalizer<ActivityCard> Loc { get; set; } = null!;
 
     [Parameter] public Activity? Activity { get; set; }
 
@@ -16,15 +19,15 @@ public partial class ActivityCard : ComponentBase
             if (Activity.Details.DistanceInMeters > 0)
             {
                 float distanceInKm = Activity.Details.DistanceInMeters / 1000;
-                return $"Distance: {distanceInKm:F1} km";
+                return $"{Loc["Distance"]}: {distanceInKm:F1} km";
             }
 
             if (Activity.Details.TotalElevationGain > 0)
             {
-                return $"Elevation: {Activity.Details.TotalElevationGain} m";
+                return $"{Loc["Elevation"]}: {Activity.Details.TotalElevationGain} m";
             }
 
-            return Activity.Details.Calories > 0 ? $"Calories: {Activity.Details.Calories} kcal" : string.Empty;
+            return Activity.Details.Calories > 0 ? $"{Loc["Calories"]}: {Activity.Details.Calories} kcal" : string.Empty;
         }
     }
 
@@ -38,14 +41,14 @@ public partial class ActivityCard : ComponentBase
             string formattedTime = "";
 
             if (timeSpan.Hours > 0)
-                formattedTime += $"{timeSpan.Hours}h ";
+                formattedTime += $"{timeSpan.Hours}{Loc["Hours"]} ";
 
             if (timeSpan.Minutes > 0 || timeSpan.Hours > 0) // Include minutes if there are any hours
-                formattedTime += $"{timeSpan.Minutes}m ";
+                formattedTime += $"{timeSpan.Minutes}{Loc["Minutes"]} ";
 
-            formattedTime += $"{timeSpan.Seconds}s";
+            formattedTime += $"{timeSpan.Seconds}{Loc["Seconds"]}";
 
-            return $"Time: {formattedTime}";
+            return $"{Loc["Time"]}: {formattedTime}";
         }
     }
 
@@ -55,7 +58,7 @@ public partial class ActivityCard : ComponentBase
         if (Activity != null)
         {
             DateTimeOffset browserTime = await BrowserTime.ConvertToLocal(Activity.Details.StartDate);
-            ActivityTime = browserTime.ToString("dd.MM.yyyy HH:mm");
+            ActivityTime = browserTime.DateTime.ToString("G");
         }
     }
 }
