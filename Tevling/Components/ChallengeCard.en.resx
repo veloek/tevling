@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>2.0</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <!--Data-->
+    <data name="Edit" xml:space="preserve">
+        <value>Edit</value>
+    </data>
+    <data name="Delete" xml:space="preserve">
+        <value>Delete</value>
+    </data>
+    <data name="ScorePlaceholder" xml:space="preserve">
+        <value>YOU! (if you join)</value>
+    </data>
+    <data name="ChallengeEnded" xml:space="preserve">
+        <value>&lt;span&gt;The challenge has ended! &lt;/span&gt;&lt;span&gt;Congrats to all participants 👏&lt;/span&gt;&lt;span&gt;Now it's time to draw a winner 🏆&lt;/span&gt;</value>
+    </data>
+    <data name="DrawWinner" xml:space="preserve">
+        <value>Draw winner</value>
+    </data>
+    <data name="AskDraw" xml:space="preserve">
+        <value>Ask {0} to do the draw!</value>
+    </data>
+    <data name="ChallengeWinner" xml:space="preserve">
+        <value>The challenge has ended, with {0} as the winner! 🏆</value>
+    </data>
+    <data name="Distance" xml:space="preserve">
+        <value>Distance</value>
+    </data>
+    <data name="Time" xml:space="preserve">
+        <value>Time</value>
+    </data>
+    <data name="Elevation" xml:space="preserve">
+        <value>Elevation</value>
+    </data>
+    <data name="Participant" xml:space="preserve">
+        <value>participant</value>
+    </data>
+    <data name="Participants" xml:space="preserve">
+        <value>participants</value>
+    </data>
+    <data name="AllActivities" xml:space="preserve">
+        <value>All activities</value>
+    </data>
+    <data name="Join" xml:space="preserve">
+        <value>Join</value>
+    </data>
+    <data name="Leave" xml:space="preserve">
+        <value>Leave</value>
+    </data>
+    <data name="DeleteChallenge" xml:space="preserve">
+        <value>Delete challenge</value>
+    </data>
+    <data name="ConfirmDelete" xml:space="preserve">
+        <value>Are you sure you want to delete {0}?</value>
+    </data>
+    <data name="Cancel" xml:space="preserve">
+        <value>Cancel</value>
+    </data>
+    <data name="Close" xml:space="preserve">
+        <value>Close</value>
+    </data>
+    <data name="Loading" xml:space="preserve">
+        <value>Loading</value>
+    </data>
+    <data name="Spinning" xml:space="preserve">
+        <value>Spinning the wheel</value>
+    </data>
+    <data name="DrawWinner_title" xml:space="preserve">
+        <value>Draw winner for {0}?</value>
+    </data>
+    <data name="DrawWinner_body" xml:space="preserve">
+        <value>The winner will be drawn based on their contribution. Each unit of contribution equals a 'lottery ticket', ensuring all participants have a chance to win, regardless of their total contribution.</value>
+    </data>
+    <data name="TheWinner_title" xml:space="preserve">
+        <value>The winner for {0} is...</value>
+    </data>
+    <data name="TheWinner_body" xml:space="preserve">
+        <value>Great job! Congratulations on the victory! 🎉</value>
+    </data>
+    <data name="SpinLottery" xml:space="preserve">
+        <value>Spin the lottery</value>
+    </data>
+</root>
