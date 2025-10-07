@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>2.0</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <!--Data-->
+    <data name="Activities" xml:space="preserve">
+        <value>Aktiviteter</value>
+    </data>
+    <data name="Today" xml:space="preserve">
+        <value>I dag</value>
+    </data>
+    <data name="Yesterday" xml:space="preserve">
+        <value>I går</value>
+    </data>
+    <data name="ThisWeek" xml:space="preserve">
+        <value>Denne uken</value>
+    </data>
+    <data name="LastWeek" xml:space="preserve">
+        <value>Forrige uke</value>
+    </data>
+    <data name="ThisMonth" xml:space="preserve">
+        <value>Denne måneden</value>
+    </data>
+    <data name="LastMonth" xml:space="preserve">
+        <value>Forrige måned</value>
+    </data>
+    <data name="ThisYear" xml:space="preserve">
+        <value>Dette året</value>
+    </data>
+    <data name="Older" xml:space="preserve">
+        <value>Eldre</value>
+    </data>
+    <data name="Welcome" xml:space="preserve">
+        <value>Velkommen</value>
+    </data>
+    <data name="NoActivitiesYet" xml:space="preserve">
+        <value>Det er ingen aktiviteter å se her ennå. Gå til din &lt;a href="profile"&gt;profil&lt;/a&gt; og importér aktiviteter fra Strava og følg noen &lt;a href="athletes"&gt;utøvere&lt;/a&gt;.</value>
+    </data>
+    <data name="Loading" xml:space="preserve">
+        <value>Laster</value>
+    </data>
+    <data name="Filters" xml:space="preserve">
+        <value>Filter</value>
+    </data>
+    <data name="ShowOnlyMy" xml:space="preserve">
+        <value>Vis kun mine aktiviteter</value>
+    </data>
+</root>
