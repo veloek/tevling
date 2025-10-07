@@ -54,7 +54,7 @@ builder.Services
 
 // Make sure our data directoy used to store the SQLite DB file exists.
 string dataDir = Path.Join(Environment.CurrentDirectory, "storage");
-Directory.CreateDirectory(dataDir);
+DirectoryInfo dataDirInfo = Directory.CreateDirectory(dataDir);
 
 builder.Services.AddDbContextFactory<DataContext>(
     optionsBuilder =>
@@ -67,7 +67,7 @@ builder.Services.AddDbContextFactory<DataContext>(
 
 builder.Services
     .AddDataProtection()
-    .PersistKeysToFileSystem(new DirectoryInfo(dataDir));
+    .PersistKeysToFileSystem(dataDirInfo);
 
 builder.Services.AddBlazoredLocalStorage();
 
