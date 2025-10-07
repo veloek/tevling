@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>2.0</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <!--Data-->
+    <data name="Challenges" xml:space="preserve">
+        <value>Challenges</value>
+    </data>
+    <data name="Search" xml:space="preserve">
+        <value>Search</value>
+    </data>
+    <data name="CreateChallenge" xml:space="preserve">
+        <value>Create challenge</value>
+    </data>
+    <data name="Loading" xml:space="preserve">
+        <value>Loading</value>
+    </data>
+    <data name="Filters" xml:space="preserve">
+        <value>Filters</value>
+    </data>
+    <data name="ShowAll" xml:space="preserve">
+        <value>Show all challenges</value>
+    </data>
+    <data name="ShowOutdated" xml:space="preserve">
+        <value>Show outdated challenges</value>
+    </data>
+    <data name="Measurement" xml:space="preserve">
+        <value>Measurement</value>
+    </data>
+    <data name="Time" xml:space="preserve">
+        <value>Time</value>
+    </data>
+    <data name="Elevation" xml:space="preserve">
+        <value>Elevation</value>
+    </data>
+    <data name="Distance" xml:space="preserve">
+        <value>Distance</value>
+    </data>
+    <data name="ActivityTypes" xml:space="preserve">
+        <value>Activity types</value>
+    </data>
+    <data name="AllActivities" xml:space="preserve">
+        <value>All activities</value>
+    </data>
+</root>
