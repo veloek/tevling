@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Localization;
 using Microsoft.JSInterop;
 
 namespace Tevling.Pages;
@@ -36,7 +37,7 @@ public partial class Statistics : ComponentBase, IAsyncDisposable
             {
                 return "<span style='color:green'>increase</span>";
             }
-            
+
             return Math.Round(ThisMonth, 1) / LastMonthsAverage > 1
                 ? "<span style='color:green'>increase</span>"
                 : "<span style='color:red'>decrease</span>";
@@ -47,6 +48,7 @@ public partial class Statistics : ComponentBase, IAsyncDisposable
     [Inject] private IJSRuntime Js { get; set; } = null!;
     [Inject] private IAuthenticationService AuthenticationService { get; set; } = null!;
     [Inject] private IActivityService ActivityService { get; set; } = null!;
+    [Inject] private IStringLocalizer<Statistics> Loc { get; set; } = null!;
 
     private Athlete _athlete = null!;
     private Activity[] _activities = [];
@@ -159,7 +161,7 @@ public partial class Statistics : ComponentBase, IAsyncDisposable
                     Distances.ToDictionary(stat => stat.Type, stat => stat.LastMonthsAggregate),
                     months,
                     "TheChart",
-                    "Total Distance [km]",
+                    Loc["TotalDistance"] + " [km]",
                     "km");
                 break;
             case ChallengeMeasurement.Elevation:
@@ -168,7 +170,7 @@ public partial class Statistics : ComponentBase, IAsyncDisposable
                     Elevations.ToDictionary(stat => stat.Type, stat => stat.LastMonthsAggregate),
                     months,
                     "TheChart",
-                    "Total Elevation [m]",
+                    Loc["TotalElevation"] + " [m]",
                     "m");
                 break;
             case ChallengeMeasurement.Time:
@@ -177,7 +179,7 @@ public partial class Statistics : ComponentBase, IAsyncDisposable
                     Durations.ToDictionary(stat => stat.Type, stat => stat.LastMonthsAggregate),
                     months,
                     "TheChart",
-                    "Total Time [h]",
+                    Loc["TotalTime"] + " [h]",
                     "h");
                 break;
             default:

@@ -6,10 +6,11 @@ public partial class ButtonGroup<T> : ComponentBase
 {
     [Parameter] public IEnumerable<T> Items { get; set; } = [];
     [Parameter] public T? SelectedItem { get; set; }
-    
+
     [Parameter] public EventCallback<T> SelectedItemChanged { get; set; }
     [Parameter] public EventCallback<T> OnButtonSelected { get; set; }
-    
+    [Parameter] public Func<T, string>? DisplayFunc { get; set; }
+
     protected override void OnInitialized()
     {
         if (SelectedItem is null && Items.Any())
@@ -33,4 +34,3 @@ public partial class ButtonGroup<T> : ComponentBase
         }
     }
 }
-
