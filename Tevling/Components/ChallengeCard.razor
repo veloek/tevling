@@ -1,4 +1,5 @@
 @inject IStringLocalizer<ChallengeCard> Loc
+@inject ActivityTypeTranslator ActivityTypeTranslator
 
 @if (Challenge != null)
 {
@@ -109,7 +110,7 @@
                     {
                         foreach (Strava.ActivityType type in Challenge.ActivityTypes)
                         {
-                            <span class="badge bg-primary">@ActivityTypeExt.ToString(type)</span>
+                            <span class="badge bg-primary">@ActivityTypeTranslator.Translate(type)</span>
                         }
                     }
                     else

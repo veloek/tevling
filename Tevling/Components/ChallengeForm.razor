@@ -1,5 +1,6 @@
 @using Tevling.Strava
 @inject IStringLocalizer<ChallengeForm> Loc
+@inject ActivityTypeTranslator ActivityTypeTranslator
 
 <EditForm FormName="challenge" method="post" Model="@Challenge" OnValidSubmit="SubmitForm">
     <div class="d-flex flex-row mb-3 column-gap-5 flex-wrap">
@@ -56,7 +57,7 @@
                 <h5 class="mb-3">@Loc["ActivityTypes"]</h5>
                 <div class="mb-3">
                     <DropdownSearch Items="@ActivityTypes" T="ActivityType"
-                                    DisplayFunc="@ActivityTypeExt.ToString"
+                                    DisplayFunc="@ActivityTypeTranslator.Translate"
                                     @bind-SelectedItems="@Challenge.ActivityTypes"
                                     @ref="_dropdownSearchRefActivityTypes">
                     </DropdownSearch>
@@ -70,7 +71,7 @@
                         @foreach (ActivityType item in Challenge.ActivityTypes)
                         {
                             <a @onclick="() => DeselectActivityType(item)" type="button" class="btn btn-primary selected-activity-type">
-                                @ActivityTypeExt.ToString(item)<i class="bi bi-x ms-1"></i>
+                                @ActivityTypeTranslator.Translate(item)<i class="bi bi-x ms-1"></i>
                             </a>
                         }
                     </div>

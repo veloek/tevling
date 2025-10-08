@@ -1,3 +1,5 @@
+@inject ActivityTypeTranslator ActivityTypeTranslator
+
 @if (Activity is not null)
 {
     <div class="activity-card px-4 py-3 d-flex flex-row flex-wrap">
@@ -17,7 +19,7 @@
 
             <div class="activity-card-body d-flex flex-column row-gap-2">
                 <div>
-                    <span class="badge bg-primary">@ActivityTypeExt.ToString(Activity.Details.Type)</span>
+                    <span class="badge bg-primary">@ActivityTypeTranslator.Translate(Activity.Details.Type)</span>
                 </div>
                 <span class="activity-name">@Activity.Details.Name</span>
                 <span class="activity-description">@Activity.Details.Description</span>

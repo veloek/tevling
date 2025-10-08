@@ -84,6 +84,7 @@ builder.Services.AddScoped<IBrowserTime, BrowserTime>();
 builder.Services.AddStravaClient();
 
 builder.Services.AddSingleton<IDevService, DevService>();
+builder.Services.AddSingleton<ActivityTypeTranslator>();
 
 builder.Services.AddHostedService<BatchImportService>();
 

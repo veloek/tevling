@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>2.0</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <!--Data-->
+    <data name="AlpineSki" xml:space="preserve">
+        <value>Alpint</value>
+    </data>
+    <data name="BackcountrySki" xml:space="preserve">
+        <value>Langrennski</value>
+    </data>
+    <data name="Canoeing" xml:space="preserve">
+        <value>Kano</value>
+    </data>
+    <data name="Crossfit" xml:space="preserve">
+        <value>Crossfit</value>
+    </data>
+    <data name="EBikeRide" xml:space="preserve">
+        <value>El-sykkel</value>
+    </data>
+    <data name="Elliptical" xml:space="preserve">
+        <value>Ellipsemaskin</value>
+    </data>
+    <data name="Golf" xml:space="preserve">
+        <value>Golf</value>
+    </data>
+    <data name="Handcycle" xml:space="preserve">
+        <value>Håndsykkel</value>
+    </data>
+    <data name="Hike" xml:space="preserve">
+        <value>Gå</value>
+    </data>
+    <data name="IceSkate" xml:space="preserve">
+        <value>Skøyter</value>
+    </data>
+    <data name="InlineSkate" xml:space="preserve">
+        <value>Rulleskøyter</value>
+    </data>
+    <data name="Kayaking" xml:space="preserve">
+        <value>Kajakk</value>
+    </data>
+    <data name="Kitesurf" xml:space="preserve">
+        <value>Kitesurfing</value>
+    </data>
+    <data name="NordicSki" xml:space="preserve">
+        <value>Ski</value>
+    </data>
+    <data name="Ride" xml:space="preserve">
+        <value>Sykkel</value>
+    </data>
+    <data name="RockClimbing" xml:space="preserve">
+        <value>Fjellklatring</value>
+    </data>
+    <data name="RollerSki" xml:space="preserve">
+        <value>Rulleski</value>
+    </data>
+    <data name="Rowing" xml:space="preserve">
+        <value>Roing</value>
+    </data>
+    <data name="Run" xml:space="preserve">
+        <value>Løping</value>
+    </data>
+    <data name="Sail" xml:space="preserve">
+        <value>Seiling</value>
+    </data>
+    <data name="Skateboard" xml:space="preserve">
+        <value>Rullebrett</value>
+    </data>
+    <data name="Snowboard" xml:space="preserve">
+        <value>Snøbrett</value>
+    </data>
+    <data name="Snowshoe" xml:space="preserve">
+        <value>Snøsko</value>
+    </data>
+    <data name="Soccer" xml:space="preserve">
+        <value>Fotball</value>
+    </data>
+    <data name="StairStepper" xml:space="preserve">
+        <value>Trappemaskin</value>
+    </data>
+    <data name="StandUpPaddling" xml:space="preserve">
+        <value>SUP</value>
+    </data>
+    <data name="Surfing" xml:space="preserve">
+        <value>Surfing</value>
+    </data>
+    <data name="Swim" xml:space="preserve">
+        <value>Svømming</value>
+    </data>
+    <data name="Velomobile" xml:space="preserve">
+        <value>Velomobil</value>
+    </data>
+    <data name="VirtualRide" xml:space="preserve">
+        <value>Virtuell sykkel</value>
+    </data>
+    <data name="VirtualRun" xml:space="preserve">
+        <value>Virtuell løping</value>
+    </data>
+    <data name="Walk" xml:space="preserve">
+        <value>Gå</value>
+    </data>
+    <data name="WaterSport" xml:space="preserve">
+        <value>Vannsport</value>
+    </data>
+    <data name="WeightTraining" xml:space="preserve">
+        <value>Vektløfting</value>
+    </data>
+    <data name="Wheelchair" xml:space="preserve">
+        <value>Rullestol</value>
+    </data>
+    <data name="Windsurf" xml:space="preserve">
+        <value>Vindsurfing</value>
+    </data>
+    <data name="Workout" xml:space="preserve">
+        <value>Trening</value>
+    </data>
+    <data name="Yoga" xml:space="preserve">
+        <value>Yoga</value>
+    </data>
+</root>

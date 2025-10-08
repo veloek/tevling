@@ -49,6 +49,7 @@ public partial class Statistics : ComponentBase, IAsyncDisposable
     [Inject] private IAuthenticationService AuthenticationService { get; set; } = null!;
     [Inject] private IActivityService ActivityService { get; set; } = null!;
     [Inject] private IStringLocalizer<Statistics> Loc { get; set; } = null!;
+    [Inject] private ActivityTypeTranslator ActivityTypeTranslator { get; set; } = null!;
 
     private Athlete _athlete = null!;
     private Activity[] _activities = [];
@@ -73,7 +74,7 @@ public partial class Statistics : ComponentBase, IAsyncDisposable
         return
         [
             .. _activities
-                .GroupBy(a => ActivityTypeExt.ToString(a.Details.Type))
+                .GroupBy(a => ActivityTypeTranslator.Translate(a.Details.Type))
                 .ToDictionary(
                     g => g.Key.ToString(),
                     g => Enumerable.Range(-monthCount + 1, monthCount)
