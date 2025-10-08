@@ -1,7 +1,9 @@
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Primitives;
 using Tevling.Strava;
 using RouteAttribute = Microsoft.AspNetCore.Mvc.RouteAttribute;
 
@@ -114,11 +116,14 @@ public class StravaController(
     [Route("authorize")]
     public async Task<IActionResult> Authorize(
         [FromQuery] string code,
-        [FromQuery] string? returnUrl,
-        [FromQuery] string? host,
+        [FromQuery] string? state,
         CancellationToken ct)
     {
-        logger.LogInformation("host='{Host}'", host ?? "n/a");
+        (string? host, string? returnUrl) = DecodeQueryState(state);
+
+        logger.LogDebug("state='{State}'", state ?? "n/a");
+        logger.LogDebug("host='{Host}'", host ?? "n/a");
+        logger.LogDebug("returnUrl='{ReturnUrl}'", returnUrl ?? "n/a");
 
         // To make sure we set the cookie on the correct domain, we check
         // that the host parameter matches the current request.
@@ -150,6 +155,23 @@ public class StravaController(
         return LocalRedirect(returnUrl ?? "/");
     }
 
+    private (string? host, string? returnUrl) DecodeQueryState(string? state)
+    {
+        if (state is null)
+            return (null, null);
+
+        try
+        {
+            Dictionary<string, StringValues> parsedState = QueryHelpers.ParseQuery(state.FromBase64());
+            return (parsedState.GetValueOrDefault("host"), parsedState.GetValueOrDefault("returnUrl"));
+        }
+        catch (Exception e)
+        {
+            logger.LogError(e, "Unable to parse query state");
+            return (null, null);
+        }
+    }
+
     private bool HostIsWhitelisted([NotNullWhen(true)] string? host)
     {
         if (host is null)
@@ -159,7 +181,7 @@ public class StravaController(
 
         bool isWhitelisted = cultureByHost.Value.ContainsKey(hostParts[0]);
 
-        logger.LogInformation("isWhitelisted=" + isWhitelisted);
+        logger.LogDebug("isWhitelisted={IsWhitelisted}", isWhitelisted);
 
         return isWhitelisted;
     }
@@ -167,8 +189,6 @@ public class StravaController(
     private bool RedirectIfDifferentHost(string host, [NotNullWhen(true)] out RedirectResult? redirect)
     {
         HttpContext? context = httpContextAccessor.HttpContext;
-
-        logger.LogInformation("context.Request.Host='{Host}'", context?.Request.Host.ToString() ?? "n/a");
 
         if (context is null || host == context.Request.Host.ToString())
         {
@@ -178,15 +198,11 @@ public class StravaController(
 
         UriBuilder uriBuilder = new(context.Request.GetDisplayUrl());
 
-        logger.LogInformation("context.Request.GetDisplayUrl()='{Url}'", context.Request.GetDisplayUrl());
-
         string[] hostParts = host.Split(':');
         uriBuilder.Host = hostParts[0];
 
         if (hostParts.Length > 1 && int.TryParse(hostParts[1], out int port))
             uriBuilder.Port = port;
-
-        logger.LogInformation("uriBuilder='{Url}'", uriBuilder.ToString());
 
         redirect = Redirect(uriBuilder.ToString());
         return true;

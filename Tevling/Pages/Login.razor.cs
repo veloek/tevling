@@ -10,6 +10,16 @@ public partial class Login : ComponentBase
     [SupplyParameterFromQuery(Name = "returnUrl")]
     private string? ReturnUrl { get; set; }
 
-    private string RedirectUri =>
-        $"{StravaConfig.Value.RedirectUri}?returnUrl={Uri.EscapeDataString(ReturnUrl ?? "")}&host={HttpContextAccessor.HttpContext?.Request.Host}";
+    private string RedirectUri => $"{StravaConfig.Value.RedirectUri}?state={GetQueryState()}";
+
+    private string GetQueryState()
+    {
+        QueryString queryString = QueryString.Create(
+            [
+                new KeyValuePair<string, string?>("returnUrl", ReturnUrl),
+                new KeyValuePair<string, string?>("host", HttpContextAccessor.HttpContext?.Request.Host.ToString())
+            ]);
+
+        return queryString.ToString().ToBase64();
+    }
 }
