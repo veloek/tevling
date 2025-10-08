@@ -83,3 +83,13 @@ h1:focus {
 .rg-3 {
   row-gap: 1rem !important;
 }
+
+.title {
+  letter-spacing: 0.2rem;
+  font-variant: all-small-caps;
+  font-size: xxx-large;
+}
+
+label {
+  font-weight: 300;
+}

@@ -7,12 +7,6 @@ public partial class MainLayout : LayoutComponentBase
 
     private string? Theme { get; set; }
     private bool ThemeSet { get; set; }
-    private Athlete Athlete { get; set; } = default!;
-
-    protected override async Task OnInitializedAsync()
-    {
-        Athlete = await AuthenticationService.GetCurrentAthleteAsync();
-    }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
