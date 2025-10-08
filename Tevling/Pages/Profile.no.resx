@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>2.0</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <!--Data-->
+    <data name="Profile" xml:space="preserve">
+        <value>Profil</value>
+    </data>
+    <data name="MemberSince" xml:space="preserve">
+        <value>Medlem siden {0}</value>
+    </data>
+    <data name="FollowRequests" xml:space="preserve">
+        <value>Følgeforespørsler</value>
+    </data>
+    <data name="Followers" xml:space="preserve">
+        <value>Følgere</value>
+    </data>
+    <data name="NoFollowers" xml:space="preserve">
+        <value>Du har for tiden ingen følgere 😕</value>
+    </data>
+    <data name="Following" xml:space="preserve">
+        <value>Fulgte</value>
+    </data>
+    <data name="NoFollowings" xml:space="preserve">
+        <value>Du følger ingen 😕</value>
+    </data>
+    <data name="Import_title" xml:space="preserve">
+        <value>Importér aktiviteter fra Strava</value>
+    </data>
+    <data name="Import_body" xml:space="preserve">
+        <value>Importér siste 30 dager for å komme i gang! &lt;br/&gt; (Dette kan bare gjøres én gang)</value>
+    </data>
+    <data name="ImportComplete" xml:space="preserve">
+        <value>Import ferdig</value>
+    </data>
+    <data name="Importing" xml:space="preserve">
+        <value>Importerer</value>
+    </data>
+    <data name="ImportActivities" xml:space="preserve">
+        <value>Importér aktiviteter</value>
+    </data>
+    <data name="SorryOnlyOnce" xml:space="preserve">
+        <value>Beklager, du kan kun importere en gang.</value>
+    </data>
+    <data name="ImportingActivities" xml:space="preserve">
+        <value>Importerer aktiviteter, vennligst vent...</value>
+    </data>
+    <data name="ImportSuccessful" xml:space="preserve">
+        <value>Import vellykket</value>
+    </data>
+    <data name="ImportFailed" xml:space="preserve">
+        <value>Feil ved import: {0}</value>
+    </data>
+    <data name="Signout_title" xml:space="preserve">
+        <value>Logg ut</value>
+    </data>
+    <data name="Signout_body" xml:space="preserve">
+        <value>Husk å logg ut dersom dette er en datamaskin du deler med andre.</value>
+    </data>
+    <data name="SignOut" xml:space="preserve">
+        <value>Logg ut</value>
+    </data>
+    <data name="DeleteAccount_title" xml:space="preserve">
+        <value>Slett konto</value>
+    </data>
+    <data name="DeleteAccount_body" xml:space="preserve">
+        <value>Fjern brukerkonto og avregistrer applikasjonen. All data vil bli slettet.&lt;br/&gt;NB! Dette kan ikke angres!</value>
+    </data>
+    <data name="ForgetMe" xml:space="preserve">
+        <value>Glem meg</value>
+    </data>
+    <data name="DeleteAccount_confirm" xml:space="preserve">
+        <value>Er du sikker på at du vil slette din bruker på Tevling?</value>
+    </data>
+    <data name="DeleteAccount" xml:space="preserve">
+        <value>Slett konto</value>
+    </data>
+    <data name="Cancel" xml:space="preserve">
+        <value>Avbryt</value>
+    </data>
+</root>

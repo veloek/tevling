@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>2.0</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <!--Data-->
+    <data name="Profile" xml:space="preserve">
+        <value>Profile</value>
+    </data>
+    <data name="MemberSince" xml:space="preserve">
+        <value>Member since {0}</value>
+    </data>
+    <data name="FollowRequests" xml:space="preserve">
+        <value>Follow Requests</value>
+    </data>
+    <data name="Followers" xml:space="preserve">
+        <value>Followers</value>
+    </data>
+    <data name="NoFollowers" xml:space="preserve">
+        <value>You currently have no followers 😕</value>
+    </data>
+    <data name="Following" xml:space="preserve">
+        <value>Following</value>
+    </data>
+    <data name="NoFollowings" xml:space="preserve">
+        <value>You're not following anyone 😕</value>
+    </data>
+    <data name="Import_title" xml:space="preserve">
+        <value>Import activities from Strava</value>
+    </data>
+    <data name="Import_body" xml:space="preserve">
+        <value>Import last 30 days of activities to get started! &lt;br/&gt; (This can only be done once)</value>
+    </data>
+    <data name="ImportComplete" xml:space="preserve">
+        <value>Import complete</value>
+    </data>
+    <data name="Importing" xml:space="preserve">
+        <value>Importing</value>
+    </data>
+    <data name="ImportActivities" xml:space="preserve">
+        <value>Import activities</value>
+    </data>
+    <data name="SorryOnlyOnce" xml:space="preserve">
+        <value>Sorry, you can only import once.</value>
+    </data>
+    <data name="ImportingActivities" xml:space="preserve">
+        <value>Importing activities, please wait...</value>
+    </data>
+    <data name="ImportSuccessful" xml:space="preserve">
+        <value>Import completed successfully</value>
+    </data>
+    <data name="ImportFailed" xml:space="preserve">
+        <value>Import failed with error: {0}</value>
+    </data>
+    <data name="Signout_title" xml:space="preserve">
+        <value>Sign out</value>
+    </data>
+    <data name="Signout_body" xml:space="preserve">
+        <value>If using a public/shared computer, please remember to sign out.</value>
+    </data>
+    <data name="SignOut" xml:space="preserve">
+        <value>Sign out</value>
+    </data>
+    <data name="DeleteAccount_title" xml:space="preserve">
+        <value>Delete account</value>
+    </data>
+    <data name="DeleteAccount_body" xml:space="preserve">
+        <value>Delete user account and deauthorize application. All data will be removed.&lt;br/&gt;NB! This cannot be undone!</value>
+    </data>
+    <data name="ForgetMe" xml:space="preserve">
+        <value>Forget me</value>
+    </data>
+    <data name="DeleteAccount_confirm" xml:space="preserve">
+        <value>Are you sure you want to delete your Tevling account?</value>
+    </data>
+    <data name="DeleteAccount" xml:space="preserve">
+        <value>Delete account</value>
+    </data>
+    <data name="Cancel" xml:space="preserve">
+        <value>Cancel</value>
+    </data>
+</root>
