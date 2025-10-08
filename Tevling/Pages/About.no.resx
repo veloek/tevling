@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>2.0</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <!--Data-->
+    <data name="About" xml:space="preserve">
+        <value>Om</value>
+    </data>
+    <data name="Attribution" xml:space="preserve">
+        <value>Kreditering</value>
+    </data>
+    <data name="Intro_1" xml:space="preserve">
+        <value>Tevling er laget med</value>
+    </data>
+    <data name="Intro_2" xml:space="preserve">
+        <value>et .NET webrammeverk. Det benytter følgende tredjeparts programvare:</value>
+    </data>
+    <data name="Strava_title" xml:space="preserve">
+        <value>Strava-integrasjon</value>
+    </data>
+    <data name="Strava_body" xml:space="preserve">
+        <value>Tevling bruker Strava for pålogging. Autentiserte brukere blir lagret med grunnleggende informasjon i Tevlings database. Alle &lt;em&gt;offentlige*&lt;/em&gt; aktiviteter registrert på Strava av autentiserte brukere blir automatisk synkronisert mot Tevling hvor deler av aktivitetsdetaljene blir lagret i Tevlings database. Det lagres kun data nødvendig for å kalkulere en poengsum for en gitt konkurranse, samt vise en liste av aktiviteter.</value>
+    </data>
+    <data name="PublicActivities" xml:space="preserve">
+        <value>* Offentlige aktiviteter inkluderer aktiviteter med synlighet satt til &lt;em&gt;Everyone&lt;/em&gt; eller &lt;em&gt;Followers&lt;/em&gt;.</value>
+    </data>
+    <data name="Disclamer_title" xml:space="preserve">
+        <value>Ansvarsfraskrivelse</value>
+    </data>
+    <data name="Disclamer_body" xml:space="preserve">
+        <value>STRAVA er et registrert varemerke av Strava, Inc. Tevling har ingen tilknytning til Strava. Du bruker denne applikasjonen på eget ansvar. Vi tar ingen ansvar for tap av data eller ukorrekt informasjon.</value>
+    </data>
+    <data name="License_title" xml:space="preserve">
+        <value>Lisens</value>
+    </data>
+    <data name="License_body" xml:space="preserve">
+        <value>GNU GPLv3 eller senere. Kildekode er tilgjengelig på</value>
+    </data>
+    <data name="Version" xml:space="preserve">
+        <value>Versjon</value>
+    </data>
+    <data name="Copyright" xml:space="preserve">
+        <value>Opphavsrett</value>
+    </data>
+</root>

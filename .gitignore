@@ -8,3 +8,6 @@ Tevling/storage/
 # Editor / IDE
 .vscode/
 .idea/
+
+# ResXpress extension
+.resxpress

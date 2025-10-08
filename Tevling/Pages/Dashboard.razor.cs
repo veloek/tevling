@@ -1,3 +1,5 @@
+using Microsoft.Extensions.Localization;
+
 namespace Tevling.Pages;
 
 public partial class Dashboard : ComponentBase
@@ -7,6 +9,7 @@ public partial class Dashboard : ComponentBase
     [Inject] private NavigationManager NavigationManager { get; set; } = null!;
     [Inject] private IAthleteService AthleteService { get; set; } = null!;
     [Inject] private IChallengeService ChallengeService { get; set; } = null!;
+    [Inject] private IStringLocalizer<Dashboard> Loc { get; set; } = null!;
 
     private string Greeting { get; set; } = string.Empty;
     private Athlete Athlete { get; set; } = default!;
@@ -38,9 +41,9 @@ public partial class Dashboard : ComponentBase
 
         return browserTime.Hour switch
         {
-            < 12 => $"Good morning, {athleteFirstName}! ☀️",
-            < 18 => $"Good afternoon, {athleteFirstName}! ☕️",
-            _ => $"Good evening, {athleteFirstName}! 🌙",
+            < 12 => $"{Loc["GoodMorning"]}, {athleteFirstName}! ☀️",
+            < 18 => $"{Loc["GoodAfternoon"]}, {athleteFirstName}! ☕️",
+            _ => $"{Loc["GoodEvening"]}, {athleteFirstName}! 🌙",
         };
     }
 
@@ -66,13 +69,7 @@ public partial class Dashboard : ComponentBase
             int placement = scoreBoard.Scores.ToList().IndexOf(score) + 1;
             if (placement is 0) continue;
 
-            string placementString = placement switch
-            {
-                1 => "1st 🥇",
-                2 => "2nd 🥈",
-                3 => "3rd 🥉",
-                _ => $"{placement}th",
-            };
+            string placementString = GetOrdinal(placement);
 
             ActiveChallenges[challenge] = (placementString, score.Score);
         }
@@ -103,13 +100,7 @@ public partial class Dashboard : ComponentBase
             int placement = scoreBoard.Scores.ToList().IndexOf(score) + 1;
             if (placement is 0) continue;
 
-            string placementString = placement switch
-            {
-                1 => "1st 🥇",
-                2 => "2nd 🥈",
-                3 => "3rd 🥉",
-                _ => $"{placement}th",
-            };
+            string placementString = GetOrdinal(placement);
 
             RecentOutdatedChallenges[challenge] = (placementString, score.Score);
         }
@@ -125,5 +116,28 @@ public partial class Dashboard : ComponentBase
     {
         Athlete = await AthleteService.ToggleFollowingAsync(Athlete, followingId);
         await InvokeAsync(StateHasChanged);
+    }
+
+    private string GetOrdinal(int num)
+    {
+        if (num <= 0) return num.ToString();
+
+        return num switch
+        {
+            1 => $"1{Loc["First"]} 🥇",
+            2 => $"2{Loc["Second"]} 🥈",
+            3 => $"3{Loc["Third"]} 🥉",
+            _ => (num % 100) switch
+            {
+                11 or 12 or 13 => num + Loc["Nth"],
+                _ => (num % 10) switch
+                {
+                    1 => num + Loc["First"],
+                    2 => num + Loc["Second"],
+                    3 => num + Loc["Third"],
+                    _ => num + Loc["Nth"],
+                },
+            },
+        };
     }
 }

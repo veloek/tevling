@@ -1,5 +1,9 @@
 namespace Tevling.Shared;
 
+// This is here to make localization work.
+// Couldn't figure out what to name the resource files with generic types.
+public abstract class DropdownSearch;
+
 public partial class DropdownSearch<T> : ComponentBase
 {
     [Parameter] public IEnumerable<T> Items { get; set; } = [];
@@ -79,7 +83,7 @@ public partial class DropdownSearch<T> : ComponentBase
 
     private async Task SelectItemAsync(T item)
     {
-        List<T> newSelection = [..SelectedItems, item];
+        List<T> newSelection = [.. SelectedItems, item];
         SelectedItems = newSelection;
         await SelectedItemsChanged.InvokeAsync(newSelection);
     }

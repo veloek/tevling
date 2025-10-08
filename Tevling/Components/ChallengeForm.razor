@@ -1,57 +1,59 @@
 @using Tevling.Strava
+@inject IStringLocalizer<ChallengeForm> Loc
+
 <EditForm FormName="challenge" method="post" Model="@Challenge" OnValidSubmit="SubmitForm">
     <div class="d-flex flex-row mb-3 column-gap-5 flex-wrap">
         <div class="left-column me-5">
             <div class="form-row mb-5">
                 <label>
-                    Title
+                    @Loc["Title"]
                     <InputText @bind-Value="@Challenge.Title" size="50" class="form-control" />
                 </label>
             </div>
             <div class="form-row mb-5">
                 <label>
-                    Description
+                    @Loc["Description"]
                     <InputTextArea @bind-Value="@Challenge.Description" cols="50" rows="4" class="form-control" />
                 </label>
             </div>
             <div class="form-row mb-5">
                 <label class="me-4">
-                    Start
+                    @Loc["Start"]
                     <InputDate @bind-Value="@Challenge.Start" Type="InputDateType.Date"
                                max="@Challenge.End.ToString("yyyy-MM-dd")" class="form-control" />
                 </label>
                 <label>
-                    End
+                    @Loc["End"]
                     <InputDate @bind-Value="@Challenge.End" Type="InputDateType.Date"
                                min="@Challenge.Start.ToString("yyyy-MM-dd")" class="form-control" />
                 </label>
             </div>
             <div class="form-row mb-5 d-flex column-gap-5">
                 <div>
-                    <h5 class="mb-3">Challenge type</h5>
+                    <h5 class="mb-3">@Loc["ChallengeType"]</h5>
                     <InputRadioGroup @bind-Value="@Challenge.Measurement">
                         @foreach (ChallengeMeasurement measurement in Enum.GetValues<ChallengeMeasurement>())
                         {
                             <div>
-                                <InputRadio Value="@measurement" class="me-2 form-check-input" /><label>@measurement</label>
+                                <InputRadio Value="@measurement" class="me-2 form-check-input" /><label>@Loc[measurement.ToString()]</label>
                             </div>
                         }
                     </InputRadioGroup>
                 </div>
                 <div>
-                    <h5 class="mb-3">Challenge visibility</h5>
+                    <h5 class="mb-3">@Loc["ChallengeVisibility"]</h5>
                     <InputRadioGroup @bind-Value="@Challenge.IsPrivate">
                         <div>
-                            <InputRadio Value="false" class="form-check-input" /> <label>Public challenge</label>
+                            <InputRadio Value="false" class="form-check-input" /> <label>@Loc["PublicChallenge"]</label>
                         </div>
                         <div>
-                            <InputRadio Value="true" class="form-check-input" /> <label>Private challenge</label>
+                            <InputRadio Value="true" class="form-check-input" /> <label>@Loc["PrivateChallenge"]</label>
                         </div>
                     </InputRadioGroup>
                 </div>
             </div>
             <div class="form-row mb-2 activity-types-selection">
-                <h5 class="mb-3">Activity types</h5>
+                <h5 class="mb-3">@Loc["ActivityTypes"]</h5>
                 <div class="mb-3">
                     <DropdownSearch Items="@ActivityTypes" T="ActivityType"
                                     DisplayFunc="@ActivityTypeExt.ToString"
@@ -62,7 +64,7 @@
                 <div class="mb-5">
                     @if (Challenge.ActivityTypes.Count == 0)
                     {
-                        <a type="button" class="btn btn-primary selected-activity-type py-1">All activities</a>
+                        <a type="button" class="btn btn-primary selected-activity-type py-1">@Loc["AllActivities"]</a>
                     }
                     <div class="d-flex flex-wrap column-gap-2 row-gap-1">
                         @foreach (ActivityType item in Challenge.ActivityTypes)
@@ -73,10 +75,10 @@
                         }
                     </div>
                 </div>
-                <h5 class="mb-3">Templates</h5>
+                <h5 class="mb-3">@Loc["Templates"]</h5>
                 <div class="mb-5">
                     <select class="form-select mb-3" @onchange="e => LoadSelectedTemplate(e.Value)">
-                        <option value="">Select a template to load</option>
+                        <option value="">@Loc["SelectTemplate"]</option>
                         @for (int i = 0; i < Templates.Count; i++)
                         {
                             <option value="@i">@Templates[i].Title</option>
@@ -86,21 +88,21 @@
                         <label>
                             <a class="btn btn-primary selected-activity-type py-1" type="button" data-bs-toggle="modal"
                                data-bs-target="#templateCreated"
-                               @onclick="CreateChallengeTemplate">Save as template</a>
+                               @onclick="CreateChallengeTemplate">@Loc["SaveTemplate"]</a>
                         </label>
                         <label>
                             <button class="btn btn-danger selected-group py-1" type="button" data-bs-toggle="modal"
                                data-bs-target="#deleteTemplate"
-                               disabled="@(Templates.Count == 0)">Delete template(s)</button>
+                               disabled="@(Templates.Count == 0)">@Loc["DeleteTemplates"]</button>
                         </label>
                     </div>
                 </div>
                 @if (Challenge.IsPrivate)
                 {
-                    <h5 class="mb-3">Groups</h5>
+                    <h5 class="mb-3">@Loc["Groups"]</h5>
                     <div class="mb-5">
                         <select class="form-select mb-3" @onchange="e => LoadSelectedChallengeGroup(e.Value)">
-                            <option value="">Select a group to load</option>
+                            <option value="">@Loc["SelectGroup"]</option>
                             @for (int i = 0; i < ChallengeGroups.Count; i++)
                             {
                                 <option value="@i">@ChallengeGroups[i].Name</option>
@@ -112,13 +114,13 @@
                                         data-bs-toggle="modal"
                                         data-bs-target="#createChallengeGroup"
                                         @onclick="ResetChallengeGroupName"
-                                        disabled="@(Challenge.InvitedAthletes.Count == 0)">Create group
+                                        disabled="@(Challenge.InvitedAthletes.Count == 0)">@Loc["CreateGroup"]
                                 </button>
                             </label>
                             <label>
                                 <button class="btn btn-danger selected-group py-1" type="button" data-bs-toggle="modal"
                                         data-bs-target="#deleteChallengeGroup"
-                                        disabled="@(ChallengeGroups.Count == 0)">Delete group(s)
+                                        disabled="@(ChallengeGroups.Count == 0)">@Loc["DeleteGroups"]
                                 </button>
                             </label>
                         </div>
@@ -134,7 +136,7 @@
         @if (Challenge.IsPrivate)
         {
             <div class="right-column">
-                <h5 class="mb-3">Athletes</h5>
+                <h5 class="mb-3">@Loc["Athletes"]</h5>
                 <DropdownSearch T="Athlete"
                                 DisplayFunc="@AthletesDisplayFunc"
                                 CustomSearchFuncAsync="@SearchAthletes"
@@ -165,11 +167,11 @@
 
 <Modal Id="deleteTemplate" Size="sm">
     <HeaderContent>
-        <span>Delete template(s)</span>
+        <span>@Loc["DeleteTemplates"]</span>
     </HeaderContent>
     <BodyContent>
         <i class="bi bi-trash delete-account-modal-icon" aria-hidden="true"></i>
-        <span class="text-center delete-account-modal-text">Select template(s) to delete:</span>
+        <span class="text-center delete-account-modal-text">@Loc["SelectTemplatesToDelete"]</span>
         <div class="d-flex flex-column align-items-start">
             @foreach (ChallengeTemplate template in Templates)
             {
@@ -182,19 +184,19 @@
     </BodyContent>
     <FooterContent>
         <button class="btn btn-danger mt-1 delete-account-modal-button" data-bs-dismiss="modal"
-                @onclick="DeleteTemplates">Delete selected
+                @onclick="DeleteTemplates">@Loc["DeleteSelected"]
         </button>
-        <button class="btn btn-secondary mt-1 delete-account-modal-button" data-bs-dismiss="modal">Cancel</button>
+        <button class="btn btn-secondary mt-1 delete-account-modal-button" data-bs-dismiss="modal">@Loc["Cancel"]</button>
     </FooterContent>
 </Modal>
 
 <Modal Id="templateCreated" Size="sm">
     <BodyContent>
         <i class="bi bi-clipboard2-check-fill delete-account-modal-icon" aria-hidden="true"></i>
-        <span class="text-center delete-account-modal-text">Template "@Challenge.Title" created!</span>
+        <span class="text-center delete-account-modal-text">@string.Format(Loc["TemplateCreated"], Challenge.Title)</span>
     </BodyContent>
     <FooterContent>
-        <button class="btn btn-secondary mt-1 delete-account-modal-button" data-bs-dismiss="modal">Nice</button>
+        <button class="btn btn-secondary mt-1 delete-account-modal-button" data-bs-dismiss="modal">@Loc["Close"]</button>
     </FooterContent>
 </Modal>
 
@@ -202,25 +204,25 @@
     <BodyContent>
         <i class="bi bi-clipboard2-check-fill delete-account-modal-icon" aria-hidden="true"></i>
         <label>
-            Group name
+            @Loc["GroupName"]
             <InputText @bind-Value="@ChallengeGroupName" size="50" class="form-control"/>
         </label>
     </BodyContent>
     <FooterContent>
         <button class="btn btn-primary mt-1 delete-account-modal-button" data-bs-dismiss="modal" @onclick="CreateChallengeGroup">
-            Save
+            @Loc["Save"]
         </button>
-        <button class="btn btn-secondary mt-1 delete-account-modal-button" data-bs-dismiss="modal">Cancel</button>
+        <button class="btn btn-secondary mt-1 delete-account-modal-button" data-bs-dismiss="modal">@Loc["Cancel"]</button>
     </FooterContent>
 </Modal>
 
 <Modal Id="deleteChallengeGroup" Size="sm">
     <HeaderContent>
-        <span>Delete groups(s)</span>
+        <span>@Loc["DeleteGroups"]</span>
     </HeaderContent>
     <BodyContent>
         <i class="bi bi-trash delete-account-modal-icon" aria-hidden="true"></i>
-        <span class="text-center delete-account-modal-text">Select group(s) to delete:</span>
+        <span class="text-center delete-account-modal-text">@Loc["SelectGroupsToDelete"]</span>
         <div class="d-flex flex-column align-items-start">
             @foreach (ChallengeGroup group in ChallengeGroups)
             {
@@ -233,8 +235,8 @@
     </BodyContent>
     <FooterContent>
         <button class="btn btn-danger mt-1 delete-account-modal-button" data-bs-dismiss="modal"
-                @onclick="DeleteChallengeGroups">Delete selected
+                @onclick="DeleteChallengeGroups">@Loc["DeleteSelected"]
         </button>
-        <button class="btn btn-secondary mt-1 delete-account-modal-button" data-bs-dismiss="modal">Cancel</button>
+        <button class="btn btn-secondary mt-1 delete-account-modal-button" data-bs-dismiss="modal">@Loc["Cancel"]</button>
     </FooterContent>
 </Modal>

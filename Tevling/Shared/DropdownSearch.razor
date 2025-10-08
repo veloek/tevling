@@ -1,8 +1,9 @@
 @typeparam T
+@inject IStringLocalizer<DropdownSearch> Loc
 
 <div class="dropdown">
     <label>
-        Search
+        @Loc["Search"]
         <input class="form-control search-input dropdown-toggle" type="text"
                @bind="@SearchTerm"
                @oninput="OnSearchInput"
@@ -11,16 +12,9 @@
     </label>
 
     <div class="dropdown-menu" style="@(IsSearchFocused && FilteredItems.Any() ? "display: block;" : "display: none;")">
-        @if (DisplayFunc != null)
+        @foreach (T? item in FilteredItems.Where(item => !SelectedItems.Contains(item)))
         {
-            @foreach (T? item in FilteredItems.Where(item => !SelectedItems.Contains(item)))
-            {
-                <button type="button" class="dropdown-item" @onclick="() => SelectItemAsync(item)">@DisplayFunc(item)</button>
-            }
-        }
-        else
-        {
-            <a class="dropdown-item" href="#">No display function provided</a>
+            <button type="button" class="dropdown-item" @onclick="() => SelectItemAsync(item)">@(DisplayFunc?.Invoke(item) ?? item?.ToString())</button>
         }
     </div>
 </div>

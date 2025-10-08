@@ -40,10 +40,8 @@ builder.Services.AddFeatureManagement();
 builder.Services.AddHealthChecks();
 builder.Services.AddLocalization();
 
-IConfigurationSection section = builder.Configuration.GetSection(nameof(StravaConfig));
-StravaConfig stravaConfig = section.Get<StravaConfig>() ?? new StravaConfig();
-builder.Services.AddSingleton(stravaConfig);
-builder.Services.AddSingleton<IDevService, DevService>();
+builder.Services.Configure<StravaConfig>(builder.Configuration.GetSection(nameof(StravaConfig)));
+builder.Services.Configure<CultureByHost>(builder.Configuration.GetSection(nameof(CultureByHost)));
 
 builder.Services
     .AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
@@ -57,7 +55,7 @@ builder.Services
 
 // Make sure our data directoy used to store the SQLite DB file exists.
 string dataDir = Path.Join(Environment.CurrentDirectory, "storage");
-Directory.CreateDirectory(dataDir);
+DirectoryInfo dataDirInfo = Directory.CreateDirectory(dataDir);
 
 builder.Services.AddDbContextFactory<DataContext>(
     optionsBuilder =>
@@ -70,7 +68,7 @@ builder.Services.AddDbContextFactory<DataContext>(
 
 builder.Services
     .AddDataProtection()
-    .PersistKeysToFileSystem(new DirectoryInfo(dataDir));
+    .PersistKeysToFileSystem(dataDirInfo);
 
 builder.Services.AddBlazoredLocalStorage();
 
@@ -85,6 +83,8 @@ builder.Services.AddScoped<IBrowserTime, BrowserTime>();
 
 builder.Services.AddStravaClient();
 
+builder.Services.AddSingleton<IDevService, DevService>();
+
 builder.Services.AddHostedService<BatchImportService>();
 
 WebApplication app = builder.Build();
@@ -92,11 +92,8 @@ WebApplication app = builder.Build();
 app.UseStaticFiles();
 app.UseSerilogRequestLogging();
 app.UseRouting();
-app.UseRequestLocalization(
-    new RequestLocalizationOptions()
-        .AddSupportedCultures(new[] { "en", "no", "nb", "nn" })
-        .AddSupportedUICultures(new[] { "en", "no", "nb", "nn" })
-        .SetDefaultCulture("en"));
+app.UseRequestLocalization("en");
+app.UseCultureByHost();
 
 app.UseAuthentication();
 app.UseAuthorization();

@@ -1,7 +1,8 @@
 @page "/challenges/create"
+@inject IStringLocalizer<CreateChallenge> Loc
 
-<PageTitle>Tevling - Challenge</PageTitle>
+<PageTitle>Tevling - @Loc["CreateChallenge"]</PageTitle>
 
-<h1 class="title mb-5">Create challenge</h1>
+<h1 class="title mb-5">@Loc["CreateChallenge"]</h1>
 
-<ChallengeForm SubmitLabel="Create" OnSubmitAsync="OnSubmit" OnCancelAsync="OnCancel" />
+<ChallengeForm SubmitLabel="@Loc["Create"]" CancelLabel="@Loc["Cancel"]" OnSubmitAsync="OnSubmit" OnCancelAsync="OnCancel" />

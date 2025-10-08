@@ -5,10 +5,7 @@ namespace Tevling.Controllers;
 
 [ApiController]
 [Route("auth")]
-public class AuthController(
-    IAuthenticationService authenticationService,
-    ILogger<AuthController> logger)
-    : ControllerBase
+public class AuthController(IAuthenticationService authenticationService) : ControllerBase
 {
     [HttpGet]
     [Route("logout")]

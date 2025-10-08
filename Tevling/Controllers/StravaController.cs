@@ -1,4 +1,7 @@
+using System.Diagnostics.CodeAnalysis;
+using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using Tevling.Strava;
 using RouteAttribute = Microsoft.AspNetCore.Mvc.RouteAttribute;
 
@@ -12,11 +15,13 @@ namespace Tevling.Controllers;
 [Route("api")]
 public class StravaController(
     ILogger<StravaController> logger,
-    StravaConfig stravaConfig,
+    IOptions<StravaConfig> stravaConfig,
+    IOptions<CultureByHost> cultureByHost,
     IStravaClient stravaClient,
     IAthleteService athleteService,
     IActivityService activityService,
-    IAuthenticationService authenticationService)
+    IAuthenticationService authenticationService,
+    IHttpContextAccessor httpContextAccessor)
     : ControllerBase
 {
     /// <summary>
@@ -29,7 +34,7 @@ public class StravaController(
         [FromQuery(Name = "hub.challenge")] string challenge,
         [FromQuery(Name = "hub.verify_token")] string verifyToken)
     {
-        if (mode != "subscribe" || verifyToken != stravaConfig.VerifyToken)
+        if (mode != "subscribe" || verifyToken != stravaConfig.Value.VerifyToken)
             return BadRequest();
 
         return new JsonResult(
@@ -46,7 +51,7 @@ public class StravaController(
     [Route("activity")]
     public IActionResult OnActivity([FromBody] WebhookEvent activity)
     {
-        if (activity.SubscriptionId != stravaConfig.SubscriptionId)
+        if (activity.SubscriptionId != stravaConfig.Value.SubscriptionId)
         {
             logger.LogWarning("Invalid subscription ID: {SubscriptionId}", activity.SubscriptionId);
             return BadRequest();
@@ -110,8 +115,16 @@ public class StravaController(
     public async Task<IActionResult> Authorize(
         [FromQuery] string code,
         [FromQuery] string? returnUrl,
+        [FromQuery] string? host,
         CancellationToken ct)
     {
+        // To make sure we set the cookie on the correct domain, we check
+        // that the host parameter matches the current request.
+        if (HostIsWhitelisted(host) && RedirectIfDifferentHost(host, out RedirectResult? redirect))
+        {
+            return redirect;
+        }
+
         TokenResponse tokenResponse = await stravaClient.GetAccessTokenByAuthorizationCodeAsync(code, ct);
 
         if (tokenResponse.Athlete != null)
@@ -133,5 +146,37 @@ public class StravaController(
         }
 
         return LocalRedirect(returnUrl ?? "/");
+    }
+
+    private bool HostIsWhitelisted([NotNullWhen(true)] string? host)
+    {
+        if (host is null)
+            return false;
+
+        string[] hostParts = host.Split(':');
+
+        return cultureByHost.Value.ContainsKey(hostParts[0]);
+    }
+
+    private bool RedirectIfDifferentHost(string host, [NotNullWhen(true)] out RedirectResult? redirect)
+    {
+        HttpContext? context = httpContextAccessor.HttpContext;
+
+        if (context is null || host == context.Request.Host.ToString())
+        {
+            redirect = null;
+            return false;
+        }
+
+        UriBuilder uriBuilder = new(context.Request.GetDisplayUrl());
+
+        string[] hostParts = host.Split(':');
+        uriBuilder.Host = hostParts[0];
+
+        if (hostParts.Length > 1 && int.TryParse(hostParts[1], out int port))
+            uriBuilder.Port = port;
+
+        redirect = Redirect(uriBuilder.ToString());
+        return true;
     }
 }

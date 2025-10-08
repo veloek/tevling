@@ -1,14 +1,15 @@
 @page "/challenges/{id:int}/edit"
+@inject IStringLocalizer<EditChallenge> Loc
 
-<PageTitle>Tevling - Challenge</PageTitle>
+<PageTitle>Tevling - @Loc["EditChallenge"]</PageTitle>
 
 @if (Challenge != null)
 {
-    <h1>Edit challenge: @Challenge.Title</h1>
+    <h1 class="title mb-5">@Loc["EditChallenge"]: @Challenge.Title</h1>
 
-    <ChallengeForm EditChallenge="@Challenge" SubmitLabel="Edit" OnSubmitAsync="OnSubmit" OnCancelAsync="OnCancel" />
+    <ChallengeForm EditChallenge="@Challenge" SubmitLabel="@Loc["Edit"]" CancelLabel="@Loc["Cancel"]" OnSubmitAsync="OnSubmit" OnCancelAsync="OnCancel" />
 }
 else
 {
-    <p class="error">404 - Challenge ID @Id not found.</p>
+    <p class="error">404 - @string.Format(Loc["NotFound"], Id)</p>
 }

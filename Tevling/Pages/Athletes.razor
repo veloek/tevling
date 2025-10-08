@@ -1,17 +1,18 @@
 @page "/athletes"
+@inject IStringLocalizer<Athletes> Loc
 
-<PageTitle>Tevling - Athletes</PageTitle>
+<PageTitle>Tevling - @Loc["Athletes"]</PageTitle>
 
-<h1 class="title mb-5">Athletes</h1>
+<h1 class="title mb-5">@Loc["Athletes"]</h1>
 
 <label class="mb-5">
     <input class="form-check-input me-1" type="checkbox" @bind-value="ShowOnlyFollowing" />
-    Show only following
+    @Loc["ShowOnlyFollowing"]
 </label>
 
 <label class="mb-5">
     <input class="form-check-input me-1" type="checkbox" @bind-value="ShowOnlyFollowers" />
-    Show only followers
+    @Loc["ShowOnlyFollowers"]
 </label>
 
 <div class="athletes d-flex flex-column row-gap-3">
@@ -25,5 +26,5 @@
 </div>
 
 <InfiniteScrollingMarker LoadMore="LoadMore" HasMore="HasMore">
-    <LoadingTemplate>Loading...</LoadingTemplate>
+    <LoadingTemplate>@Loc["Loading"]...</LoadingTemplate>
 </InfiniteScrollingMarker>

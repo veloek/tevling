@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>2.0</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <!--Data-->
+    <data name="Edit" xml:space="preserve">
+        <value>Endre</value>
+    </data>
+    <data name="Delete" xml:space="preserve">
+        <value>Slett</value>
+    </data>
+    <data name="ScorePlaceholder" xml:space="preserve">
+        <value>DU! (hvis du blir med)</value>
+    </data>
+    <data name="ChallengeEnded" xml:space="preserve">
+        <value>&lt;span&gt;Konkurransen er over! &lt;/span&gt;&lt;span&gt;Gratulerer til alle påmeldte 👏&lt;/span&gt;&lt;span&gt;Nå er det tid for å trekke en vinner 🏆&lt;/span&gt;</value>
+    </data>
+    <data name="DrawWinner" xml:space="preserve">
+        <value>Trekk vinner</value>
+    </data>
+    <data name="AskDraw" xml:space="preserve">
+        <value>Spør {0} om å utføre trekking!</value>
+    </data>
+    <data name="ChallengeWinner" xml:space="preserve">
+        <value>Konkurransen er over, med {0} som vinner! 🏆</value>
+    </data>
+    <data name="Distance" xml:space="preserve">
+        <value>Distanse</value>
+    </data>
+    <data name="Time" xml:space="preserve">
+        <value>Tid</value>
+    </data>
+    <data name="Elevation" xml:space="preserve">
+        <value>Stigning</value>
+    </data>
+    <data name="Participant" xml:space="preserve">
+        <value>utøver</value>
+    </data>
+    <data name="Participants" xml:space="preserve">
+        <value>utøvere</value>
+    </data>
+    <data name="AllActivities" xml:space="preserve">
+        <value>Alle aktiviteter</value>
+    </data>
+    <data name="Join" xml:space="preserve">
+        <value>Bli med</value>
+    </data>
+    <data name="Leave" xml:space="preserve">
+        <value>Forlat</value>
+    </data>
+    <data name="DeleteChallenge" xml:space="preserve">
+        <value>Slett konkurranse</value>
+    </data>
+    <data name="ConfirmDelete" xml:space="preserve">
+        <value>Er du sikker på at du vil slette {0}?</value>
+    </data>
+    <data name="Cancel" xml:space="preserve">
+        <value>Avbryt</value>
+    </data>
+    <data name="Close" xml:space="preserve">
+        <value>Lukk</value>
+    </data>
+    <data name="Loading" xml:space="preserve">
+        <value>Laster</value>
+    </data>
+    <data name="Spinning" xml:space="preserve">
+        <value>Snurrer hjulet</value>
+    </data>
+    <data name="DrawWinner_title" xml:space="preserve">
+        <value>Trekk vinner for {0}?</value>
+    </data>
+    <data name="DrawWinner_body" xml:space="preserve">
+        <value>Vinneren vil bli trukket basert på deltakelse. Hver enhet av deltakelse gir et 'lodd' i lotteriet, noe som sørger for at alle utøvere har sjans til å vinne, uavhenigig av deres totale bidrag.</value>
+    </data>
+    <data name="TheWinner_title" xml:space="preserve">
+        <value>Vinneren av {0} er...</value>
+    </data>
+    <data name="TheWinner_body" xml:space="preserve">
+        <value>Godt jobba! Gratulerer med seieren! 🎉</value>
+    </data>
+    <data name="SpinLottery" xml:space="preserve">
+        <value>Snurr lotteriet</value>
+    </data>
+</root>

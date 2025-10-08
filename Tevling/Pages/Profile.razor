@@ -1,11 +1,11 @@
 @page "/profile"
 
-<h1 class="title mb-5">Profile</h1>
+<h1 class="title mb-5">@Loc["Profile"]</h1>
 <div class="profile d-flex flex-row column-gap-2 mb-5">
     <Avatar Url="@Athlete.ImgUrl" Size="50"/>
     <div class="d-flex flex-column">
         <span class="profile-name">@Athlete.Name</span>
-        <span class="member-since">Member since @CreatedTime</span>
+        <span class="member-since">@string.Format(Loc["MemberSince"], @CreatedTime)</span>
     </div>
 </div>
 
@@ -15,7 +15,7 @@
         @if (Athlete.PendingFollowers?.Count > 0 && Athlete.PendingFollowers is not null)
         {
             <div class="follow-requests">
-                <h2 class="mb-3">Follow Requests</h2>
+                <h2 class="mb-3">@Loc["FollowRequests"]</h2>
                 <div class="d-flex flex-column row-gap-3">
                     @foreach (Athlete? pendingFollower in Athlete.PendingFollowers)
                     {
@@ -32,12 +32,12 @@
                 </div>
             </div>
         }
-        
+
         <div class="followers">
-            <h2 class="mb-3">Followers</h2>
+            <h2 class="mb-3">@Loc["Followers"]</h2>
             @if (Athlete.Followers?.Count == 0 || Athlete.Followers is null)
             {
-                <span>You currently have no followers 😕</span>
+                <span>@Loc["NoFollowers"]</span>
             }
             else
             {
@@ -57,10 +57,10 @@
         </div>
 
         <div class="following mb-5">
-            <h2 class="mb-3">Following</h2>
+            <h2 class="mb-3">@Loc["Following"]</h2>
             @if ((Athlete.Following?.Count == 0 || Athlete.Following is null) && (Athlete.PendingFollowing?.Count == 0 || Athlete.PendingFollowing is null))
             {
-                <span>You're not following anyone 😕</span>
+                <span>@Loc["NoFollowings"]</span>
             }
             else
             {
@@ -92,21 +92,21 @@
     </div>
     <div class="profile-actions mb-5">
         <div class="d-flex flex-column row-gap-3">
-            <h4 class="mt-4">Import activities from Strava</h4>
-            <span>Import last 30 days of activities to get started! <br/> (This can only be done once)</span>
+            <h4 class="mt-4">@Loc["Import_title"]</h4>
+            <span>@(new MarkupString(Loc["Import_body"]))</span>
             <button class="btn btn-primary" @onclick="Import" disabled="@(Importing || Athlete.HasImportedActivities)">
                 <i class="bi bi-box-arrow-in-down me-1" aria-hidden="true"></i>
                 @if (Athlete.HasImportedActivities)
                 {
-                    <text>Import complete</text>
+                    <text>@Loc["ImportComplete"]</text>
                 }
                 else if (Importing)
                 {
-                    <text>Importing...</text>
+                    <text>@Loc["Importing"]...</text>
                 }
                 else
                 {
-                    <text>Import activities</text>
+                    <text>@Loc["ImportActivities"]</text>
                 }
             </button>
             @if (!string.IsNullOrEmpty(ImportResult))
@@ -116,20 +116,18 @@
         </div>
 
         <div class="d-flex flex-column row-gap-2">
-            <h4 class="mt-4">Sign out</h4>
-            <span>If using a public/shared computer, please remember to sign out.</span>
-            <a class="btn btn-secondary mt-1" href="/auth/logout"><i class="bi bi-box-arrow-right me-1"
-                                                                     aria-hidden="true"></i>Sign out</a>
+            <h4 class="mt-4">@Loc["Signout_title"]</h4>
+            <span>@Loc["Signout_body"]</span>
+            <a class="btn btn-secondary mt-1" href="/auth/logout">
+                <i class="bi bi-box-arrow-right me-1" aria-hidden="true"></i>@Loc["SignOut"]
+            </a>
         </div>
 
         <div class="d-flex flex-column row-gap-2">
-            <h4 class="mt-4">Delete account</h4>
-            <span class="text-danger">
-                Delete user account and deauthorize application. All data will be
-                removed.<br/>NB! This cannot be undone!
-            </span>
+            <h4 class="mt-4">@Loc["DeleteAccount_title"]</h4>
+            <span class="text-danger">@(new MarkupString(Loc["DeleteAccount_body"]))</span>
             <a class="btn btn-danger mt-1" data-bs-toggle="modal" data-bs-target="#deleteAccount">
-                <i class="bi bi-trash-fill me-1" aria-hidden="true"></i>Forget me
+                <i class="bi bi-trash-fill me-1" aria-hidden="true"></i>@Loc["ForgetMe"]
             </a>
         </div>
     </div>
@@ -138,15 +136,14 @@
 
 <Modal Id="deleteAccount" Size="sm">
     <HeaderContent>
-        <span>Delete account</span>
+        <span>@Loc["DeleteAccount_title"]</span>
     </HeaderContent>
     <BodyContent>
         <i class="bi bi-trash delete-account-modal-icon" aria-hidden="true"></i>
-        <span class="text-center delete-account-modal-text">Are you sure you want to delete your Tevling account?</span>
+        <span class="text-center delete-account-modal-text">@Loc["DeleteAccount_confirm"]</span>
     </BodyContent>
     <FooterContent>
-        <a class="btn btn-danger mt-1 delete-account-modal-button" href="/auth/logout?deauthorize=true">Delete
-            account</a>
-        <button class="btn btn-secondary mt-1 delete-account-modal-button" data-bs-dismiss="modal">Cancel</button>
+        <a class="btn btn-danger mt-1 delete-account-modal-button" href="/auth/logout?deauthorize=true">@Loc["DeleteAccount"]</a>
+        <button class="btn btn-secondary mt-1 delete-account-modal-button" data-bs-dismiss="modal">@Loc["Cancel"]</button>
     </FooterContent>
 </Modal>

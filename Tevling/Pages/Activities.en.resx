@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>2.0</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <!--Data-->
+    <data name="Activities" xml:space="preserve">
+        <value>Activities</value>
+    </data>
+    <data name="Today" xml:space="preserve">
+        <value>Today</value>
+    </data>
+    <data name="Yesterday" xml:space="preserve">
+        <value>Yesterday</value>
+    </data>
+    <data name="ThisWeek" xml:space="preserve">
+        <value>This week</value>
+    </data>
+    <data name="LastWeek" xml:space="preserve">
+        <value>Last week</value>
+    </data>
+    <data name="ThisMonth" xml:space="preserve">
+        <value>This month</value>
+    </data>
+    <data name="LastMonth" xml:space="preserve">
+        <value>Last month</value>
+    </data>
+    <data name="ThisYear" xml:space="preserve">
+        <value>This year</value>
+    </data>
+    <data name="Older" xml:space="preserve">
+        <value>Older</value>
+    </data>
+    <data name="Welcome" xml:space="preserve">
+        <value>Welcome</value>
+    </data>
+    <data name="NoActivitiesYet" xml:space="preserve">
+        <value>There are no activities to see here yet. Go to your &lt;a href="profile"&gt;profile&lt;/a&gt; and import some activities from Strava and start following some &lt;a href="athletes"&gt;athletes&lt;/a&gt;.</value>
+    </data>
+    <data name="Loading" xml:space="preserve">
+        <value>Loading</value>
+    </data>
+    <data name="Filters" xml:space="preserve">
+        <value>Filters</value>
+    </data>
+    <data name="ShowOnlyMy" xml:space="preserve">
+        <value>Show only my activities</value>
+    </data>
+</root>
