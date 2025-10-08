@@ -27,9 +27,10 @@
   }
 
   .unfollow-button-text,
+  .unfollow-button-text-hover,
   .unfollow-button:hover::after,
   .follow-button-text {
-    display: none;
+    display: none !important;
   }
 }
 
@@ -71,12 +72,16 @@
   content: "\F770";
 }
 
+.unfollow-button .unfollow-button-text-hover {
+  display: none;
+}
+
 .unfollow-button:hover .unfollow-button-text {
   display: none;
 }
 
-.unfollow-button:hover::after {
-  content: "Unfollow";
+.unfollow-button:hover .unfollow-button-text-hover {
+  display: inline;
 }
 
 .follow-button:hover .bi-heart::before {
