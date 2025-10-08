@@ -118,6 +118,8 @@ public class StravaController(
         [FromQuery] string? host,
         CancellationToken ct)
     {
+        logger.LogInformation("host='{Host}'", host ?? "n/a");
+
         // To make sure we set the cookie on the correct domain, we check
         // that the host parameter matches the current request.
         if (HostIsWhitelisted(host) && RedirectIfDifferentHost(host, out RedirectResult? redirect))
@@ -155,12 +157,18 @@ public class StravaController(
 
         string[] hostParts = host.Split(':');
 
-        return cultureByHost.Value.ContainsKey(hostParts[0]);
+        bool isWhitelisted = cultureByHost.Value.ContainsKey(hostParts[0]);
+
+        logger.LogInformation("isWhitelisted=" + isWhitelisted);
+
+        return isWhitelisted;
     }
 
     private bool RedirectIfDifferentHost(string host, [NotNullWhen(true)] out RedirectResult? redirect)
     {
         HttpContext? context = httpContextAccessor.HttpContext;
+
+        logger.LogInformation("context.Request.Host='{Host}'", context?.Request.Host.ToString() ?? "n/a");
 
         if (context is null || host == context.Request.Host.ToString())
         {
@@ -170,11 +178,15 @@ public class StravaController(
 
         UriBuilder uriBuilder = new(context.Request.GetDisplayUrl());
 
+        logger.LogInformation("context.Request.GetDisplayUrl()='{Url}'", context.Request.GetDisplayUrl());
+
         string[] hostParts = host.Split(':');
         uriBuilder.Host = hostParts[0];
 
         if (hostParts.Length > 1 && int.TryParse(hostParts[1], out int port))
             uriBuilder.Port = port;
+
+        logger.LogInformation("uriBuilder='{Url}'", uriBuilder.ToString());
 
         redirect = Redirect(uriBuilder.ToString());
         return true;
