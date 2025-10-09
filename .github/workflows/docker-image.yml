@@ -1,4 +1,4 @@
-name: Docker Image CI
+name: Run tests and push Docker image
 
 on:
   workflow_dispatch: {}
@@ -22,6 +22,20 @@ jobs:
         ref: ${{ github.ref_name }}
         fetch-depth: 0
         fetch-tags: true
+
+    - name: Setup dotnet 9.x
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '9.x'
+
+    - name: Restore dependencies
+      run: dotnet restore
+
+    - name: Build
+      run: dotnet build --no-restore
+
+    - name: Run tests
+      run: dotnet test --no-build
 
     - name: Get APP_VERSION
       id: get_version
