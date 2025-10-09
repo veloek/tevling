@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Data.Common;
 using System.Linq;
 using Microsoft.AspNetCore.Hosting;
@@ -6,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Tevling.Clients;
@@ -15,14 +17,21 @@ namespace Tevling.Integration;
 
 public class TevlingWebApplicationFactory : WebApplicationFactory<Program>
 {
+    public const string WhitelistedHost = "test.tld";
+
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
-        builder.ConfigureTestServices(services =>
-        {
-            ReplaceDbContext(services);
-        });
+        builder.ConfigureTestServices(ReplaceDbContext);
 
         builder.UseEnvironment(Environments.Development);
+
+        builder.ConfigureAppConfiguration(config =>
+        {
+            config.AddInMemoryCollection(new Dictionary<string, string?>()
+            {
+                [$"CultureByHost:{WhitelistedHost}"] = "en"
+            });
+        });
     }
 
     public WebApplicationFactory<Program> WithStravaClientHandler(Action<StravaClientHandler> configureHandler)
