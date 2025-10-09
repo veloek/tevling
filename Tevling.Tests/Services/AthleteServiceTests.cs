@@ -209,12 +209,24 @@ public class AthleteServiceTests
             TestContext.Current.CancellationToken);
 
         AthleteService sut = CreateSut(dataContextFactory);
+
         Athlete? follower = await sut.GetAthleteByIdAsync(followerId, TestContext.Current.CancellationToken);
         follower.ShouldNotBeNull();
         follower.Following.ShouldBeEmpty();
 
+        Athlete? followee = await sut.GetAthleteByIdAsync(followeeId, TestContext.Current.CancellationToken);
+        followee.ShouldNotBeNull();
+        followee.Followers.ShouldBeEmpty();
+
         follower = await sut.ToggleFollowingAsync(follower, followeeId, TestContext.Current.CancellationToken);
+        followee = await sut.AcceptFollowerAsync(followee, followerId, TestContext.Current.CancellationToken);
+
+        // Get updated athelete
+        follower = await sut.GetAthleteByIdAsync(followerId, TestContext.Current.CancellationToken);
+
+        follower.ShouldNotBeNull();
         follower.Following.ShouldNotBeEmpty();
+        followee.Followers.ShouldNotBeEmpty();
     }
 
     [Fact]
