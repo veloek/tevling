@@ -56,16 +56,16 @@
                 @foreach (Stats stats in Distances)
                 {
                     <tr>
-                        <td data-label="Activity">
+                        <td data-label="@Loc["Activity"]">
                             @stats.Type
                         </td>
-                        <td data-label="Traversed">
+                        <td data-label="@Loc["Traversed"]">
                             @stats.LastMonthsTotal km
                         </td>
-                        <td data-label="Averaging">
+                        <td data-label="@Loc["Averaging"]">
                             @stats.LastMonthsAverage km
                         </td>
-                        <td data-label="Current Month">
+                        <td data-label="@Loc["CurrentMonth"]">
                             @Math.Round(stats.ThisMonth, 1) km
                             <b>(@Math.Round(stats.CurrentMonthComparedToAverage(), 1)%</b> @((MarkupString)stats.IncreaseVsDecrease()))
                         </td>
@@ -76,16 +76,16 @@
                 @foreach (Stats stats in Elevations)
                 {
                     <tr>
-                        <td data-label="Activity">
+                        <td data-label="@Loc["Activity"]">
                             @stats.Type
                         </td>
-                        <td data-label="Climbed">
+                        <td data-label="@Loc["Climbed"]">
                             @stats.LastMonthsTotal m
                         </td>
-                        <td data-label="Averaging">
+                        <td data-label="@Loc["Averaging"]">
                             @stats.LastMonthsAverage m
                         </td>
-                        <td data-label="Current Month">
+                        <td data-label="@Loc["CurrentMonth"]">
                             @Math.Round(stats.ThisMonth, 1) m
                             <b>(@Math.Round(stats.CurrentMonthComparedToAverage(), 1)%</b> @((MarkupString)stats.IncreaseVsDecrease()))
                         </td>
@@ -96,16 +96,16 @@
                 @foreach (Stats stats in Durations)
                 {
                     <tr>
-                        <td data-label="Activity">
+                        <td data-label="@Loc["Activity"]">
                             @stats.Type
                         </td>
-                        <td data-label="Spent">
+                        <td data-label="@Loc["Spent"]">
                             @stats.LastMonthsTotal @Loc["h"]
                         </td>
-                        <td data-label="Averaging">
+                        <td data-label="@Loc["Averaging"]">
                             @stats.LastMonthsAverage @Loc["h"]
                         </td>
-                        <td data-label="Current Month">
+                        <td data-label="@Loc["CurrentMonth"]">
                             @Math.Round(stats.ThisMonth, 1) @Loc["h"]
                             <b>(@Math.Round(stats.CurrentMonthComparedToAverage(), 1)%</b> @((MarkupString)stats.IncreaseVsDecrease()))
                         </td>
