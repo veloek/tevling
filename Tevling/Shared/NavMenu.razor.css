@@ -58,7 +58,7 @@
   color: white;
 }
 
-@media (min-width: 641px) {
+@media (min-width: 801px) {
   .navbar-toggler {
     display: none;
   }
@@ -73,7 +73,7 @@
   }
 }
 
-@media (max-width: 641px) {
+@media (max-width: 801px) {
   .top-row {
     padding-left: 1rem;
   }

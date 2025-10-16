@@ -1,9 +1,10 @@
 .activity-card {
   display: flex;
   flex-direction: row;
-  border-radius: 1.5rem;
+  border-radius: .5rem;
   width: 34rem;
-  box-shadow: 0 4px 4px 0 rgba(0, 0, 0, 0.25);
+  max-width: 100%;
+  box-shadow: 2px 2px 5px 0 rgba(0, 0, 0, 0.15);
   transition: box-shadow 0.2s, max-height 1s ease-in-out;
   column-gap: 1em;
   margin-bottom: 1rem;
@@ -17,7 +18,7 @@
 
 @media (max-width: 500px) {
   .activity-card {
-    width: 21rem;
+    min-width: 21rem;
   }
 
   .activity-time,

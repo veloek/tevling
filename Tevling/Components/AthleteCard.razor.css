@@ -1,16 +1,17 @@
 .athlete-card {
   display: flex;
   flex-direction: row;
-  border-radius: 1rem;
+  border-radius: .5rem;
   width: 44rem;
-  box-shadow: 0 4px 4px 0 rgba(0, 0, 0, 0.25);
+  max-width: 100%;
+  box-shadow: 2px 2px 5px 0 rgba(0, 0, 0, 0.15);
   transition: box-shadow 0.2s, max-height 1s ease-in-out;
   column-gap: 1em;
 }
 
 @media (max-width: 500px) {
   .athlete-card {
-    max-width: 22rem;
+    min-width: 21rem;
   }
 
   .athlete-name {
@@ -35,18 +36,18 @@
 }
 
 .athlete-name {
-  width: 15rem;
+  max-width: 15rem;
 }
 
 .strava-link {
   font-size: smaller;
   font-weight: 300;
-  width: 7rem;
+  max-width: 7rem;
 }
 
 .unfollow-button,
 .follow-button {
-  width: 8rem;
+  max-width: 8rem;
 }
 
 .page[data-bs-theme="dark"] .athlete-card {
