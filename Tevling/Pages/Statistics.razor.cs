@@ -31,16 +31,16 @@ public partial class Statistics : ComponentBase, IAsyncDisposable
             return 100 - difference;
         }
 
-        public string IncreaseVsDecrease()
+        public string IncreaseVsDecrease(string increase, string decrease)
         {
             if (LastMonthsAverage == 0)
             {
-                return "<span style='color:green'>increase</span>";
+                return "<span style='color:green'>"+ increase +"</span>";
             }
 
             return Math.Round(ThisMonth, 1) / LastMonthsAverage > 1
-                ? "<span style='color:green'>increase</span>"
-                : "<span style='color:red'>decrease</span>";
+                ? "<span style='color:green'>"+ increase +"</span>"
+                : "<span style='color:red'>"+ decrease +"</span>";
         }
     }
 

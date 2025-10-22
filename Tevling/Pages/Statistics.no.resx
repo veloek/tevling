@@ -64,4 +64,10 @@
     <data name="TotalTime" xml:space="preserve">
         <value>Total tid</value>
     </data>
+    <data name="Increase" xml:space="preserve">
+        <value>Økning</value>
+    </data>
+    <data name="Decrease" xml:space="preserve">
+        <value>Reduksjon</value>
+    </data>
 </root>

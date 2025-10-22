@@ -67,7 +67,7 @@
                         </td>
                         <td data-label="@Loc["CurrentMonth"]">
                             @Math.Round(stats.ThisMonth, 1) km
-                            <b>(@Math.Round(stats.CurrentMonthComparedToAverage(), 1)%</b> @((MarkupString)stats.IncreaseVsDecrease()))
+                            <b>(@Math.Round(stats.CurrentMonthComparedToAverage(), 1)%</b> @((MarkupString)stats.IncreaseVsDecrease(@Loc["Increase"], @Loc["Decrease"])))
                         </td>
                     </tr>
                 }
@@ -87,7 +87,7 @@
                         </td>
                         <td data-label="@Loc["CurrentMonth"]">
                             @Math.Round(stats.ThisMonth, 1) m
-                            <b>(@Math.Round(stats.CurrentMonthComparedToAverage(), 1)%</b> @((MarkupString)stats.IncreaseVsDecrease()))
+                            <b>(@Math.Round(stats.CurrentMonthComparedToAverage(), 1)%</b> @((MarkupString)stats.IncreaseVsDecrease(@Loc["Increase"], @Loc["Decrease"])))
                         </td>
                     </tr>
                 }
@@ -107,7 +107,7 @@
                         </td>
                         <td data-label="@Loc["CurrentMonth"]">
                             @Math.Round(stats.ThisMonth, 1) @Loc["h"]
-                            <b>(@Math.Round(stats.CurrentMonthComparedToAverage(), 1)%</b> @((MarkupString)stats.IncreaseVsDecrease()))
+                            <b>(@Math.Round(stats.CurrentMonthComparedToAverage(), 1)%</b> @((MarkupString)stats.IncreaseVsDecrease(@Loc["Increase"], @Loc["Decrease"])))
                         </td>
                     </tr>
                 }
