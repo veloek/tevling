@@ -70,4 +70,13 @@
     <data name="Decrease" xml:space="preserve">
         <value>Reduksjon</value>
     </data>
+    <data name="Weeks" xml:space="preserve">
+        <value>Uker</value>
+    </data>
+    <data name="TheLastWeeks" xml:space="preserve">
+        <value>De siste &lt;b&gt;{0}&lt;/b&gt; ukene har du</value>
+    </data>
+    <data name="CurrentWeek" xml:space="preserve">
+        <value>Denne uken</value>
+    </data>
 </root>

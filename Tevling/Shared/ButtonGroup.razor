@@ -4,7 +4,7 @@
     @foreach (T item in Items)
     {
         <button type="button"
-                class="@GetButtonCssClass(item)"
+                class="@GetButtonCssClass(item) mb-2"
                 @onclick="() => HandleButtonClick(item)">
             @(DisplayFunc?.Invoke(item) ?? item?.ToString())
         </button>
