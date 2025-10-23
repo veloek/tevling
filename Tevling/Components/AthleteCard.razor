@@ -8,41 +8,43 @@
             {
                 <Avatar Url="@Athlete.ImgUrl" Size="30" />
             }
-            <span>@Athlete.Name</span>
+            <NavLink href="@($"/athletes/{Athlete.Id}")"><span>@Athlete.Name</span></NavLink>
         </div>
-
-        @if (IsFollowing)
+        @if (!IsYou)
         {
-            <div class="unfollow-button" @onclick="() => FollowingStatusChanged.InvokeAsync()">
-                <i class="bi bi-heart-fill" aria-hidden="true"></i>
-                <span class="unfollow-button-text">
-                    @Loc["Following"]
-                </span>
-                <span class="unfollow-button-text-hover">
-                    @Loc["Unfollow"]
-                </span>
-            </div>
-        }
-        else if (IsPendingFollowing)
-        {
-            <div class="unfollow-button" @onclick="() => FollowingStatusChanged.InvokeAsync()">
-                <i class="bi bi-heart-half" aria-hidden="true"></i>
-                <span class="unfollow-button-text">
-                    @Loc["Pending"]
-                </span>
-                <span class="unfollow-button-text-hover">
-                    @Loc["Cancel"]
-                </span>
-            </div>
-        }
-        else
-        {
-            <div class="follow-button" @onclick="() => FollowingStatusChanged.InvokeAsync()">
-                <i class="bi bi-heart" aria-hidden="true"></i>
-                <span class="follow-button-text">
-                    @Loc["Follow"]
-                </span>
-            </div>
+            @if (IsFollowing)
+            {
+                <div class="unfollow-button" @onclick="() => FollowingStatusChanged.InvokeAsync()">
+                    <i class="bi bi-heart-fill" aria-hidden="true"></i>
+                    <span class="unfollow-button-text">
+                        @Loc["Following"]
+                    </span>
+                    <span class="unfollow-button-text-hover">
+                        @Loc["Unfollow"]
+                    </span>
+                </div>
+            }
+            else if (IsPendingFollowing)
+            {
+                <div class="unfollow-button" @onclick="() => FollowingStatusChanged.InvokeAsync()">
+                    <i class="bi bi-heart-half" aria-hidden="true"></i>
+                    <span class="unfollow-button-text">
+                        @Loc["Pending"]
+                    </span>
+                    <span class="unfollow-button-text-hover">
+                        @Loc["Cancel"]
+                    </span>
+                </div>
+            }
+            else
+            {
+                <div class="follow-button" @onclick="() => FollowingStatusChanged.InvokeAsync()">
+                    <i class="bi bi-heart" aria-hidden="true"></i>
+                    <span class="follow-button-text">
+                        @Loc["Follow"]
+                    </span>
+                </div>
+            } 
         }
 
         @if (IsFollower)

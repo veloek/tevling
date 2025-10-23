@@ -1,0 +1,72 @@
+@page "/athletes/{AthleteToViewId:int}"
+<h1 class="title mb-5">@Loc["Profile"]</h1>
+<div class="profile d-flex flex-row column-gap-2 mb-5">
+    <Avatar Url="@AthleteToView.ImgUrl" Size="50"/>
+    <div class="d-flex flex-column">
+        <span class="profile-name">@AthleteToView.Name</span>
+        <span class="member-since">@string.Format(Loc["MemberSince"], @CreatedTime)</span>
+    </div>
+</div>
+
+<div class="d-flex flex-row flex-wrap">
+    <div class="profile-info d-flex flex-column row-gap-5">
+        <div class="following mb-3">
+            <h2 class="mb-3">@Loc["Following"]</h2>
+
+            @if (Athlete.IsFollowing(AthleteToViewId) || Athlete.Id == AthleteToViewId)
+            {
+                @if (AthleteToView.Following?.Count == 0 || AthleteToView.Following is null)
+                {
+                    <span>@AthleteToView.Name does not follow anybody</span>
+                }
+                else
+                {
+                    @foreach (Athlete? following in AthleteToView.Following)
+                    {
+                        <AthleteCard Athlete="@following"
+                                     IsFollowing="true"
+                                     FollowingStatusChanged="() => ToggleFollowing(following.Id)"/>
+                    }
+                }
+            }
+            else
+            {
+                <span>You must follow @AthleteToView.Name to see their followers</span>
+            }
+
+
+        </div>
+
+        <div class="followers">
+            <h2 class="mb-3">@Loc["Followers"]</h2>
+            @if (Athlete.IsFollowing(AthleteToViewId) || Athlete.Id == AthleteToViewId)
+            {
+                @if (AthleteToView.Followers?.Count == 0 || AthleteToView.Followers is null)
+                {
+                    <span>@Loc["NoFollowers"]</span>
+                }
+                else
+                {
+                    <div class="d-flex flex-column row-gap-3">
+
+                        @foreach (Athlete? follower in AthleteToView.Followers)
+                        {
+                            <AthleteCard Athlete="@follower"
+                                         IsFollowing="Athlete.IsFollowing(follower.Id)"
+                                         FollowingStatusChanged="() => ToggleFollowing(follower.Id)"
+                                         IsFollower="@Athlete.IsFollower(follower.Id)"
+                                         IsPendingFollowing="@Athlete.IsPendingFollowing(follower.Id)"
+                                         IsYou="Athlete.Id == follower.Id"
+                                         RemoveFollower="() => RemoveFollower(follower.Id)"/>
+                        }
+                    </div>
+                }
+            }
+            else
+            {
+                <span>You have to follow @AthleteToView.Name to see their followers</span>
+            }
+        </div>
+    </div>
+</div>
+
