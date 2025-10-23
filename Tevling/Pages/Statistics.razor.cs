@@ -92,8 +92,10 @@ public partial class Statistics : ComponentBase, IAsyncDisposable
                             }
 
                             int week = ISOWeek.GetWeekOfYear(now.AddDays(m * 7).DateTime);
+                            int weekYear = now.AddDays(m * 7).Year;
                             return g
-                                .Where(a => ISOWeek.GetWeekOfYear(a.Details.StartDate.DateTime) == week)
+                                .Where(a => ISOWeek.GetWeekOfYear(a.Details.StartDate.DateTime) == week &&
+                                    a.Details.StartDate.Year == weekYear)
                                 .Sum(selector);
                         })
                         .ToArray()
