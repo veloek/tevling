@@ -26,19 +26,19 @@
         <value>Followers</value>
     </data>
     <data name="NoFollowers" xml:space="preserve">
-        <value>You currently have no followers 😕</value>
+        <value>This user has no followers</value>
     </data>
     <data name="Following" xml:space="preserve">
         <value>Following</value>
     </data>
     <data name="NoFollowings" xml:space="preserve">
-        <value>You're not following anyone 😕</value>
+        <value>This user does not follow anyone</value>
     </data>
     <data name="ActiveChallenges" xml:space="preserve">
-        <value>Your active challenges</value>
+        <value>Active challenges</value>
     </data>
     <data name="NoActiveChallenges" xml:space="preserve">
-        <value>You have no active challenges, how about joining one? 😌</value>
+        <value>This user has no active challenges</value>
     </data>
     <data name="First" xml:space="preserve">
         <value>st</value>
@@ -51,5 +51,8 @@
     </data>
     <data name="Nth" xml:space="preserve">
         <value>th</value>
+    </data>
+    <data name="PublicProfile" xml:space="preserve">
+        <value>Public profile</value>
     </data>
 </root>

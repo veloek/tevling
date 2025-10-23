@@ -26,19 +26,19 @@
         <value>Følgere</value>
     </data>
     <data name="NoFollowers" xml:space="preserve">
-        <value>Du har for tiden ingen følgere 😕</value>
+        <value>Denne brukeren har ingen følgere</value>
     </data>
     <data name="Following" xml:space="preserve">
         <value>Fulgte</value>
     </data>
     <data name="NoFollowings" xml:space="preserve">
-        <value>Du følger ingen 😕</value>
+        <value>Denne brukeren følger ingen</value>
     </data>
     <data name="ActiveChallenges" xml:space="preserve">
-        <value>Dine aktive konkurranser</value>
+        <value>Aktive konkurranser</value>
     </data>
     <data name="NoActiveChallenges" xml:space="preserve">
-        <value>Du har ingen aktive konkurranser, hva med å melde deg på en? 😌</value>
+        <value>Denne brukeren har ingen aktive konkurranser.</value>
     </data>
     <data name="First" xml:space="preserve">
         <value>.</value>
@@ -51,5 +51,8 @@
     </data>
     <data name="Nth" xml:space="preserve">
         <value>.</value>
+    </data>
+    <data name="PublicProfile" xml:space="preserve">
+        <value>Offentlig profil</value>
     </data>
 </root>
