@@ -18,7 +18,7 @@ public partial class PublicProfile : ComponentBase
     private Athlete Athlete { get; set; } = default!;
     private Athlete AthleteToView { get; set; } = default!;
     private string? CreatedTime;
-    private Dictionary<Challenge, (string, string)> ActiveChallenges { get; } = [];
+    private Dictionary<string, (string, string)> ActiveChallenges { get; } = [];
 
 
     protected override async Task OnInitializedAsync()
@@ -34,6 +34,7 @@ public partial class PublicProfile : ComponentBase
             throw new InvalidOperationException($"Athlete with ID {AthleteToViewId} not found");
         DateTimeOffset browserTime = await BrowserTime.ConvertToLocal(AthleteToView.Created);
         CreatedTime = browserTime.ToString("d");
+        ActiveChallenges.Clear();
         await FetchActiveChallenges();
     }
     
@@ -61,7 +62,7 @@ public partial class PublicProfile : ComponentBase
 
             string placementString = GetOrdinal(placement);
 
-            ActiveChallenges[challenge] = (placementString, score.Score);
+            ActiveChallenges[challenge.Title] = (placementString, score.Score);
         }
     }
     

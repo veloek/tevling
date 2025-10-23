@@ -78,10 +78,10 @@
             }
             else
             {
-                @foreach (KeyValuePair<Challenge, (string, string)> challenge in ActiveChallenges)
+                @foreach (KeyValuePair<string, (string, string)> challenge in ActiveChallenges)
                 {
                     <JoinedChallengeCard
-                        Title="@challenge.Key.Title"
+                        Title="@challenge.Key"
                         Placement="@challenge.Value.Item1"
                         Score="@challenge.Value.Item2"
                     />
