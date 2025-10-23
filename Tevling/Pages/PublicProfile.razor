@@ -21,12 +21,15 @@
                 }
                 else
                 {
-                    @foreach (Athlete? following in AthleteToView.Following)
-                    {
-                        <AthleteCard Athlete="@following"
-                                     IsFollowing="true"
-                                     FollowingStatusChanged="() => ToggleFollowing(following.Id)"/>
-                    }
+                    <div class="d-flex flex-column row-gap-3">
+                        @foreach (Athlete? following in AthleteToView.Following)
+                        {
+                            <AthleteCard Athlete="@following"
+                                         IsFollowing="true"
+                                         IsYou="Athlete.Id == following.Id"
+                                         FollowingStatusChanged="() => ToggleFollowing(following.Id)"/>
+                        }
+                    </div>
                 }
             }
             else
