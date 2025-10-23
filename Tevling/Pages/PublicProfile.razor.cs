@@ -5,7 +5,7 @@ namespace Tevling.Pages;
 public partial class PublicProfile : ComponentBase
 {
     [Inject] private IAuthenticationService AuthenticationService { get; set; } = null!;
-    [Inject] private IStringLocalizer<Profile> Loc { get; set; } = null!;
+    [Inject] private IStringLocalizer<PublicProfile> Loc { get; set; } = null!;
 
     [Inject] private IAthleteService AthleteService { get; set; } = null!;
 
@@ -26,7 +26,6 @@ public partial class PublicProfile : ComponentBase
         Athlete = await AuthenticationService.GetCurrentAthleteAsync();
         AthleteToView = await AthleteService.GetAthleteByIdAsync(AthleteToViewId) ??
             throw new InvalidOperationException($"Athlete with ID {AthleteToViewId} not found");
-        
     }
 
     protected override async Task OnParametersSetAsync()

@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>2.0</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <!--Data-->
+    <data name="Profile" xml:space="preserve">
+        <value>Profil</value>
+    </data>
+    <data name="MemberSince" xml:space="preserve">
+        <value>Medlem siden {0}</value>
+    </data>
+    <data name="FollowRequests" xml:space="preserve">
+        <value>Følgeforespørsler</value>
+    </data>
+    <data name="Followers" xml:space="preserve">
+        <value>Følgere</value>
+    </data>
+    <data name="NoFollowers" xml:space="preserve">
+        <value>Du har for tiden ingen følgere 😕</value>
+    </data>
+    <data name="Following" xml:space="preserve">
+        <value>Fulgte</value>
+    </data>
+    <data name="NoFollowings" xml:space="preserve">
+        <value>Du følger ingen 😕</value>
+    </data>
+    <data name="ActiveChallenges" xml:space="preserve">
+        <value>Dine aktive konkurranser</value>
+    </data>
+    <data name="NoActiveChallenges" xml:space="preserve">
+        <value>Du har ingen aktive konkurranser, hva med å melde deg på en? 😌</value>
+    </data>
+    <data name="First" xml:space="preserve">
+        <value>.</value>
+    </data>
+    <data name="Second" xml:space="preserve">
+        <value>.</value>
+    </data>
+    <data name="Third" xml:space="preserve">
+        <value>.</value>
+    </data>
+    <data name="Nth" xml:space="preserve">
+        <value>.</value>
+    </data>
+</root>
