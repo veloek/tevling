@@ -10,37 +10,7 @@
 
 <div class="d-flex flex-row flex-wrap">
     <div class="profile-info d-flex flex-column row-gap-5">
-        <div class="following mb-3">
-            <h2 class="mb-3">@Loc["Following"]</h2>
-
-            @if (Athlete.IsFollowing(AthleteToViewId) || Athlete.Id == AthleteToViewId)
-            {
-                @if (AthleteToView.Following?.Count == 0 || AthleteToView.Following is null)
-                {
-                    <span>@AthleteToView.Name does not follow anybody</span>
-                }
-                else
-                {
-                    <div class="d-flex flex-column row-gap-3">
-                        @foreach (Athlete? following in AthleteToView.Following)
-                        {
-                            <AthleteCard Athlete="@following"
-                                         IsFollowing="true"
-                                         IsYou="Athlete.Id == following.Id"
-                                         FollowingStatusChanged="() => ToggleFollowing(following.Id)"/>
-                        }
-                    </div>
-                }
-            }
-            else
-            {
-                <span>You must follow @AthleteToView.Name to see their followers</span>
-            }
-
-
-        </div>
-
-        <div class="followers">
+        <div class="followers mb-3">
             <h2 class="mb-3">@Loc["Followers"]</h2>
             @if (Athlete.IsFollowing(AthleteToViewId) || Athlete.Id == AthleteToViewId)
             {
@@ -68,6 +38,53 @@
             else
             {
                 <span>You have to follow @AthleteToView.Name to see their followers</span>
+            }
+        </div>
+
+        <div class="following mb-3">
+            <h2 class="mb-3">@Loc["Following"]</h2>
+
+            @if (Athlete.IsFollowing(AthleteToViewId) || Athlete.Id == AthleteToViewId)
+            {
+                @if (AthleteToView.Following?.Count == 0 || AthleteToView.Following is null)
+                {
+                    <span>@AthleteToView.Name does not follow anybody</span>
+                }
+                else
+                {
+                    <div class="d-flex flex-column row-gap-3">
+                        @foreach (Athlete? following in AthleteToView.Following)
+                        {
+                            <AthleteCard Athlete="@following"
+                                         IsFollowing="true"
+                                         IsYou="Athlete.Id == following.Id"
+                                         FollowingStatusChanged="() => ToggleFollowing(following.Id)"/>
+                        }
+                    </div>
+                }
+            }
+            else
+            {
+                <span>You must follow @AthleteToView.Name to see their followers</span>
+            }
+
+        </div>
+        <div class="active-challenges mb-5">
+            <h3 class="mb-4">@Loc["ActiveChallenges"]</h3>
+            @if (!ActiveChallenges.Any())
+            {
+                <span>@Loc["NoActiveChallenges"]</span>
+            }
+            else
+            {
+                @foreach (KeyValuePair<Challenge, (string, string)> challenge in ActiveChallenges)
+                {
+                    <JoinedChallengeCard
+                        Title="@challenge.Key.Title"
+                        Placement="@challenge.Value.Item1"
+                        Score="@challenge.Value.Item2"
+                    />
+                }
             }
         </div>
     </div>
