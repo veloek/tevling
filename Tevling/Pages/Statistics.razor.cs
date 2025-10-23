@@ -82,21 +82,25 @@ public partial class Statistics : ComponentBase, IAsyncDisposable
                     g => Enumerable.Range(-periodCount + 1, periodCount)
                         .Select(m =>
                         {
-                            if (TimePeriod == TimePeriod.Months)
+                            switch (TimePeriod)
                             {
-                                int month = now.AddMonths(m).Month;
-                                int year = now.AddMonths(m).Year;
-                                return g
-                                    .Where(a => a.Details.StartDate.Month == month && a.Details.StartDate.Year == year)
-                                    .Sum(selector);
+                                case TimePeriod.Months:
+                                    int month = now.AddMonths(m).Month;
+                                    int year = now.AddMonths(m).Year;
+                                    return g
+                                        .Where(a => a.Details.StartDate.Month == month &&
+                                            a.Details.StartDate.Year == year)
+                                        .Sum(selector);
+                                case TimePeriod.Weeks:
+                                    int week = ISOWeek.GetWeekOfYear(now.AddDays(m * 7).DateTime);
+                                    int weekYear = now.AddDays(m * 7).Year;
+                                    return g
+                                        .Where(a => ISOWeek.GetWeekOfYear(a.Details.StartDate.DateTime) == week &&
+                                            a.Details.StartDate.Year == weekYear)
+                                        .Sum(selector);
+                                default:
+                                    throw new Exception("Unknown time period");
                             }
-
-                            int week = ISOWeek.GetWeekOfYear(now.AddDays(m * 7).DateTime);
-                            int weekYear = now.AddDays(m * 7).Year;
-                            return g
-                                .Where(a => ISOWeek.GetWeekOfYear(a.Details.StartDate.DateTime) == week &&
-                                    a.Details.StartDate.Year == weekYear)
-                                .Sum(selector);
                         })
                         .ToArray()
                 )
@@ -149,12 +153,17 @@ public partial class Statistics : ComponentBase, IAsyncDisposable
 
     private async Task UpdateMeasurementData()
     {
+        DateTimeOffset startDate = TimePeriod switch
+        {
+            TimePeriod.Months => DateTimeOffset.Now.AddMonths(-NumberOfPeriodsToReview + 1).ToFirstOfTheMonth(),
+            TimePeriod.Weeks => DateTimeOffset.Now.AddDays(-NumberOfPeriodsToReview * 7),
+            _ => throw new Exception("Unknown time period"),
+        };
+
         ActivityFilter filter = new(
             _athlete.Id,
             false,
-            TimePeriod == TimePeriod.Months
-                ? DateTimeOffset.Now.AddMonths(-NumberOfPeriodsToReview + 1).ToFirstOfTheMonth()
-                : DateTimeOffset.Now.AddDays(-NumberOfPeriodsToReview * 7));
+            startDate);
         _activities = await ActivityService.GetActivitiesAsync(filter);
 
         Distances =
@@ -179,9 +188,12 @@ public partial class Statistics : ComponentBase, IAsyncDisposable
     {
         _module = await Js.InvokeAsync<IJSObjectReference>("import", "./Pages/Statistics.razor.js");
 
-        string[] months = TimePeriod == TimePeriod.Months
-            ? CreateMonthArray(NumberOfPeriodsToReview)
-            : CreateWeekArray(NumberOfPeriodsToReview);
+        string[] months = TimePeriod switch
+        {
+            TimePeriod.Months => CreateMonthArray(NumberOfPeriodsToReview),
+            TimePeriod.Weeks => CreateWeekArray(NumberOfPeriodsToReview),
+            _ => throw new Exception("Unknown time period"),
+        };
 
         await UpdateMeasurementData();
 
