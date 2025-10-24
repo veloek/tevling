@@ -55,4 +55,7 @@
     <data name="PublicProfile" xml:space="preserve">
         <value>Offentlig profil</value>
     </data>
+    <data name="MustFollow" xml:space="preserve">
+        <value>Du må følge {0} for å se brukerens {1}</value>
+    </data>
 </root>

@@ -38,7 +38,7 @@
             }
             else
             {
-                <span>You have to follow @AthleteToView.Name to see their followers</span>
+                <span>@string.Format(Loc["MustFollow"], AthleteToView.Name, Loc["Followers"])</span>
             }
         </div>
 
@@ -66,27 +66,33 @@
             }
             else
             {
-                <span>You must follow @AthleteToView.Name to see their followers</span>
+                <span>@string.Format(Loc["MustFollow"], AthleteToView.Name, Loc["Following"])</span>
             }
 
         </div>
         <div class="active-challenges mb-5">
             <h3 class="mb-4">@Loc["ActiveChallenges"]</h3>
-            @if (!ActiveChallenges.Any())
+        @if (Athlete.IsFollowing(AthleteToViewId) || Athlete.Id == AthleteToViewId)
             {
-                <span>@Loc["NoActiveChallenges"]</span>
-            }
-            else
-            {
-                @foreach (KeyValuePair<string, (string, string)> challenge in ActiveChallenges)
+                @if (!ActiveChallenges.Any())
                 {
-                    <JoinedChallengeCard
-                        Title="@challenge.Key"
-                        Placement="@challenge.Value.Item1"
-                        Score="@challenge.Value.Item2"
-                    />
+                    <span>@Loc["NoActiveChallenges"]</span>
+                }
+                else
+                {
+                    @foreach (KeyValuePair<string, (string, string)> challenge in ActiveChallenges)
+                    {
+                        <JoinedChallengeCard
+                            Title="@challenge.Key"
+                            Placement="@challenge.Value.Item1"
+                            Score="@challenge.Value.Item2" />
+                    }
                 }
             }
+        else
+        {
+            <span>@string.Format(Loc["MustFollow"], AthleteToView.Name, Loc["ActiveChallenges"])</span>
+        }
         </div>
     </div>
 </div>

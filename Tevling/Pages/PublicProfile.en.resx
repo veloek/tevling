@@ -55,4 +55,7 @@
     <data name="PublicProfile" xml:space="preserve">
         <value>Public profile</value>
     </data>
+    <data name="MustFollow" xml:space="preserve">
+        <value>You must follow {0} to see their {1}</value>
+    </data>
 </root>
