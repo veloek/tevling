@@ -18,8 +18,9 @@
             </div>
 
             <div class="activity-card-body d-flex flex-column row-gap-2">
-                <div>
+                <div class="d-flex justify-content-between">
                     <span class="badge bg-primary">@ActivityTypeTranslator.Translate(Activity.Details.Type)</span>
+                    <span class="device-name">@Activity.Details.DeviceName</span>
                 </div>
                 <span class="activity-name">@Activity.Details.Name</span>
                 <span class="activity-description">@Activity.Details.Description</span>
