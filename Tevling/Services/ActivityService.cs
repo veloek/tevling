@@ -253,6 +253,7 @@ public class ActivityService(
             Type = stravaActivity.Type,
             StartDate = stravaActivity.StartDate,
             Manual = stravaActivity.Manual,
+            DeviceName = stravaActivity.DeviceName,
         };
     }
 }
