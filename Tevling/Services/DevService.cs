@@ -34,6 +34,7 @@ public class DevService : IDevService
                 Type = ActivityType.Run,
                 StartDate = DateTimeOffset.UtcNow,
                 Manual = true,
+                DeviceName = "Garmin fēnix 6 Pro"
             };
     }
 }
