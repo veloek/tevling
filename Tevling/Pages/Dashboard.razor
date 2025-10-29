@@ -15,11 +15,11 @@
     {
         @foreach (KeyValuePair<Challenge, (string, string)> challenge in ActiveChallenges)
         {
-            <div class="joined-challenge-card d-flex flex-row mt-2 column-gap-2">
-                <span class="challenge-title">@challenge.Key.Title</span>
-                <span class="challenge-placement">@challenge.Value.Item1</span>
-                <span class="challenge-score">@challenge.Value.Item2</span>
-            </div>
+            <JoinedChallengeCard
+                Title="@challenge.Key.Title"
+                Placement="@challenge.Value.Item1"
+                Score="@challenge.Value.Item2"
+            />
         }
     }
 </div>
@@ -56,7 +56,7 @@
             <AthleteCard Athlete="@athlete"
                          IsFollowing="@Athlete.IsFollowing(athlete.Id)"
                          IsPendingFollowing="@Athlete.IsPendingFollowing(athlete.Id)"
-                         FollowingStatusChanged="() => ToggleFollowing(athlete.Id)" />
+                         FollowingStatusChanged="() => ToggleFollowing(athlete.Id)"/>
         }
     }
 </div>

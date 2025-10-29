@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>2.0</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <!--Data-->
+    <data name="Profile" xml:space="preserve">
+        <value>Profil</value>
+    </data>
+    <data name="MemberSince" xml:space="preserve">
+        <value>Medlem siden {0}</value>
+    </data>
+    <data name="FollowRequests" xml:space="preserve">
+        <value>Følgeforespørsler</value>
+    </data>
+    <data name="Followers" xml:space="preserve">
+        <value>Følgere</value>
+    </data>
+    <data name="NoFollowers" xml:space="preserve">
+        <value>Denne brukeren har ingen følgere</value>
+    </data>
+    <data name="Following" xml:space="preserve">
+        <value>Fulgte</value>
+    </data>
+    <data name="NoFollowings" xml:space="preserve">
+        <value>Denne brukeren følger ingen</value>
+    </data>
+    <data name="ActiveChallenges" xml:space="preserve">
+        <value>Aktive konkurranser</value>
+    </data>
+    <data name="NoActiveChallenges" xml:space="preserve">
+        <value>Denne brukeren har ingen aktive konkurranser.</value>
+    </data>
+    <data name="First" xml:space="preserve">
+        <value>.</value>
+    </data>
+    <data name="Second" xml:space="preserve">
+        <value>.</value>
+    </data>
+    <data name="Third" xml:space="preserve">
+        <value>.</value>
+    </data>
+    <data name="Nth" xml:space="preserve">
+        <value>.</value>
+    </data>
+    <data name="PublicProfile" xml:space="preserve">
+        <value>Offentlig profil</value>
+    </data>
+    <data name="MustFollow" xml:space="preserve">
+        <value>Du må følge {0} for å se brukerens {1}</value>
+    </data>
+    <data name="NotFound" xml:space="preserve">
+        <value>Brukeren med id {0} finnes ikke</value>
+    </data>
+</root>
