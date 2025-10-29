@@ -18,5 +18,6 @@ public class DetailedActivityFaker : Faker<DetailedActivity>
         RuleFor(da => da.Type, f => f.PickRandom<ActivityType>());
         RuleFor(da => da.StartDate, f => f.Date.Past(yearsToGoBack: 1));
         RuleFor(da => da.Manual, f => f.Random.Bool());
+        RuleFor(da => da.DeviceName, f => $"Garmin {f.Vehicle.Model()}");
     }
 }

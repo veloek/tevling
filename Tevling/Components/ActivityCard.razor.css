@@ -54,6 +54,11 @@
   font-size: 0.9rem;
 }
 
+.device-name {
+  text-transform: uppercase;
+  font-size: 0.7rem;
+}
+
 .page[data-bs-theme="dark"] .activity-card {
   background-color: #121417;
 }

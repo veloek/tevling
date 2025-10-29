@@ -14,4 +14,5 @@ public class ActivityDetails
     public ActivityType Type { get; set; }
     public DateTimeOffset StartDate { get; set; }
     public bool Manual { get; set; }
+    public string? DeviceName { get; set; }
 }
