@@ -151,12 +151,19 @@ public partial class Statistics : ComponentBase, IAsyncDisposable
         await DrawChart();
     }
 
+    private static DateTimeOffset GetFirstOfTheWeek(DateTimeOffset date)
+    {
+        DayOfWeek day = date.DayOfWeek;
+        // IsoWeeks Starts on monday, but DayOfWeek starts on sunday
+        return day == DayOfWeek.Sunday ? date.AddDays(-6) : date.AddDays(-(int)day + 1);
+    }
+
     private async Task UpdateMeasurementData()
     {
         DateTimeOffset startDate = TimePeriod switch
         {
             TimePeriod.Months => DateTimeOffset.Now.AddMonths(-NumberOfPeriodsToReview + 1).ToFirstOfTheMonth(),
-            TimePeriod.Weeks => DateTimeOffset.Now.AddDays(-NumberOfPeriodsToReview * 7),
+            TimePeriod.Weeks => GetFirstOfTheWeek(DateTimeOffset.Now.AddDays(-NumberOfPeriodsToReview * 7)),
             _ => throw new Exception("Unknown time period"),
         };
 
