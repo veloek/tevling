@@ -4,8 +4,19 @@
 
 <h1 class="title mb-5">@Loc["Statistics"]</h1>
 
-<label>@Loc["Months"]:</label>
-<InputSelect @bind-Value="@NumberOfMonthsToReview" @oninput="DrawChart" class="mb-2">
+@switch (TimePeriod)
+{
+    case TimePeriod.Months:
+        <label>@Loc["Months"]:</label>
+        break;
+    case TimePeriod.Weeks:
+        <label>@Loc["Weeks"]:</label>
+        break;
+    default:
+        throw new ArgumentOutOfRangeException();
+}
+
+<InputSelect @bind-Value="@NumberOfPeriodsToReview" @oninput="DrawChart" class="mb-2">
     @for (int i = 3; i <= 36; i += 3)
     {
         <option value="@i">@i</option>
@@ -18,12 +29,28 @@
     @bind-SelectedItem="Measurement"
     OnButtonSelected="@DrawChart">
 </ButtonGroup>
+<ButtonGroup
+    Items="Enum.GetValues<TimePeriod>()"
+    DisplayFunc="timePeriod => Loc[timePeriod.ToString()]"
+    T="TimePeriod"
+    @bind-SelectedItem="TimePeriod"
+    OnButtonSelected="@DrawChart">
+</ButtonGroup>
 
 <div class="d-flex flex-wrap p-2 mb-5">
     <canvas id="TheChart"></canvas>
 </div>
-
-<h2>@(new MarkupString(string.Format(Loc["TheLastMonths"], NumberOfMonthsToReview))):</h2>
+@switch (TimePeriod)
+{
+    case TimePeriod.Months:
+        <h2>@(new MarkupString(string.Format(Loc["TheLastMonths"], NumberOfPeriodsToReview))):</h2>
+        break;
+    case TimePeriod.Weeks:
+        <h2>@(new MarkupString(string.Format(Loc["TheLastWeeks"], NumberOfPeriodsToReview))):</h2>
+        break;
+    default:
+        throw new ArgumentOutOfRangeException();
+}
 <div>
     <table style="width: 100%">
         <thead>
@@ -46,7 +73,17 @@
                 }
             </th>
             <th scope="col">@Loc["Averaging"]</th>
-            <th scope="col">@Loc["CurrentMonth"]</th>
+            @switch (TimePeriod)
+            {
+                case TimePeriod.Months:
+                    <th scope="col">@Loc["CurrentMonth"]</th>
+                    break;
+                case TimePeriod.Weeks:
+                    <th scope="col">@Loc["CurrentWeek"]</th>
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
         </tr>
         </thead>
         <tbody>
@@ -60,17 +97,18 @@
                             @stats.Type
                         </td>
                         <td data-label="@Loc["Traversed"]">
-                            @stats.LastMonthsTotal km
+                            @stats.LastTimePeriodTotal km
                         </td>
                         <td data-label="@Loc["Averaging"]">
-                            @stats.LastMonthsAverage km
+                            @stats.LastTimePeriodAverage km
                         </td>
                         <td data-label="@Loc["CurrentMonth"]">
-                            @Math.Round(stats.ThisMonth, 1) km
-                            <b>(@Math.Round(stats.CurrentMonthComparedToAverage(), 1)%</b> @((MarkupString)stats.IncreaseVsDecrease()))
+                            @Math.Round(stats.ThisTimePeriod, 1) km
+                            <b>(@Math.Round(stats.CurrentMonthComparedToAverage(), 1)%</b> @((MarkupString)stats.IncreaseVsDecrease(@Loc["Increase"], @Loc["Decrease"])))
                         </td>
                     </tr>
                 }
+
                 break;
             case ChallengeMeasurement.Elevation:
                 @foreach (Stats stats in Elevations)
@@ -80,17 +118,18 @@
                             @stats.Type
                         </td>
                         <td data-label="@Loc["Climbed"]">
-                            @stats.LastMonthsTotal m
+                            @stats.LastTimePeriodTotal m
                         </td>
                         <td data-label="@Loc["Averaging"]">
-                            @stats.LastMonthsAverage m
+                            @stats.LastTimePeriodAverage m
                         </td>
                         <td data-label="@Loc["CurrentMonth"]">
-                            @Math.Round(stats.ThisMonth, 1) m
-                            <b>(@Math.Round(stats.CurrentMonthComparedToAverage(), 1)%</b> @((MarkupString)stats.IncreaseVsDecrease()))
+                            @Math.Round(stats.ThisTimePeriod, 1) m
+                            <b>(@Math.Round(stats.CurrentMonthComparedToAverage(), 1)%</b> @((MarkupString)stats.IncreaseVsDecrease(@Loc["Increase"], @Loc["Decrease"])))
                         </td>
                     </tr>
                 }
+
                 break;
             case ChallengeMeasurement.Time:
                 @foreach (Stats stats in Durations)
@@ -100,17 +139,18 @@
                             @stats.Type
                         </td>
                         <td data-label="@Loc["Spent"]">
-                            @stats.LastMonthsTotal @Loc["h"]
+                            @stats.LastTimePeriodTotal @Loc["h"]
                         </td>
                         <td data-label="@Loc["Averaging"]">
-                            @stats.LastMonthsAverage @Loc["h"]
+                            @stats.LastTimePeriodAverage @Loc["h"]
                         </td>
                         <td data-label="@Loc["CurrentMonth"]">
-                            @Math.Round(stats.ThisMonth, 1) @Loc["h"]
-                            <b>(@Math.Round(stats.CurrentMonthComparedToAverage(), 1)%</b> @((MarkupString)stats.IncreaseVsDecrease()))
+                            @Math.Round(stats.ThisTimePeriod, 1) @Loc["h"]
+                            <b>(@Math.Round(stats.CurrentMonthComparedToAverage(), 1)%</b> @((MarkupString)stats.IncreaseVsDecrease(@Loc["Increase"], @Loc["Decrease"])))
                         </td>
                     </tr>
                 }
+
                 break;
             default:
                 throw new ArgumentOutOfRangeException();
@@ -122,17 +162,17 @@
                     @switch (Measurement)
                     {
                         case ChallengeMeasurement.Distance:
-                            <span>@Math.Round(Distances.Sum(stats => stats.LastMonthsTotal), 1) km</span>
+                            <span>@Math.Round(Distances.Sum(stats => stats.LastTimePeriodTotal), 1) km</span>
                             break;
                         case ChallengeMeasurement.Elevation:
-                            <span>@Math.Round(Elevations.Sum(stats => stats.LastMonthsTotal), 1) m</span>
+                            <span>@Math.Round(Elevations.Sum(stats => stats.LastTimePeriodTotal), 1) m</span>
                             break;
                         case ChallengeMeasurement.Time:
-                            <span>@Math.Round(Durations.Sum(stats => stats.LastMonthsTotal), 1) @Loc["h"]</span>
+                            <span>@Math.Round(Durations.Sum(stats => stats.LastTimePeriodTotal), 1) @Loc["h"]</span>
                             break;
                         default:
                                 throw new ArgumentOutOfRangeException();
                     }
-        </b></u></h4>
+                </b></u></h4>
     </div>
 </div>

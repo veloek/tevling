@@ -64,4 +64,19 @@
     <data name="TotalTime" xml:space="preserve">
         <value>Total Time</value>
     </data>
+    <data name="Increase" xml:space="preserve">
+        <value>Increase</value>
+    </data>
+    <data name="Decrease" xml:space="preserve">
+        <value>Decrease</value>
+    </data>
+    <data name="Weeks" xml:space="preserve">
+        <value>Weeks</value>
+    </data>
+    <data name="TheLastWeeks" xml:space="preserve">
+        <value>The last &lt;b&gt;{0}&lt;/b&gt; weeks(s) you've</value>
+    </data>
+    <data name="CurrentWeek" xml:space="preserve">
+        <value>Current Week</value>
+    </data>
 </root>

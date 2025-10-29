@@ -1,5 +1,6 @@
 using Microsoft.Extensions.Localization;
 using Microsoft.JSInterop;
+using System.Globalization;
 
 namespace Tevling.Pages;
 
@@ -8,21 +9,21 @@ public partial class Statistics : ComponentBase, IAsyncDisposable
     private record Stats
     {
         public required string Type { get; init; }
-        public required float[] LastMonthsAggregate { get; init; }
-        public double LastMonthsAverage => Math.Round(LastMonthsAggregate.Average(), 1);
-        public double LastMonthsTotal => Math.Round(LastMonthsAggregate.Sum(), 1);
+        public required float[] LastTimePeriodAggregate { get; init; }
+        public double LastTimePeriodAverage => Math.Round(LastTimePeriodAggregate.Average(), 1);
+        public double LastTimePeriodTotal => Math.Round(LastTimePeriodAggregate.Sum(), 1);
 
-        public float ThisMonth => LastMonthsAggregate[^1];
+        public float ThisTimePeriod => LastTimePeriodAggregate[^1];
 
         public double CurrentMonthComparedToAverage()
         {
-            if (LastMonthsAverage == 0)
+            if (LastTimePeriodAverage == 0)
             {
                 return 100;
             }
 
             double difference =
-                100 * (Math.Round(ThisMonth, 1) / LastMonthsAverage);
+                100 * (Math.Round(ThisTimePeriod, 1) / LastTimePeriodAverage);
             if (difference > 100)
             {
                 return difference - 100;
@@ -31,16 +32,16 @@ public partial class Statistics : ComponentBase, IAsyncDisposable
             return 100 - difference;
         }
 
-        public string IncreaseVsDecrease()
+        public string IncreaseVsDecrease(string increase, string decrease)
         {
-            if (LastMonthsAverage == 0)
+            if (LastTimePeriodAverage == 0)
             {
-                return "<span style='color:green'>increase</span>";
+                return "<span style='color:green'>" + increase + "</span>";
             }
 
-            return Math.Round(ThisMonth, 1) / LastMonthsAverage > 1
-                ? "<span style='color:green'>increase</span>"
-                : "<span style='color:red'>decrease</span>";
+            return Math.Round(ThisTimePeriod, 1) / LastTimePeriodAverage > 1
+                ? "<span style='color:green'>" + increase + "</span>"
+                : "<span style='color:red'>" + decrease + "</span>";
         }
     }
 
@@ -55,7 +56,8 @@ public partial class Statistics : ComponentBase, IAsyncDisposable
     private Activity[] _activities = [];
     private IJSObjectReference? _module;
 
-    private int NumberOfMonthsToReview { get; set; } = 3;
+    private TimePeriod TimePeriod { get; set; } = TimePeriod.Months;
+    private int NumberOfPeriodsToReview { get; set; } = 3;
     private ChallengeMeasurement Measurement { get; set; } = ChallengeMeasurement.Distance;
     private IReadOnlyList<Stats> Distances { get; set; } = [];
     private IReadOnlyList<Stats> Elevations { get; set; } = [];
@@ -67,7 +69,7 @@ public partial class Statistics : ComponentBase, IAsyncDisposable
         await UpdateMeasurementData();
     }
 
-    private List<Stats> GetAggregatedMeasurementData(Func<Activity, float> selector, int monthCount = 3)
+    private List<Stats> GetAggregatedMeasurementData(Func<Activity, float> selector, int periodCount = 3)
     {
         DateTimeOffset now = DateTimeOffset.Now;
 
@@ -77,14 +79,28 @@ public partial class Statistics : ComponentBase, IAsyncDisposable
                 .GroupBy(a => ActivityTypeTranslator.Translate(a.Details.Type))
                 .ToDictionary(
                     g => g.Key.ToString(),
-                    g => Enumerable.Range(-monthCount + 1, monthCount)
+                    g => Enumerable.Range(-periodCount + 1, periodCount)
                         .Select(m =>
                         {
-                            int month = now.AddMonths(m).Month;
-                            int year = now.AddMonths(m).Year;
-                            return g
-                                .Where(a => a.Details.StartDate.Month == month && a.Details.StartDate.Year == year)
-                                .Sum(selector);
+                            switch (TimePeriod)
+                            {
+                                case TimePeriod.Months:
+                                    int month = now.AddMonths(m).Month;
+                                    int year = now.AddMonths(m).Year;
+                                    return g
+                                        .Where(a => a.Details.StartDate.Month == month &&
+                                            a.Details.StartDate.Year == year)
+                                        .Sum(selector);
+                                case TimePeriod.Weeks:
+                                    int week = ISOWeek.GetWeekOfYear(now.AddDays(m * 7).DateTime);
+                                    int weekYear = now.AddDays(m * 7).Year;
+                                    return g
+                                        .Where(a => ISOWeek.GetWeekOfYear(a.Details.StartDate.DateTime) == week &&
+                                            a.Details.StartDate.Year == weekYear)
+                                        .Sum(selector);
+                                default:
+                                    throw new Exception("Unknown time period");
+                            }
                         })
                         .ToArray()
                 )
@@ -92,7 +108,7 @@ public partial class Statistics : ComponentBase, IAsyncDisposable
                 .Select(kvp => new Stats
                     {
                         Type = kvp.Key,
-                        LastMonthsAggregate = kvp.Value,
+                        LastTimePeriodAggregate = kvp.Value,
                     }
                 ),
         ];
@@ -108,7 +124,22 @@ public partial class Statistics : ComponentBase, IAsyncDisposable
                     DateTime month = DateTime.Now.AddMonths(-i);
                     return month.ToString(month.Month == 1 ? "MMMM-yy" : "MMMM");
                 })
-                .Reverse()
+                .Reverse(),
+        ];
+    }
+
+    private static string[] CreateWeekArray(int weekCount)
+    {
+        return
+        [
+            .. Enumerable.Range(0, weekCount)
+                .Select(i =>
+                {
+                    DateTime week = DateTime.Now.AddDays(-i * 7);
+
+                    return ISOWeek.GetWeekOfYear(week).ToString();
+                })
+                .Reverse(),
         ];
     }
 
@@ -120,29 +151,43 @@ public partial class Statistics : ComponentBase, IAsyncDisposable
         await DrawChart();
     }
 
+    private static DateTimeOffset GetFirstOfTheWeek(DateTimeOffset date)
+    {
+        DayOfWeek day = date.DayOfWeek;
+        // IsoWeeks Starts on monday, but DayOfWeek starts on sunday
+        return day == DayOfWeek.Sunday ? date.AddDays(-6) : date.AddDays(-(int)day + 1);
+    }
+
     private async Task UpdateMeasurementData()
     {
+        DateTimeOffset startDate = TimePeriod switch
+        {
+            TimePeriod.Months => DateTimeOffset.Now.AddMonths(-NumberOfPeriodsToReview + 1).ToFirstOfTheMonth(),
+            TimePeriod.Weeks => GetFirstOfTheWeek(DateTimeOffset.Now.AddDays(-NumberOfPeriodsToReview * 7)),
+            _ => throw new Exception("Unknown time period"),
+        };
+
         ActivityFilter filter = new(
             _athlete.Id,
             false,
-            DateTimeOffset.Now.AddMonths(-NumberOfMonthsToReview + 1).ToFirstOfTheMonth());
+            startDate);
         _activities = await ActivityService.GetActivitiesAsync(filter);
 
         Distances =
         [
             .. GetAggregatedMeasurementData(
                 a => a.Details.DistanceInMeters / 1000,
-                NumberOfMonthsToReview),
+                NumberOfPeriodsToReview),
         ];
         Elevations =
         [
-            .. GetAggregatedMeasurementData(a => a.Details.TotalElevationGain, NumberOfMonthsToReview),
+            .. GetAggregatedMeasurementData(a => a.Details.TotalElevationGain, NumberOfPeriodsToReview),
         ];
         Durations =
         [
             .. GetAggregatedMeasurementData(
                 a => (float)a.Details.MovingTimeInSeconds / 3600,
-                NumberOfMonthsToReview),
+                NumberOfPeriodsToReview),
         ];
     }
 
@@ -150,7 +195,12 @@ public partial class Statistics : ComponentBase, IAsyncDisposable
     {
         _module = await Js.InvokeAsync<IJSObjectReference>("import", "./Pages/Statistics.razor.js");
 
-        string[] months = CreateMonthArray(NumberOfMonthsToReview);
+        string[] months = TimePeriod switch
+        {
+            TimePeriod.Months => CreateMonthArray(NumberOfPeriodsToReview),
+            TimePeriod.Weeks => CreateWeekArray(NumberOfPeriodsToReview),
+            _ => throw new Exception("Unknown time period"),
+        };
 
         await UpdateMeasurementData();
 
@@ -159,7 +209,7 @@ public partial class Statistics : ComponentBase, IAsyncDisposable
             case ChallengeMeasurement.Distance:
                 await _module.InvokeVoidAsync(
                     "drawChart",
-                    Distances.ToDictionary(stat => stat.Type, stat => stat.LastMonthsAggregate),
+                    Distances.ToDictionary(stat => stat.Type, stat => stat.LastTimePeriodAggregate),
                     months,
                     "TheChart",
                     Loc["TotalDistance"] + " [km]",
@@ -168,7 +218,7 @@ public partial class Statistics : ComponentBase, IAsyncDisposable
             case ChallengeMeasurement.Elevation:
                 await _module.InvokeVoidAsync(
                     "drawChart",
-                    Elevations.ToDictionary(stat => stat.Type, stat => stat.LastMonthsAggregate),
+                    Elevations.ToDictionary(stat => stat.Type, stat => stat.LastTimePeriodAggregate),
                     months,
                     "TheChart",
                     Loc["TotalElevation"] + " [m]",
@@ -177,7 +227,7 @@ public partial class Statistics : ComponentBase, IAsyncDisposable
             case ChallengeMeasurement.Time:
                 await _module.InvokeVoidAsync(
                     "drawChart",
-                    Durations.ToDictionary(stat => stat.Type, stat => stat.LastMonthsAggregate),
+                    Durations.ToDictionary(stat => stat.Type, stat => stat.LastTimePeriodAggregate),
                     months,
                     "TheChart",
                     Loc["TotalTime"] + " [h]",
