@@ -58,4 +58,7 @@
     <data name="MustFollow" xml:space="preserve">
         <value>Du må følge {0} for å se brukerens {1}</value>
     </data>
+    <data name="NotFound" xml:space="preserve">
+        <value>Brukeren med id {0} finnes ikke</value>
+    </data>
 </root>

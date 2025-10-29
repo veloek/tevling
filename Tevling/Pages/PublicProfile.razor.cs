@@ -16,7 +16,7 @@ public partial class PublicProfile : ComponentBase
 
     [Parameter] public int AthleteToViewId { get; set; }
     private Athlete Athlete { get; set; } = default!;
-    private Athlete AthleteToView { get; set; } = default!;
+    private Athlete? AthleteToView { get; set; }
     private string? CreatedTime;
     private Dictionary<string, (string, string)> ActiveChallenges { get; } = [];
 
@@ -24,18 +24,20 @@ public partial class PublicProfile : ComponentBase
     protected override async Task OnInitializedAsync()
     {
         Athlete = await AuthenticationService.GetCurrentAthleteAsync();
-        AthleteToView = await AthleteService.GetAthleteByIdAsync(AthleteToViewId) ??
-            throw new InvalidOperationException($"Athlete with ID {AthleteToViewId} not found");
     }
 
     protected override async Task OnParametersSetAsync()
     {
-        AthleteToView = await AthleteService.GetAthleteByIdAsync(AthleteToViewId) ??
-            throw new InvalidOperationException($"Athlete with ID {AthleteToViewId} not found");
-        DateTimeOffset browserTime = await BrowserTime.ConvertToLocal(AthleteToView.Created);
-        CreatedTime = browserTime.ToString("d");
-        ActiveChallenges.Clear();
-        await FetchActiveChallenges();
+        Athlete? athleteToView = await AthleteService.GetAthleteByIdAsync(AthleteToViewId);
+        if (athleteToView != null)
+        {
+            AthleteToView = athleteToView;
+            DateTimeOffset browserTime = await BrowserTime.ConvertToLocal(AthleteToView!.Created);
+            CreatedTime = browserTime.ToString("d");
+            ActiveChallenges.Clear();
+            await FetchActiveChallenges();
+        }
+        
     }
     
     private async Task FetchActiveChallenges(CancellationToken ct = default)
@@ -46,7 +48,7 @@ public partial class PublicProfile : ComponentBase
             null,
             OnlyJoinedChallenges: true,
             IncludeOutdatedChallenges: false);
-        Challenge[] challenges = await ChallengeService.GetChallengesAsync(AthleteToView.Id, filter, null, ct);
+        Challenge[] challenges = await ChallengeService.GetChallengesAsync(AthleteToView!.Id, filter, null, ct);
 
         foreach (Challenge challenge in challenges)
         {
