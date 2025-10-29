@@ -8,6 +8,12 @@
         <div class="d-flex flex-column">
             <span class="profile-name">@AthleteToView.Name</span>
             <span class="member-since">@string.Format(Loc["MemberSince"], @CreatedTime)</span>
+            <div class="d-flex">
+                <span class="member-since">Medals:</span>
+                <span class="member-since" style="padding-left: 1em">@AthleteMedals.GetFirst()</span>
+                <span class="member-since">@AthleteMedals.GetSecond()</span>
+                <span class="member-since">@AthleteMedals.GetThird()</span>
+            </div>
         </div>
     </div>
 
