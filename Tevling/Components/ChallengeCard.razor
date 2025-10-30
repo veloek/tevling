@@ -46,6 +46,10 @@
                     <li class="list-group-item">@Loc["ScorePlaceholder"]</li>
                 }
             </ul>
+            @if (ScoreBoard.Attribute)
+            {
+                <span class="list-group-item mt-5">@Loc["Attribution"]</span>
+            }
             <button class="btn btn-primary mt-auto"
                     data-bs-toggle="modal"
                     data-bs-target="#stats-@(Challenge.Id)"
@@ -156,6 +160,10 @@
         </HeaderContent>
         <BodyContent>
             <canvas id="distribution-@Challenge.Id"></canvas>
+            @if (ScoreBoard is { Attribute: true })
+            {
+                <span>@Loc["Attribution"]</span>
+            }
         </BodyContent>
         <FooterContent>
             <button class="btn btn-primary mt-1 modal-button" data-bs-dismiss="modal">@Loc["Close"]</button>

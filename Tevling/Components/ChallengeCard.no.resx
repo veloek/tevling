@@ -91,4 +91,7 @@
     <data name="SpinLottery" xml:space="preserve">
         <value>Snurr lotteriet</value>
     </data>
+    <data name="Attribution" xml:space="preserve">
+        <value>Innsikt er utledet delvis fra data fra Garmin-Enheter</value>
+    </data>
 </root>

@@ -36,7 +36,6 @@
     @bind-SelectedItem="TimePeriod"
     OnButtonSelected="@DrawChart">
 </ButtonGroup>
-
 <div class="d-flex flex-wrap p-2 mb-5">
     <canvas id="TheChart"></canvas>
 </div>
@@ -159,20 +158,25 @@
     </table>
     <div class="mt-2">
         <h4><u>@Loc["Total"] <b>
-                    @switch (Measurement)
-                    {
-                        case ChallengeMeasurement.Distance:
-                            <span>@Math.Round(Distances.Sum(stats => stats.LastTimePeriodTotal), 1) km</span>
-                            break;
-                        case ChallengeMeasurement.Elevation:
-                            <span>@Math.Round(Elevations.Sum(stats => stats.LastTimePeriodTotal), 1) m</span>
-                            break;
-                        case ChallengeMeasurement.Time:
-                            <span>@Math.Round(Durations.Sum(stats => stats.LastTimePeriodTotal), 1) @Loc["h"]</span>
-                            break;
-                        default:
-                                throw new ArgumentOutOfRangeException();
-                    }
-                </b></u></h4>
+            @switch (Measurement)
+            {
+                case ChallengeMeasurement.Distance:
+                    <span>@Math.Round(Distances.Sum(stats => stats.LastTimePeriodTotal), 1) km</span>
+                    break;
+                case ChallengeMeasurement.Elevation:
+                    <span>@Math.Round(Elevations.Sum(stats => stats.LastTimePeriodTotal), 1) m</span>
+                    break;
+                case ChallengeMeasurement.Time:
+                    <span>@Math.Round(Durations.Sum(stats => stats.LastTimePeriodTotal), 1) @Loc["h"]</span>
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        </b></u></h4>
     </div>
 </div>
+
+@if(IsGarminDeviceSourcedData())
+{
+    <p class="mt-5">@Loc["Attribution"]</p>
+}
