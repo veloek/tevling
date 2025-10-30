@@ -79,4 +79,7 @@
     <data name="CurrentWeek" xml:space="preserve">
         <value>Current Week</value>
     </data>
+    <data name="Attribution" xml:space="preserve">
+        <value>Insights derived in part from Garmin device-sourced data.</value>
+    </data>
 </root>

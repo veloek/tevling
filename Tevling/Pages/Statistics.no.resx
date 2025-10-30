@@ -79,4 +79,7 @@
     <data name="CurrentWeek" xml:space="preserve">
         <value>Denne uken</value>
     </data>
+    <data name="Attribution" xml:space="preserve">
+        <value>Innsikt er utledet delvis fra data fra Garmin-Enheter</value>
+    </data>
 </root>
