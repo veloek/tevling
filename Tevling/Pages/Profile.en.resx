@@ -88,4 +88,7 @@
     <data name="Cancel" xml:space="preserve">
         <value>Cancel</value>
     </data>
+    <data name="SeePublic" xml:space="preserve">
+        <value>See public profile</value>
+    </data>
 </root>

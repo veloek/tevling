@@ -61,4 +61,37 @@
     <data name="NotFound" xml:space="preserve">
         <value>Brukeren med id {0} finnes ikke</value>
     </data>
+    <data name="Medals" xml:space="preserve">
+        <value>Medaljer</value>
+    </data>
+    <data name="LongestRun" xml:space="preserve">
+        <value>Lengste løpetur</value>
+    </data>
+    <data name="LongestRide" xml:space="preserve">
+        <value>Lengste sykkeltur</value>
+    </data>
+    <data name="MostPopularActivity" xml:space="preserve">
+        <value>Mest populære aktivitet</value>
+    </data>
+    <data name="LongestWalk" xml:space="preserve">
+    <value>Lengste gåtur</value>
+</data>
+    <data name="LongestActivity" xml:space="preserve">
+    <value>Lengste aktivitet</value>
+</data>
+    <data name="BiggestClimb" xml:space="preserve">
+    <value>Største stigning</value>
+</data>
+    <data name="ActivitiesLogged" xml:space="preserve">
+    <value>Antall loggførte aktiviteter</value>
+</data>
+    <data name="Stats" xml:space="preserve">
+        <value>Statistikk</value>
+    </data>
+    <data name="StatsSmall" xml:space="preserve">
+        <value>statistikk</value>
+    </data>
+    <data name="SeePublic" xml:space="preserve">
+        <value />
+    </data>
 </root>

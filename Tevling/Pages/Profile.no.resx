@@ -88,4 +88,7 @@
     <data name="Cancel" xml:space="preserve">
         <value>Avbryt</value>
     </data>
+    <data name="SeePublic" xml:space="preserve">
+        <value>Se offentlig profil</value>
+    </data>
 </root>
