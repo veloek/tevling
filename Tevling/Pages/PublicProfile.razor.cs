@@ -1,4 +1,5 @@
 using Microsoft.Extensions.Localization;
+using Tevling.Strava;
 
 namespace Tevling.Pages;
 
@@ -22,6 +23,17 @@ public partial class PublicProfile : ComponentBase
         }
     }
 
+    private record Stats
+    {
+        public double? LongestRun { get; init; }
+        public double? LongestWalk { get; init; }
+        public double? LongestRide { get; init; }
+        public double? BiggestClimb { get; init; }
+        public double? LongestActivity { get; init; }
+        public int? NumberOfActivitiesLogged { get; init; }
+        public ActivityType? MostPopularActivity { get; init; }
+    }
+
     [Inject] private IAuthenticationService AuthenticationService { get; set; } = null!;
     [Inject] private IStringLocalizer<PublicProfile> Loc { get; set; } = null!;
 
@@ -30,6 +42,8 @@ public partial class PublicProfile : ComponentBase
     [Inject] private IBrowserTime BrowserTime { get; set; } = null!;
     [Inject] private IChallengeService ChallengeService { get; set; } = null!;
 
+    [Inject] private IActivityService ActivityService { get; set; } = null!;
+
 
     [Parameter] public int AthleteToViewId { get; set; }
     private Athlete Athlete { get; set; } = default!;
@@ -37,6 +51,7 @@ public partial class PublicProfile : ComponentBase
     private string? CreatedTime;
     private Dictionary<string, (string, string)> ActiveChallenges { get; } = [];
     private Medals AthleteMedals { get; } = new();
+    private Stats? AthleteStats { get; set; }
 
 
     protected override async Task OnInitializedAsync()
@@ -56,7 +71,50 @@ public partial class PublicProfile : ComponentBase
             AthleteMedals.Reset();
             await FetchActiveChallenges();
             await CountMedals();
+            await FetchStats();
         }
+    }
+
+    private async Task FetchStats(CancellationToken ct = default)
+    {
+        ActivityFilter filter = new(
+            AthleteToViewId,
+            false
+        );
+        Activity[] activities = await ActivityService.GetActivitiesAsync(filter, ct: ct);
+        if (activities.Length == 0)
+        {
+            AthleteStats = null;
+            return;
+        }
+
+        List<Activity> runs = [.. activities.Where(a => a.Details.Type is ActivityType.Run)];
+        List<Activity> rides = [.. activities.Where(a => a.Details.Type is ActivityType.Ride)];
+        List<Activity> walks = [.. activities.Where(a => a.Details.Type is ActivityType.Walk or ActivityType.Hike)];
+        Stats athleteStats = new()
+        {
+            MostPopularActivity = activities.GroupBy(a => a.Details.Type)
+                .OrderByDescending(g => g.Count())
+                .First()
+                .Key,
+            LongestRun = runs.Count != 0
+                ? runs.Select(a => Math.Round(a.Details.DistanceInMeters / 1000, 1)).Max()
+                : null,
+            LongestRide = rides.Count != 0
+                ? rides.Select(a => Math.Round(a.Details.DistanceInMeters / 1000, 1))
+                    .DefaultIfEmpty()
+                    .Max()
+                : null,
+            LongestWalk = walks.Count != 0
+                ? walks.Select(a => Math.Round(a.Details.DistanceInMeters / 1000, 1))
+                    .DefaultIfEmpty()
+                    .Max()
+                : null,
+            BiggestClimb = activities.Select(a => Math.Round(a.Details.TotalElevationGain)).Max(),
+            LongestActivity = activities.Select(a => Math.Round((double)a.Details.MovingTimeInSeconds / 3600)).Max(),
+            NumberOfActivitiesLogged = activities.Length,
+        };
+        AthleteStats = athleteStats;
     }
 
     private async Task CountMedals(CancellationToken ct = default)

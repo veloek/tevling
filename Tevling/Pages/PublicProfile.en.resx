@@ -61,4 +61,34 @@
     <data name="NotFound" xml:space="preserve">
         <value>The user with id {0} is not found</value>
     </data>
+    <data name="Medals" xml:space="preserve">
+        <value>Medals</value>
+    </data>
+    <data name="LongestRun" xml:space="preserve">
+        <value>Longest run</value>
+    </data>
+    <data name="LongestRide" xml:space="preserve">
+        <value>Longest ride</value>
+    </data>
+    <data name="MostPopularActivity" xml:space="preserve">
+        <value>Most popular activity</value>
+    </data>
+    <data name="LongestWalk" xml:space="preserve">
+    <value>Longest walk</value>
+</data>
+    <data name="LongestActivity" xml:space="preserve">
+    <value>Longest activity</value>
+</data>
+    <data name="BiggestClimb" xml:space="preserve">
+    <value>Biggest climb</value>
+</data>
+    <data name="ActivitiesLogged" xml:space="preserve">
+    <value>Activities logged</value>
+</data>
+    <data name="Stats" xml:space="preserve">
+        <value>Statistics</value>
+    </data>
+    <data name="StatsSmall" xml:space="preserve">
+        <value>statistics</value>
+    </data>
 </root>
