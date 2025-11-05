@@ -147,6 +147,37 @@ public class ActivityService(
         return activities;
     }
 
+    public async Task<PublicProfileStats?> GetPublicProfileStats(int athleteId, CancellationToken ct = default)
+    {
+        await using DataContext dataContext = await dataContextFactory.CreateDbContextAsync(ct);
+
+        return await dataContext.Activities
+            .AsNoTracking()
+            .Where(a => a.AthleteId == athleteId)
+            .GroupBy(_ => 1)
+            .Select(g => new PublicProfileStats
+            {
+                NumberOfActivitiesLogged = g.Count(),
+                LongestRun = g.Max(a => a.Details.Type == ActivityType.Run
+                    ? Math.Round(a.Details.DistanceInMeters / 1000.0, 1)
+                    : null),
+                LongestRide = g.Max(a => a.Details.Type == ActivityType.Ride
+                    ? Math.Round(a.Details.DistanceInMeters / 1000.0, 1)
+                    : null),
+                LongestWalk = g.Max(a => a.Details.Type == ActivityType.Walk || a.Details.Type == ActivityType.Hike
+                    ? Math.Round(a.Details.DistanceInMeters / 1000.0, 1)
+                    : null),
+                BiggestClimb = Math.Round(g.Max(a => a.Details.TotalElevationGain), 1),
+                LongestActivity = Math.Round(g.Max(a => a.Details.MovingTimeInSeconds / 3600.0), 1),
+                MostPopularActivity = g.GroupBy(a => a.Details.Type)
+                    .OrderByDescending(x => x.Count())
+                    .ThenBy(x => x.Key)
+                    .Select(x => (ActivityType?)x.Key)
+                    .FirstOrDefault(),
+            })
+            .SingleOrDefaultAsync(ct);
+    }
+
     public IObservable<FeedUpdate<Activity>> GetActivityFeedForAthlete(int athleteId)
     {
         return Observable
