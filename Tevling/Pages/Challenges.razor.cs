@@ -102,14 +102,14 @@ public partial class Challenges : ComponentBase, IDisposable
             OnFilterChange();
         }
     }
-    
+
     private async Task DeselectActivityType(ActivityType item)
     {
         if (_dropdownSearchRefActivityTypes is null) return;
 
         await _dropdownSearchRefActivityTypes.DeselectItemAsync(item);
     }
-    
+
     public void Dispose()
     {
         _filterTextSubscription?.Dispose();
@@ -169,7 +169,7 @@ public partial class Challenges : ComponentBase, IDisposable
 
     private void SubscribeToChallengeFeed()
     {
-        _challengeFeedSubscription = ChallengeService.GetChallengeFeed()
+        _challengeFeedSubscription = ChallengeService.GetChallengeFeed(AthleteId)
             .Catch<FeedUpdate<Challenge>, Exception>(
                 err =>
                 {

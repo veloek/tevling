@@ -132,9 +132,13 @@ public class ChallengeService(
         return challengeTemplates;
     }
 
-    public IObservable<FeedUpdate<Challenge>> GetChallengeFeed()
+    public IObservable<FeedUpdate<Challenge>> GetChallengeFeed(int athleteId)
     {
-        return _challengeFeed.AsObservable();
+        return _challengeFeed.AsObservable()
+            .Where(update =>
+                !update.Item.IsPrivate ||
+                (update.Item.InvitedAthletes?.Any(a => a.Id == athleteId) ?? false) ||
+                update.Item.CreatedById == athleteId);
     }
 
     public async Task<Challenge> CreateChallengeAsync(ChallengeFormModel newChallenge, CancellationToken ct = default)
@@ -202,7 +206,7 @@ public class ChallengeService(
         logger.LogInformation("Updating challenge ID {ChallengeId}", challengeId);
 
 
-        bool stillInvited(Athlete a)
+        bool StillInvited(Athlete a)
         {
             return editChallenge.InvitedAthletes.Any(i => i.Id == a.Id);
         }
@@ -211,10 +215,9 @@ public class ChallengeService(
             .Where(i => !challenge.InvitedAthletes!.Any(ii => ii.Id == i.Id));
 
         challenge.InvitedAthletes = challenge.InvitedAthletes!
-            .Where(stillInvited)
+            .Where(StillInvited)
             .Concat(newInvites)
             .ToList();
-
 
         challenge.Title = editChallenge.Title;
         challenge.Description = editChallenge.Description;
@@ -352,7 +355,7 @@ public class ChallengeService(
                         ChallengeMeasurement.Elevation => $"{s.Sum:0.##} m",
                         _ => s.Sum.ToString(CultureInfo.InvariantCulture),
                     };
-                    
+
                     float scoreValue = challenge.Measurement switch
                     {
                         ChallengeMeasurement.Distance => s.Sum / 1000,

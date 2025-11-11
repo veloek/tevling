@@ -10,7 +10,7 @@ public interface IChallengeService
         Paging? paging = null,
         CancellationToken ct = default);
 
-    IObservable<FeedUpdate<Challenge>> GetChallengeFeed();
+    IObservable<FeedUpdate<Challenge>> GetChallengeFeed(int athleteId);
 
     Task<Challenge> CreateChallengeAsync(ChallengeFormModel challenge, CancellationToken ct = default);
 
@@ -19,7 +19,7 @@ public interface IChallengeService
 
     Task<ChallengeGroup> CreateChallengeGroupAsync(ChallengeGroup challengeGroup, CancellationToken ct = default);
     Task DeleteChallengeGroupAsync(int challengeGroupId, CancellationToken ct = default);
-    Task<ChallengeGroup[]> GetChallengeGroupsAsync(int currentAthleteId, CancellationToken ct = default); 
+    Task<ChallengeGroup[]> GetChallengeGroupsAsync(int currentAthleteId, CancellationToken ct = default);
     Task<ChallengeTemplate[]> GetChallengeTemplatesAsync(
         int currentAthleteId,
         CancellationToken ct = default);
