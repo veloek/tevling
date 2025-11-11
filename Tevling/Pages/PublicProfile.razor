@@ -9,13 +9,13 @@
     <div class="profile d-flex flex-row column-gap-2 mb-5">
         <Avatar Url="@AthleteToView.ImgUrl" Size="50"/>
         <div class="d-flex flex-column">
-            <span class="profile-name">@AthleteToView.Name</span>
-            <span class="member-since">@string.Format(Loc["MemberSince"], @CreatedTime)</span>
+            <span class="public-profile-name">@AthleteToView.Name</span>
+            <span class="public-profile-details">@string.Format(Loc["MemberSince"], @CreatedTime)</span>
             <div class="d-flex">
-                <span class="member-since">@Loc["Medals"]:</span>
-                <span class="member-since" style="padding-left: 1em">@AthleteMedals.GetFirst()</span>
-                <span class="member-since">@AthleteMedals.GetSecond()</span>
-                <span class="member-since">@AthleteMedals.GetThird()</span>
+                <span class="public-profile-details">@Loc["Medals"]:</span>
+                <span class="public-profile-details" style="padding-left: 1em">@AthleteMedals.GetFirst()</span>
+                <span class="public-profile-details">@AthleteMedals.GetSecond()</span>
+                <span class="public-profile-details">@AthleteMedals.GetThird()</span>
             </div>
         </div>
     </div>
@@ -77,7 +77,7 @@
     }
 
     <div class="d-flex flex-row flex-wrap">
-        <div class="profile-info d-flex flex-column row-gap-5">
+        <div class="public-profile-info d-flex flex-column row-gap-5">
             <div class="followers mb-3">
                 <h2 class="mb-3">@Loc["Followers"]</h2>
                 @if (Athlete.IsFollowing(AthleteToViewId) || Athlete.Id == AthleteToViewId)

@@ -1,5 +1,4 @@
 using Microsoft.Extensions.Localization;
-using Tevling.Strava;
 
 namespace Tevling.Pages;
 
