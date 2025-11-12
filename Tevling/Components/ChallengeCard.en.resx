@@ -91,4 +91,7 @@
     <data name="SpinLottery" xml:space="preserve">
         <value>Spin the lottery</value>
     </data>
+    <data name="Attribution" xml:space="preserve">
+        <value>Insights derived in part from Garmin device-sourced data.</value>
+    </data>
 </root>

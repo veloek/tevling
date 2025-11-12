@@ -331,6 +331,8 @@ public class ChallengeService(
                 athleteIds.Contains(activity.AthleteId))
             .ToArrayAsync(ct);
 
+        bool attribute = activities.Select(a => a.Details.DeviceName).Any(d => d != null && d.Contains("Garmin"));
+
         AthleteScore[] scores = [.. challenge.Athletes!
             .Select(
                 athlete => new
@@ -373,7 +375,7 @@ public class ChallengeService(
                     return new AthleteScore(s.Athlete, score, scoreValue);
                 })];
 
-        return new ScoreBoard(scores);
+        return new ScoreBoard(scores, attribute);
     }
 
     public async Task<Athlete?> DrawChallengeWinnerAsync(int challengeId, CancellationToken ct = default)

@@ -55,6 +55,8 @@ public partial class Statistics : ComponentBase, IAsyncDisposable
     private Athlete _athlete = null!;
     private Activity[] _activities = [];
     private IJSObjectReference? _module;
+    private const string UnknownDevice = "Unknown device";
+    
 
     private TimePeriod TimePeriod { get; set; } = TimePeriod.Months;
     private int NumberOfPeriodsToReview { get; set; } = 3;
@@ -62,6 +64,7 @@ public partial class Statistics : ComponentBase, IAsyncDisposable
     private IReadOnlyList<Stats> Distances { get; set; } = [];
     private IReadOnlyList<Stats> Elevations { get; set; } = [];
     private IReadOnlyList<Stats> Durations { get; set; } = [];
+    private IReadOnlyList<string> Devices { get; set; } = [];
 
     protected override async Task OnInitializedAsync()
     {
@@ -151,6 +154,11 @@ public partial class Statistics : ComponentBase, IAsyncDisposable
         await DrawChart();
     }
 
+    private bool IsGarminDeviceSourcedData()
+    {
+        return Devices.Any(d => d.Contains("Garmin"));
+    }
+    
     private static DateTimeOffset GetFirstOfTheWeek(DateTimeOffset date)
     {
         DayOfWeek day = date.DayOfWeek;
@@ -173,6 +181,7 @@ public partial class Statistics : ComponentBase, IAsyncDisposable
             startDate);
         _activities = await ActivityService.GetActivitiesAsync(filter);
 
+        Devices = [.. _activities.Select(a => a.Details.DeviceName ?? UnknownDevice).Distinct()];
         Distances =
         [
             .. GetAggregatedMeasurementData(
