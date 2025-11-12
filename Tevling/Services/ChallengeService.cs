@@ -58,6 +58,12 @@ public class ChallengeService(
                     // TODO: Use EF.Functions.ILike when switching to PostgreSQL
                     //       to keep the search text case-insensitive
                     EF.Functions.Like(c.Title, $"%{filter.SearchText}%"))
+            .Where(c =>
+                (filter.IncludeTimeChallenges && c.Measurement == ChallengeMeasurement.Time) ||
+                (filter.IncludeElevationChallenges && c.Measurement == ChallengeMeasurement.Elevation) ||
+                (filter.IncludeDistanceChallenges && c.Measurement == ChallengeMeasurement.Distance))
+            .Where(c => filter.ActivityTypes == null || filter.ActivityTypes.Count <= 0 ||
+                filter.ActivityTypes.Intersect(c.ActivityTypes).Any())
             .OrderByDescending(challenge => challenge.Start)
             .ThenBy(challenge => challenge.Title)
             .ThenBy(challenge => challenge.Id)

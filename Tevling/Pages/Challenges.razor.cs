@@ -144,7 +144,6 @@ public partial class Challenges : ComponentBase, IDisposable
         _challenges = [];
         _page = -1;
         HasMore = true;
-        UpdateChallenges();
     }
 
     private async Task LoadMore(CancellationToken ct)
@@ -161,7 +160,12 @@ public partial class Challenges : ComponentBase, IDisposable
         ChallengeFilter filter = new(
             _filterText,
             _showAllChallenges ? null : AthleteId,
-            _showOutdatedChallenges);
+            _showOutdatedChallenges,
+            !_showAllChallenges,
+            _showTimeChallenges,
+            _showElevationChallenges,
+            _showDistanceChallenges,
+            [.. _activityTypes]);
         Challenge[] challenges =
             await ChallengeService.GetChallengesAsync(AthleteId, filter, new Paging(_pageSize, _page), ct);
         AddChallenges(challenges);
