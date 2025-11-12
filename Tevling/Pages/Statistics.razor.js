@@ -72,3 +72,14 @@ export function drawChart(activityData, labels, chartName, chartTitle, unit) {
 export function isMobile() {
     return window.matchMedia('(max-width: 576px)').matches;
 }
+
+export function enableCanvasResize(chartName) {
+    // Add event listener for window resize
+    window.addEventListener('resize', () => {
+        const canvas = document.getElementById(chartName);
+        if (canvas && window[chartName] instanceof Chart) {
+            window[chartName].resize(); // Resize Chart.js instance on canvas resize
+        }
+    });
+}
+

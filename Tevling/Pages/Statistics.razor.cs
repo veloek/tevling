@@ -213,6 +213,8 @@ public partial class Statistics : ComponentBase, IAsyncDisposable
         {
             await DrawChartDesktop(timePeriodArray);
         }
+        
+        await _module.InvokeVoidAsync("enableCanvasResize", "TheChart");
     }
 
     private async Task DrawChartDesktop(string[] timePeriodArray)
