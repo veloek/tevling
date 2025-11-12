@@ -1,4 +1,7 @@
 @page "/athletes/{AthleteToViewId:int}"
+@using Tevling.Strava
+@inject ActivityTypeTranslator ActivityTypeTranslator
+
 
 @if (AthleteToView != null)
 {
@@ -6,13 +9,75 @@
     <div class="profile d-flex flex-row column-gap-2 mb-5">
         <Avatar Url="@AthleteToView.ImgUrl" Size="50"/>
         <div class="d-flex flex-column">
-            <span class="profile-name">@AthleteToView.Name</span>
-            <span class="member-since">@string.Format(Loc["MemberSince"], @CreatedTime)</span>
+            <span class="public-profile-name">@AthleteToView.Name</span>
+            <span class="public-profile-details">@string.Format(Loc["MemberSince"], @CreatedTime)</span>
+            <div class="d-flex">
+                <span class="public-profile-details">@Loc["Medals"]:</span>
+                <span class="public-profile-details" style="padding-left: 1em">@AthleteMedals.GetFirst()</span>
+                <span class="public-profile-details">@AthleteMedals.GetSecond()</span>
+                <span class="public-profile-details">@AthleteMedals.GetThird()</span>
+            </div>
         </div>
     </div>
 
+    if (AthleteStats is not null)
+    {
+        <div class="active-challenges mb-3">
+            <h3 class="mb-3">@Loc["Stats"]</h3>
+            @if (Athlete.IsFollowing(AthleteToViewId) || Athlete.Id == AthleteToViewId)
+            {
+                @if (AthleteStats.MostPopularActivity is not null)
+                {
+                    <StatsCard Stat="@(Loc["MostPopularActivity"] + ":")"
+                               Value="@ActivityTypeTranslator.Translate((ActivityType)AthleteStats.MostPopularActivity)"
+                               AdditionalValueClass="badge bg-primary">
+                    </StatsCard>
+                }
+
+                @if (AthleteStats.LongestRun is not null)
+                {
+                    <StatsCard Stat="@(Loc["LongestRun"] + ":")" Value="@(AthleteStats.LongestRun + " km")"></StatsCard>
+                }
+
+                @if (AthleteStats.LongestRide is not null)
+                {
+                    <StatsCard Stat="@(Loc["LongestRide"] + ":")"
+                               Value="@(AthleteStats.LongestRide + " km")"></StatsCard>
+                }
+
+                @if (AthleteStats.LongestWalk is not null)
+                {
+                    <StatsCard Stat="@(Loc["LongestWalk"] + ":")"
+                               Value="@(AthleteStats.LongestWalk + " km")"></StatsCard>
+                }
+
+                @if (AthleteStats.LongestActivity is not null)
+                {
+                    <StatsCard Stat="@(Loc["LongestActivity"] + ":")"
+                               Value="@(AthleteStats.LongestActivity + " h")"></StatsCard>
+                }
+
+                @if (AthleteStats.BiggestClimb is not null)
+                {
+                    <StatsCard Stat="@(Loc["BiggestClimb"] + ":")"
+                               Value="@(AthleteStats.BiggestClimb + " m")"></StatsCard>
+                }
+
+                @if (AthleteStats.NumberOfActivitiesLogged is not null)
+                {
+                    <StatsCard Stat="@(Loc["ActivitiesLogged"] + ":")"
+                               Value="@(AthleteStats.NumberOfActivitiesLogged.ToString())"></StatsCard>
+                }
+            }
+            else
+            {
+                <span>@string.Format(Loc["MustFollow"], AthleteToView.Name, Loc["StatsSmall"])</span>
+            }
+        </div>
+    }
+
     <div class="d-flex flex-row flex-wrap">
-        <div class="profile-info d-flex flex-column row-gap-5">
+        <div class="public-profile-info d-flex flex-column row-gap-5">
             <div class="followers mb-3">
                 <h2 class="mb-3">@Loc["Followers"]</h2>
                 @if (Athlete.IsFollowing(AthleteToViewId) || Athlete.Id == AthleteToViewId)
