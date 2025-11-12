@@ -238,8 +238,9 @@ public class AthleteService(
                 .FirstOrDefaultAsync(a => a.Id == athleteId, ct) ??
             throw new Exception("Unknown athlete id: " + athleteId);
 
-        if (athlete.AccessTokenExpiry - DateTimeOffset.Now < TimeSpan.FromMinutes(1))
+        if (athlete.AccessTokenExpiry - DateTimeOffset.UtcNow < TimeSpan.FromMinutes(1))
         {
+            logger.LogInformation("Refreshing access token for athlete: {Name}", athlete.Name);
             (string accessToken, DateTimeOffset expiry, string? refreshToken) =
                 await RefreshAccessToken(athlete.RefreshToken, ct);
             athlete.AccessToken = accessToken;
