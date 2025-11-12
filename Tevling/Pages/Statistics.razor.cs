@@ -193,16 +193,31 @@ public partial class Statistics : ComponentBase, IAsyncDisposable
 
     private async Task DrawChart()
     {
-        _module = await Js.InvokeAsync<IJSObjectReference>("import", "./Pages/Statistics.razor.js");
+        _module ??= await Js.InvokeAsync<IJSObjectReference>("import", "./Pages/Statistics.razor.js");
 
-        string[] months = TimePeriod switch
+        string[] timePeriodArray = TimePeriod switch
         {
             TimePeriod.Months => CreateMonthArray(NumberOfPeriodsToReview),
             TimePeriod.Weeks => CreateWeekArray(NumberOfPeriodsToReview),
             _ => throw new Exception("Unknown time period"),
         };
-
+        
         await UpdateMeasurementData();
+        
+        bool isMobile = await _module.InvokeAsync<bool>("isMobile");
+        if (isMobile)
+        {
+            await DrawChartMobile(timePeriodArray);
+        }
+        else
+        {
+            await DrawChartDesktop(timePeriodArray);
+        }
+    }
+
+    private async Task DrawChartDesktop(string[] timePeriodArray)
+    {
+        _module ??= await Js.InvokeAsync<IJSObjectReference>("import", "./Pages/Statistics.razor.js");
 
         switch (Measurement)
         {
@@ -210,7 +225,7 @@ public partial class Statistics : ComponentBase, IAsyncDisposable
                 await _module.InvokeVoidAsync(
                     "drawChart",
                     Distances.ToDictionary(stat => stat.Type, stat => stat.LastTimePeriodAggregate),
-                    months,
+                    timePeriodArray,
                     "TheChart",
                     Loc["TotalDistance"] + " [km]",
                     "km");
@@ -219,7 +234,7 @@ public partial class Statistics : ComponentBase, IAsyncDisposable
                 await _module.InvokeVoidAsync(
                     "drawChart",
                     Elevations.ToDictionary(stat => stat.Type, stat => stat.LastTimePeriodAggregate),
-                    months,
+                    timePeriodArray,
                     "TheChart",
                     Loc["TotalElevation"] + " [m]",
                     "m");
@@ -228,7 +243,81 @@ public partial class Statistics : ComponentBase, IAsyncDisposable
                 await _module.InvokeVoidAsync(
                     "drawChart",
                     Durations.ToDictionary(stat => stat.Type, stat => stat.LastTimePeriodAggregate),
-                    months,
+                    timePeriodArray,
+                    "TheChart",
+                    Loc["TotalTime"] + " [h]",
+                    "h");
+                break;
+            default:
+                throw new Exception("Unknown challenge measurement");
+        }
+    }
+
+    private async Task DrawChartMobile(string[] timePeriodArray)
+    {
+        _module ??= await Js.InvokeAsync<IJSObjectReference>("import", "./Pages/Statistics.razor.js");
+
+        switch (Measurement)
+        {
+            case ChallengeMeasurement.Distance:
+                float[] totalDistances = new float[NumberOfPeriodsToReview];
+                foreach (Stats distance in Distances)
+                {
+                    for (int i = 0; i < distance.LastTimePeriodAggregate.Length; i++)
+                    {
+                        totalDistances[i] += distance.LastTimePeriodAggregate[i];
+                    }
+                }
+
+                await _module.InvokeVoidAsync(
+                    "drawChart",
+                    new Dictionary<string, float[]>
+                    {
+                        { "Total", totalDistances },
+                    },
+                    timePeriodArray,
+                    "TheChart",
+                    Loc["TotalDistance"] + " [km]",
+                    "km");
+                break;
+            case ChallengeMeasurement.Elevation:
+                float[] totalElevation = new float[NumberOfPeriodsToReview];
+                foreach (Stats stat in Elevations)
+                {
+                    for (int i = 0; i < stat.LastTimePeriodAggregate.Length; i++)
+                    {
+                        totalElevation[i] += stat.LastTimePeriodAggregate[i];
+                    }
+                }
+
+                await _module.InvokeVoidAsync(
+                    "drawChart",
+                    new Dictionary<string, float[]>
+                    {
+                        { "Total", totalElevation },
+                    },
+                    timePeriodArray,
+                    "TheChart",
+                    Loc["TotalElevation"] + " [m]",
+                    "m");
+                break;
+            case ChallengeMeasurement.Time:
+                float[] totalTimes = new float[NumberOfPeriodsToReview];
+                foreach (Stats stat in Durations)
+                {
+                    for (int i = 0; i < stat.LastTimePeriodAggregate.Length; i++)
+                    {
+                        totalTimes[i] += stat.LastTimePeriodAggregate[i];
+                    }
+                }
+
+                await _module.InvokeVoidAsync(
+                    "drawChart",
+                    new Dictionary<string, float[]>
+                    {
+                        { "Total", totalTimes },
+                    },
+                    timePeriodArray,
                     "TheChart",
                     Loc["TotalTime"] + " [h]",
                     "h");
