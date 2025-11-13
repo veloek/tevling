@@ -1,0 +1,22 @@
+
+
+.icon-badge-container {
+  position:relative;
+}
+
+.icon-badge-icon {
+  position: relative;
+}
+
+.icon-badge {
+  background-color: red;
+  font-size: 8px;
+  color: white;
+  text-align: center;
+  width:10px;
+  height:10px;
+  border-radius: 35%;
+  position: absolute; /* changed */
+  top: -3px; /* changed */
+  left: 12px; /* changed */
+}

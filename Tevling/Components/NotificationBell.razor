@@ -1,0 +1,11 @@
+<div class="icon-badge-container">
+    <i class="bi bi-bell-fill me-2 icon-badge-icon me-2"></i>Notifications
+    @if (Count is > 0 and < 10)
+    {
+        <div class="icon-badge">@Count</div>
+    }
+    @if (Count >=  10)
+    {
+        <div class="icon-badge">+</div>
+    }
+</div>

@@ -10,6 +10,7 @@ public class AthleteService(
     : IAthleteService
 {
     private readonly Subject<FeedUpdate<Athlete>> _athleteFeed = new();
+    private readonly Subject<FeedUpdate<FollowRequest>> _athleteFollowersFeed = new();
 
     public async Task<Athlete?> GetAthleteByIdAsync(int athleteId, CancellationToken ct = default)
     {
@@ -128,17 +129,23 @@ public class AthleteService(
 
             if (pending is null)
             {
+                FollowRequest followRequest = new()
+                {
+                    FollowerId = athlete.Id,
+                    FolloweeId = followingId,
+                };
                 await dataContext.AddFollowerRequestAsync(
-                    new FollowRequest
-                    {
-                        FollowerId = athlete.Id,
-                        FolloweeId = followingId,
-                    },
+                    followRequest,
                     ct);
+                _athleteFollowersFeed.OnNext(new FeedUpdate<FollowRequest> { Item = followRequest, Action = FeedAction.Create });
+                logger.LogInformation("Follower request created");
             }
             else
             {
                 await dataContext.RemoveFollowRequestAsync(pending, ct);
+                _athleteFollowersFeed.OnNext(new FeedUpdate<FollowRequest> { Item = pending, Action = FeedAction.Delete });
+                logger.LogInformation("Follower request retracted");
+                
             }
         }
         else
@@ -182,6 +189,8 @@ public class AthleteService(
         if (pending is not null)
         {
             await dataContext.RemoveFollowRequestAsync(pending, ct);
+            _athleteFollowersFeed.OnNext(new FeedUpdate<FollowRequest> { Item = pending, Action = FeedAction.Delete });
+            logger.LogInformation("Follower request accepted");
         }
 
         await dataContext.AddFollowingAsync(
@@ -208,6 +217,8 @@ public class AthleteService(
         if (pending is not null)
         {
             await dataContext.RemoveFollowRequestAsync(pending, ct);
+            logger.LogInformation("Follower request declined");
+            _athleteFollowersFeed.OnNext(new FeedUpdate<FollowRequest> { Item = pending, Action = FeedAction.Delete });
         }
 
         athlete = await GetAthleteByIdAsync(athlete.Id, ct) ?? throw new Exception("Athlete is gone");
@@ -271,6 +282,11 @@ public class AthleteService(
     public IObservable<FeedUpdate<Athlete>> GetAthleteFeed()
     {
         return _athleteFeed.AsObservable();
+    }
+
+    public IObservable<FeedUpdate<FollowRequest>> GetAthleteFollowersFeed(int athleteId)
+    {
+        return _athleteFollowersFeed.AsObservable().Where(fr => fr.Item.FolloweeId == athleteId);
     }
 
     public async Task DeleteAthleteAsync(long stravaId, CancellationToken ct = default)

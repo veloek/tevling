@@ -75,6 +75,7 @@ builder.Services.AddBlazoredLocalStorage();
 builder.Services.AddSingleton<IActivityService, ActivityService>();
 builder.Services.AddSingleton<IAthleteService, AthleteService>();
 builder.Services.AddSingleton<IChallengeService, ChallengeService>();
+builder.Services.AddSingleton<INotificationService, NotificationService>();
 
 builder.Services.AddHttpContextAccessor();
 
