@@ -73,13 +73,20 @@ export function isMobile() {
     return window.matchMedia('(max-width: 576px)').matches;
 }
 
+
+function handleCanvasResize(chartName) {
+    const canvas = document.getElementById(chartName);
+    if (canvas && window[chartName] instanceof Chart) {
+        window[chartName].resize(); // Resize Chart.js instance on canvas resize
+    }
+}
+
 export function enableCanvasResize(chartName) {
     // Add event listener for window resize
-    window.addEventListener('resize', () => {
-        const canvas = document.getElementById(chartName);
-        if (canvas && window[chartName] instanceof Chart) {
-            window[chartName].resize(); // Resize Chart.js instance on canvas resize
-        }
-    });
+    window.addEventListener('resize', () => handleCanvasResize(chartName));
+}
+
+export function disposeCanvasResize(chartName) {
+    window.removeEventListener('resize', () => handleCanvasResize(chartName));
 }
 

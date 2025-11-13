@@ -272,6 +272,7 @@ public partial class Statistics : ComponentBase, IAsyncDisposable
         {
             if (_module != null)
             {
+                await _module.InvokeVoidAsync("disposeCanvasResize", "TheChart");
                 await _module.DisposeAsync();
                 _module = null;
             }
