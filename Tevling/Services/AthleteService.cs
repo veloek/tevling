@@ -1,17 +1,17 @@
 using System.Reactive.Subjects;
 using Microsoft.EntityFrameworkCore;
+using Tevling.Model.Notification;
 
 namespace Tevling.Services;
 
 public class AthleteService(
     ILogger<AthleteService> logger,
     IDbContextFactory<DataContext> dataContextFactory,
-    IStravaClient stravaClient)
+    IStravaClient stravaClient,
+    INotificationService notificationService)
     : IAthleteService
 {
     private readonly Subject<FeedUpdate<Athlete>> _athleteFeed = new();
-    private readonly Subject<FeedUpdate<FollowRequest>> _athleteFollowersFeed = new();
-
     public async Task<Athlete?> GetAthleteByIdAsync(int athleteId, CancellationToken ct = default)
     {
         await using DataContext dataContext = await dataContextFactory.CreateDbContextAsync(ct);
@@ -137,15 +137,21 @@ public class AthleteService(
                 await dataContext.AddFollowerRequestAsync(
                     followRequest,
                     ct);
-                _athleteFollowersFeed.OnNext(new FeedUpdate<FollowRequest> { Item = followRequest, Action = FeedAction.Create });
+                notificationService.Publish(
+                    new Notification
+                    {
+                        Created = new DateTimeOffset(),
+                        CreatedBy = athlete.Id,
+                        Recipients = [followingId],
+                        Type = NotificationType.FollowRequestCreated,
+                        Actionable = true,
+                    });
                 logger.LogInformation("Follower request created");
             }
             else
             {
                 await dataContext.RemoveFollowRequestAsync(pending, ct);
-                _athleteFollowersFeed.OnNext(new FeedUpdate<FollowRequest> { Item = pending, Action = FeedAction.Delete });
                 logger.LogInformation("Follower request retracted");
-                
             }
         }
         else
@@ -189,7 +195,15 @@ public class AthleteService(
         if (pending is not null)
         {
             await dataContext.RemoveFollowRequestAsync(pending, ct);
-            _athleteFollowersFeed.OnNext(new FeedUpdate<FollowRequest> { Item = pending, Action = FeedAction.Delete });
+            notificationService.Publish(
+                new Notification
+                {
+                    Created = new DateTimeOffset(),
+                    CreatedBy = athlete.Id,
+                    Recipients = [ followerId],
+                    Type = NotificationType.FollowRequestAccepted,
+                    Actionable = false,
+                });
             logger.LogInformation("Follower request accepted");
         }
 
@@ -218,7 +232,6 @@ public class AthleteService(
         {
             await dataContext.RemoveFollowRequestAsync(pending, ct);
             logger.LogInformation("Follower request declined");
-            _athleteFollowersFeed.OnNext(new FeedUpdate<FollowRequest> { Item = pending, Action = FeedAction.Delete });
         }
 
         athlete = await GetAthleteByIdAsync(athlete.Id, ct) ?? throw new Exception("Athlete is gone");
@@ -282,11 +295,6 @@ public class AthleteService(
     public IObservable<FeedUpdate<Athlete>> GetAthleteFeed()
     {
         return _athleteFeed.AsObservable();
-    }
-
-    public IObservable<FeedUpdate<FollowRequest>> GetAthleteFollowersFeed(int athleteId)
-    {
-        return _athleteFollowersFeed.AsObservable().Where(fr => fr.Item.FolloweeId == athleteId);
     }
 
     public async Task DeleteAthleteAsync(long stravaId, CancellationToken ct = default)

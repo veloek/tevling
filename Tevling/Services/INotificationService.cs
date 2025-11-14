@@ -1,6 +1,11 @@
+using Tevling.Model.Notification;
+
 namespace Tevling.Services;
 
 public interface INotificationService
 {
-    public Task<int> GetNotificationCount(int athleteId);
+    public void Publish(Notification notification);
+    public IObservable<Notification> GetNotificationFeed(int athleteId);
+
+    public IReadOnlyCollection<Notification> GetUnreadNotifications(int athleteId);
 }

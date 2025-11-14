@@ -270,8 +270,10 @@ public class AthleteServiceTests
         IStravaClient stravaClientMock = Substitute.For<IStravaClient>();
         stravaClientMock.GetAccessTokenByRefreshTokenAsync(Arg.Any<string>(), Arg.Any<CancellationToken>())
             .Returns(new TokenResponse { AccessToken = updatedAccessToken });
+        
+        INotificationService notificationServiceMock = Substitute.For<INotificationService>();
 
-        AthleteService sut = new(Substitute.For<ILogger<AthleteService>>(), dataContextFactory, stravaClientMock);
+        AthleteService sut = new(Substitute.For<ILogger<AthleteService>>(), dataContextFactory, stravaClientMock, notificationServiceMock);;
         string accessToken = await sut.GetAccessTokenAsync(athleteEntry.Entity.Id, TestContext.Current.CancellationToken);
 
         accessToken.ShouldBe(updatedAccessToken);
@@ -377,5 +379,6 @@ public class AthleteServiceTests
         => new(
             logger: Substitute.For<ILogger<AthleteService>>(),
             dataContextFactory: dataContextFactory,
-            stravaClient: Substitute.For<IStravaClient>());
+            stravaClient: Substitute.For<IStravaClient>(),
+            notificationService: Substitute.For<INotificationService>());
 }

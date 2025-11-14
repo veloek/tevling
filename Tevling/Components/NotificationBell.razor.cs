@@ -1,42 +1,60 @@
+using Tevling.Model.Notification;
+
 namespace Tevling.Components;
 
 public partial class NotificationBell : ComponentBase
 {
     [Inject] private INotificationService NotificationService { get; set; } = null!;
-    [Inject] private IAthleteService AthleteService { get; set; } = null!;
     [Inject] private ILogger<NotificationBell> Logger { get; set; } = null!;
     
     [Parameter] public int AthleteId { get; set; }
+    private ICollection<Notification> UnreadNotifications { get; set; } = [];
     private int Count { get; set; }
-    private IDisposable? _athleteFollowersFeedSubscription;
+    private IDisposable? _notificationFeedSubscription;
     
     protected override async Task OnParametersSetAsync()
     {
-        Count = await NotificationService.GetNotificationCount(AthleteId);
         SubscribeToAthleteFollowersFeed();
+        UnreadNotifications = [.. NotificationService.GetUnreadNotifications(AthleteId)];
+        Count = UnreadNotifications.Count;
     }
     
     private void SubscribeToAthleteFollowersFeed()
     {
-        _athleteFollowersFeedSubscription = AthleteService.GetAthleteFollowersFeed(AthleteId)
-            .Catch<FeedUpdate<FollowRequest>, Exception>(
+        _notificationFeedSubscription = NotificationService.GetNotificationFeed(AthleteId)
+            .Catch<Notification, Exception>(
                 err =>
                 {
-                    Logger.LogError(err, "Error in followers feed");
-                    return Observable.Throw<FeedUpdate<FollowRequest>>(err).Delay(TimeSpan.FromSeconds(1));
+                    Logger.LogError(err, "Error in Notification feed");
+                    return Observable.Throw<Notification>(err).Delay(TimeSpan.FromSeconds(1));
                 })
             .Retry()
-            .Subscribe(async void (feed) =>
-                {
-                    Logger.LogInformation("New notification received");
-                    Count = await NotificationService.GetNotificationCount(AthleteId);
-                    await InvokeAsync(StateHasChanged);
-                });
+            .Subscribe(async void (notification) =>
+            {
+                switch (notification.State)
+                    {
+                        case NotificationState.Unread:
+                            Logger.LogInformation("New notification received");
+                            UnreadNotifications.Add(notification);
+                            break;
+                        case NotificationState.ActedUpon:
+                        case NotificationState.Read:
+                            Logger.LogInformation("New notification received");
+                            
+                            break;
+                        default:
+                            throw new ArgumentOutOfRangeException();
+                    }
+
+                Count = UnreadNotifications.Count;
+
+                await InvokeAsync(StateHasChanged);
+            });
     }
     
     public void Dispose()
     {
-        _athleteFollowersFeedSubscription?.Dispose();
+        _notificationFeedSubscription?.Dispose();
     }
 }
 

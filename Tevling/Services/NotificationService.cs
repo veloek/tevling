@@ -1,12 +1,29 @@
+using System.Reactive.Subjects;
+using Tevling.Model.Notification;
+
 namespace Tevling.Services;
 
-public class NotificationService(IAthleteService athleteService, IChallengeService challengeService)
+public class NotificationService()
     : INotificationService
 {
-    public async Task<int> GetNotificationCount(int athleteId)
+    
+    private readonly Subject<Notification> _notificationFeed = new();
+    
+    
+    public IObservable<Notification> GetNotificationFeed(int athleteId)
     {
-        Athlete? athlete = await athleteService.GetAthleteByIdAsync(athleteId);
-
-        return athlete is { PendingFollowers: not null } ? athlete.PendingFollowers.Count : 0;
+        return _notificationFeed.AsObservable().Where(n => n.Recipients.Contains(athleteId));
     }
+
+    public void Publish(Notification notification)
+    {
+        _notificationFeed.OnNext(notification);
+    }
+
+    public IReadOnlyCollection<Notification> GetUnreadNotifications(int athleteId)
+    {
+        // TODO
+        return [];
+    }
+
 }
