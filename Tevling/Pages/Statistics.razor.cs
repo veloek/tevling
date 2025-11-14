@@ -55,6 +55,7 @@ public partial class Statistics : ComponentBase, IAsyncDisposable
     private Athlete _athlete = null!;
     private Activity[] _activities = [];
     private IJSObjectReference? _module;
+    private IJSObjectReference? _resizeHandler;
 
     private TimePeriod TimePeriod { get; set; } = TimePeriod.Months;
     private int NumberOfPeriodsToReview { get; set; } = 3;
@@ -263,16 +264,22 @@ public partial class Statistics : ComponentBase, IAsyncDisposable
                 throw new Exception("Unknown challenge measurement");
         }
 
-        await _module.InvokeVoidAsync("enableCanvasResize", "TheChart");
+       _resizeHandler ??= await _module.InvokeAsync<IJSObjectReference>("enableCanvasResize", "TheChart");
     }
 
     public async ValueTask DisposeAsync()
     {
         try
         {
+            if (_resizeHandler != null)
+            {
+                await _resizeHandler.InvokeVoidAsync("dispose");
+                await _resizeHandler.DisposeAsync();
+                _resizeHandler = null;
+            }
+            
             if (_module != null)
             {
-                await _module.InvokeVoidAsync("disposeCanvasResize", "TheChart");
                 await _module.DisposeAsync();
                 _module = null;
             }
