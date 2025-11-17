@@ -144,6 +144,7 @@ public partial class Challenges : ComponentBase, IDisposable
         _challenges = [];
         _page = -1;
         HasMore = true;
+        UpdateChallenges();
     }
 
     private async Task LoadMore(CancellationToken ct)
