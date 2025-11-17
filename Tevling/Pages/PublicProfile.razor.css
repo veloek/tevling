@@ -3,6 +3,8 @@
   font-weight: 300;
 }
 
+
+
 .public-profile-name {
   font-size: larger;
 }
@@ -18,7 +20,7 @@ button {
 
 .public-profile-info {
   width: 100%;
-  margin-right: 13rem;
+  margin-top: 3rem;
 }
 
 @media (max-width: 1500px) {
