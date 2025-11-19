@@ -5,4 +5,5 @@ public enum NotificationType
     FollowRequestCreated,
     FollowRequestAccepted,
     ChallengeInvite,
+    Cleared,
 }

@@ -29,7 +29,7 @@ namespace Tevling.Migrations
 
                     b.HasIndex("ChallengesId");
 
-                    b.ToTable("AthleteChallenge");
+                    b.ToTable("AthleteChallenge", (string)null);
                 });
 
             modelBuilder.Entity("AthleteChallenge1", b =>
@@ -44,7 +44,7 @@ namespace Tevling.Migrations
 
                     b.HasIndex("InvitedAthletesId");
 
-                    b.ToTable("AthleteChallenge1");
+                    b.ToTable("AthleteChallenge1", (string)null);
                 });
 
             modelBuilder.Entity("AthleteChallengeGroup", b =>
@@ -59,7 +59,7 @@ namespace Tevling.Migrations
 
                     b.HasIndex("MembersId");
 
-                    b.ToTable("AthleteChallengeGroup");
+                    b.ToTable("AthleteChallengeGroup", (string)null);
                 });
 
             modelBuilder.Entity("Tevling.Model.Activity", b =>
@@ -78,7 +78,7 @@ namespace Tevling.Migrations
 
                     b.HasIndex("AthleteId");
 
-                    b.ToTable("Activities");
+                    b.ToTable("Activities", (string)null);
                 });
 
             modelBuilder.Entity("Tevling.Model.Athlete", b =>
@@ -116,7 +116,7 @@ namespace Tevling.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Athletes");
+                    b.ToTable("Athletes", (string)null);
                 });
 
             modelBuilder.Entity("Tevling.Model.Challenge", b =>
@@ -164,7 +164,7 @@ namespace Tevling.Migrations
 
                     b.HasIndex("WinnerId");
 
-                    b.ToTable("Challenges");
+                    b.ToTable("Challenges", (string)null);
                 });
 
             modelBuilder.Entity("Tevling.Model.ChallengeGroup", b =>
@@ -187,7 +187,7 @@ namespace Tevling.Migrations
 
                     b.HasIndex("CreatedById");
 
-                    b.ToTable("ChallengeGroups");
+                    b.ToTable("ChallengeGroups", (string)null);
                 });
 
             modelBuilder.Entity("Tevling.Model.ChallengeTemplate", b =>
@@ -224,7 +224,7 @@ namespace Tevling.Migrations
 
                     b.HasIndex("CreatedById");
 
-                    b.ToTable("ChallengeTemplates");
+                    b.ToTable("ChallengeTemplates", (string)null);
                 });
 
             modelBuilder.Entity("Tevling.Model.FollowRequest", b =>
@@ -239,7 +239,7 @@ namespace Tevling.Migrations
 
                     b.HasIndex("FollowerId");
 
-                    b.ToTable("FollowRequests");
+                    b.ToTable("FollowRequests", (string)null);
                 });
 
             modelBuilder.Entity("Tevling.Model.Following", b =>
@@ -254,7 +254,7 @@ namespace Tevling.Migrations
 
                     b.HasIndex("FollowerId");
 
-                    b.ToTable("Following");
+                    b.ToTable("Following", (string)null);
                 });
 
             modelBuilder.Entity("AthleteChallenge", b =>
@@ -351,7 +351,7 @@ namespace Tevling.Migrations
 
                             b1.HasKey("ActivityId");
 
-                            b1.ToTable("Activities");
+                            b1.ToTable("Activities", (string)null);
 
                             b1.WithOwner()
                                 .HasForeignKey("ActivityId");

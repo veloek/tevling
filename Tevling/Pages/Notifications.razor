@@ -1,0 +1,11 @@
+@page "/Notifications"
+@using Tevling.Model.Notification
+<h3 class="title mb-5" >Notifications</h3>
+
+<div>
+    @foreach (Notification notification in UnreadNotifications)
+    {
+        <span>@notification.Id</span>
+    }    
+</div>
+
