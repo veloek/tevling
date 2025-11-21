@@ -8,6 +8,7 @@ public partial class Notifications : ComponentBase, IDisposable
     [Inject] private IAuthenticationService AuthenticationService { get; set; } = null!;
     [Inject] private ILogger<Notifications> Logger { get; set; } = null!;
 
+    [Inject] private INotificationStateService NotificationStateService { get; set; } = null!;
 
     private ICollection<Notification> UnreadNotifications { get; set; } = [];
     private IDisposable? _notificationsFeedSubscription;
@@ -17,9 +18,12 @@ public partial class Notifications : ComponentBase, IDisposable
     {
         _athlete = await AuthenticationService.GetCurrentAthleteAsync();
 
-        UnreadNotifications = [.. await NotificationService.GetUnreadNotifications(_athlete.Id)];
-        await NotificationService.MarkNotificationsAsRead([..UnreadNotifications]);
-        SubscribeToNotificationFeed();
+        // UnreadNotifications = [.. await NotificationService.GetUnreadNotifications(_athlete.Id)];
+        // await NotificationService.MarkNotificationsAsRead([..UnreadNotifications]);
+        // SubscribeToNotificationFeed();
+        await NotificationStateService.Subscribe();
+        NotificationStateService.MarkAllAsRead();
+        NotificationStateService.OnChange += StateHasChanged;
     }
 
     private void SubscribeToNotificationFeed()
@@ -45,5 +49,6 @@ public partial class Notifications : ComponentBase, IDisposable
     public void Dispose()
     {
         _notificationsFeedSubscription?.Dispose();
+        NotificationStateService.OnChange -= StateHasChanged;
     }
 }

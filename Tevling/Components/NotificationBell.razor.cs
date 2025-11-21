@@ -6,6 +6,8 @@ public partial class NotificationBell : ComponentBase, IDisposable
 {
     [Inject] private INotificationService NotificationService { get; set; } = null!;
     [Inject] private ILogger<NotificationBell> Logger { get; set; } = null!;
+    
+    [Inject] private INotificationStateService NotificationStateService { get; set; } = null!;
 
     [Parameter] public int AthleteId { get; set; }
     private int Count { get; set; }
@@ -14,8 +16,10 @@ public partial class NotificationBell : ComponentBase, IDisposable
     protected override async Task OnInitializedAsync()
     {
         Logger.LogInformation("Initializing NotificationBell");
-        SubscribeToNotificationsFeed();
-        Count = (await NotificationService.GetUnreadNotifications(AthleteId)).Count;
+        // SubscribeToNotificationsFeed();
+        // Count = (await NotificationService.GetUnreadNotifications(AthleteId)).Count;
+        await NotificationStateService.Subscribe();
+        NotificationStateService.OnChange += StateHasChanged;
     }
 
     private void SubscribeToNotificationsFeed()
@@ -45,5 +49,6 @@ public partial class NotificationBell : ComponentBase, IDisposable
     {
         Logger.LogInformation("Disposing NotificationBell");
         _notificationFeedSubscription?.Dispose();
+        NotificationStateService.OnChange -= StateHasChanged;
     }
 }
