@@ -134,6 +134,20 @@ public class DataContext(DbContextOptions<DataContext> options) : DbContext(opti
         _ = await SaveChangesAsync(ct);
     }
 
+    public async Task<ICollection<Notification>> MarkNotificationsAsReadAsync(IReadOnlyCollection<Notification> notifications,
+        CancellationToken ct = default)
+    {
+        List<Notification> notificationsToUpdate =
+            [.. UnreadNotifications.Where(n => notifications.Contains(n)).Where(n => n.Read == null)];
+        foreach (Notification notification in notificationsToUpdate)
+        {
+            notification.Read = DateTimeOffset.Now;
+        }
+        _ = await SaveChangesAsync(ct);
+        
+        return notificationsToUpdate;
+    }
+
     public async Task<Athlete> AddAthleteAsync(Athlete athlete, CancellationToken ct = default)
     {
         EntityEntry<Athlete> entry = await Athletes.AddAsync(athlete, ct);

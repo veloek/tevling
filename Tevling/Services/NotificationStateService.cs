@@ -2,25 +2,30 @@ using Tevling.Model.Notification;
 
 namespace Tevling.Services;
 
-public class NotificationStateService (IAuthenticationService authenticationService,
+public class NotificationStateService(
+    IAuthenticationService authenticationService,
     INotificationService notificationService,
     ILogger<NotificationStateService> logger) : INotificationStateService, IDisposable
 {
-
-    
     private readonly List<Notification> _notifications = [];
     public event Action? OnChange;
-    
+
     public IReadOnlyCollection<Notification> Notifications => _notifications;
-    public int UnreadCount => _notifications.Count;
+    public int UnreadCount => _notifications.Count(n => n.Read == null);
     private IDisposable? _notificationSubscription;
-    
-    
-    public async Task Subscribe()
+
+    private int? _athleteId;
+
+    public async Task InitAsync()
     {
+        _athleteId ??= (await authenticationService.GetCurrentAthleteAsync()).Id;
+
+        _notifications.Clear();
+        _notifications.AddRange(await notificationService.GetUnreadNotifications(_athleteId!.Value));
+
         // Subscribe to the NotificationService's notification stream
         _notificationSubscription ??= notificationService.GetNotificationFeed(
-                (await authenticationService.GetCurrentAthleteAsync()).Id)
+                _athleteId!.Value)
             .Catch<Notification, Exception>(err =>
             {
                 logger.LogError(err, "Error in Notification feed");
@@ -30,22 +35,24 @@ public class NotificationStateService (IAuthenticationService authenticationServ
             .Subscribe(async void (notification) => { AddNotification(notification); });
     }
 
-    
-    public void MarkAllAsRead()
+
+    public async Task MarkAllAsRead()
     {
+        _ = await notificationService.MarkNotificationsAsRead(_notifications);
         _notifications.Clear();
+        _notifications.AddRange(await notificationService.GetUnreadNotifications(_athleteId!.Value));
+
         OnChange?.Invoke();
     }
-    
+
     private void AddNotification(Notification notification)
     {
         _notifications.Add(notification);
         OnChange?.Invoke();
     }
-    
+
     public void Dispose()
     {
-        _notificationSubscription?.Dispose();   
+        _notificationSubscription?.Dispose();
     }
-    
 }

@@ -9,8 +9,8 @@ public interface INotificationStateService
 
     event Action? OnChange;
 
-    public void MarkAllAsRead();
+    public Task MarkAllAsRead();
 
-    public Task Subscribe();
+    public Task InitAsync();
     
 }

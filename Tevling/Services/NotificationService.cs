@@ -28,25 +28,11 @@ public class NotificationService(IDbContextFactory<DataContext> dataContextFacto
         }
     }
 
-    public async Task MarkNotificationsAsRead(IReadOnlyCollection<Notification> notifications,
+    public async Task<ICollection<Notification>> MarkNotificationsAsRead(IReadOnlyCollection<Notification> notifications,
         CancellationToken ct = default)
     {
         await using DataContext dataContext = await dataContextFactory.CreateDbContextAsync(ct);
-        await dataContext.RemoveNotifications(notifications, ct);
-        if (notifications.Count > 0)
-        {
-            await Publish(
-                [
-                    new Notification
-                    {
-                        Created = DateTimeOffset.Now,
-                        CreatedBy = notifications.Select(n => n.Recipient).First(),
-                        Recipient = notifications.Select(n => n.Recipient).First(),
-                        Type = NotificationType.Cleared,
-                    },
-                ],
-                ct);
-        }
+        return await dataContext.MarkNotificationsAsReadAsync(notifications, ct);
     }
 
     public async Task<IReadOnlyCollection<Notification>> GetUnreadNotifications(int athleteId,

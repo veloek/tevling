@@ -6,6 +6,8 @@ public class Notification
     public required DateTimeOffset Created { get; init; }
     public required int CreatedBy { get; init; }
     public required int Recipient { get; init; }
+
+    public DateTimeOffset? Read { get; set; }
     public required NotificationType Type { get; init; } 
     
     public string? Message { get; init; }

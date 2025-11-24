@@ -9,6 +9,6 @@ public interface INotificationService
 
     public Task<IReadOnlyCollection<Notification>> GetUnreadNotifications(int athleteId, CancellationToken ct = default);
 
-    public Task MarkNotificationsAsRead(IReadOnlyCollection<Notification> notifications,
+    public Task<ICollection<Notification>> MarkNotificationsAsRead(IReadOnlyCollection<Notification> notifications,
         CancellationToken ct = default);
 }
