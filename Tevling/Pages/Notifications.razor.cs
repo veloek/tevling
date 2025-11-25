@@ -1,30 +1,26 @@
-using Tevling.Model.Notification;
 
 namespace Tevling.Pages;
 
 public partial class Notifications : ComponentBase, IDisposable
 {
-    [Inject] private INotificationService NotificationService { get; set; } = null!;
     [Inject] private IAuthenticationService AuthenticationService { get; set; } = null!;
-    [Inject] private ILogger<Notifications> Logger { get; set; } = null!;
 
     [Inject] private INotificationStateService NotificationStateService { get; set; } = null!;
 
-    private Athlete _athlete = null!;
-
     protected override async Task OnInitializedAsync()
     {
-        _athlete = await AuthenticationService.GetCurrentAthleteAsync();
-        
         await NotificationStateService.InitAsync();
-        NotificationStateService.OnChange += StateHasChanged;
+        NotificationStateService.OnChange += HandleNotificationsChanged;
         await NotificationStateService.MarkAllAsRead();
     }
 
-
+    private void HandleNotificationsChanged()
+    {
+        _ = InvokeAsync(StateHasChanged);
+    }
 
     public void Dispose()
     {
-        NotificationStateService.OnChange -= StateHasChanged;
+        NotificationStateService.OnChange -= HandleNotificationsChanged;
     }
 }

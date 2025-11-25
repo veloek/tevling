@@ -138,7 +138,7 @@ public class DataContext(DbContextOptions<DataContext> options) : DbContext(opti
         CancellationToken ct = default)
     {
         List<Notification> notificationsToUpdate =
-            [.. UnreadNotifications.Where(n => notifications.Contains(n)).Where(n => n.Read == null)];
+            [.. UnreadNotifications.AsTracking().Where(n => notifications.Contains(n)).Where(n => n.Read == null)];
         foreach (Notification notification in notificationsToUpdate)
         {
             notification.Read = DateTimeOffset.Now;
