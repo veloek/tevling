@@ -8,6 +8,7 @@ public interface INotificationService
     public IObservable<Notification> GetNotificationFeed(int athleteId);
 
     public Task<IReadOnlyCollection<Notification>> GetNotifications(int athleteId, CancellationToken ct = default);
+    public Task<IReadOnlyCollection<Notification>> GetUnreadNotifications(int athleteId, CancellationToken ct = default);
 
     public Task<ICollection<Notification>> MarkNotificationsAsRead(int athleteId,
         CancellationToken ct = default);

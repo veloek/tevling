@@ -19,6 +19,7 @@ namespace Tevling.Migrations
                     Created = table.Column<long>(type: "INTEGER", nullable: false),
                     CreatedBy = table.Column<int>(type: "INTEGER", nullable: false),
                     Recipient = table.Column<int>(type: "INTEGER", nullable: false),
+                    NotificationReadId = table.Column<Guid>(type: "TEXT", nullable: true),
                     Read = table.Column<DateTimeOffset>(type: "TEXT", nullable: true),
                     Type = table.Column<int>(type: "INTEGER", nullable: false),
                     Message = table.Column<string>(type: "TEXT", nullable: true)

@@ -11,7 +11,7 @@ using Tevling.Data;
 namespace Tevling.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20251125081123_notifications")]
+    [Migration("20251126091735_notifications")]
     partial class notifications
     {
         /// <inheritdoc />
@@ -273,6 +273,9 @@ namespace Tevling.Migrations
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Message")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid?>("NotificationReadId")
                         .HasColumnType("TEXT");
 
                     b.Property<DateTimeOffset?>("Read")

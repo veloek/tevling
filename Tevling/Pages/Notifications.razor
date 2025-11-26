@@ -3,7 +3,7 @@
 <h3 class="title mb-5">Notifications</h3>
 
 <div>
-    @foreach (Notification notification in NotificationStateService.Notifications.OrderBy(n => n.Read is not null)
+    @foreach (Notification notification in _notifications.OrderBy(n => n.Read is not null)
                   .ThenByDescending(n => n.Created))
     {
         @if (notification.Read is null)

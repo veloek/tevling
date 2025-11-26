@@ -272,6 +272,9 @@ namespace Tevling.Migrations
                     b.Property<string>("Message")
                         .HasColumnType("TEXT");
 
+                    b.Property<Guid?>("NotificationReadId")
+                        .HasColumnType("TEXT");
+
                     b.Property<DateTimeOffset?>("Read")
                         .HasColumnType("TEXT");
 
