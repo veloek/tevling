@@ -4,7 +4,8 @@ public class Notification
 {
     public Guid Id { get; } = Guid.NewGuid();
     public required DateTimeOffset Created { get; init; }
-    public required int CreatedBy { get; init; }
+    public required int CreatedById { get; init; }
+    public required Athlete? CreatedBy { get; init; }
     public required int Recipient { get; init; }
     
     public Guid? NotificationReadId { get; init; }

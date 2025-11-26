@@ -7,8 +7,8 @@
             </div>
 
             <div class="d-flex align-items-center flex-row column-gap-2 athlete-name-container me-1">
-                @* <Avatar Url="@Activity.Athlete?.ImgUrl" Size="40" /> *@
-                <span class="athlete-name">@Notification.CreatedBy</span>
+                <Avatar Url="@Notification.CreatedBy!.ImgUrl" Size="40" />
+                <span class="athlete-name">@Notification.CreatedBy!.Name</span>
             </div>
 
             @* <div class="notification-card-body d-flex flex-column row-gap-2"> *@
