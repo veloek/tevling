@@ -1,0 +1,28 @@
+@if (Notification is not null)
+{
+    <div class="notification-card px-3 py-2 d-flex flex-row flex-wrap @(Notification.Read is null ? "notification-unread" : "notification-read")">
+        <div class="notification-card-content pb-1 d-flex flex-column">
+            <div class="notification-card-header mb-2 d-flex flex-row align-items-center flex-wrap-reverse row-gap-1">
+                <span class="notification-time">@NotificationTime</span>
+            </div>
+
+            <div class="d-flex align-items-center flex-row column-gap-2 athlete-name-container me-1">
+                @* <Avatar Url="@Activity.Athlete?.ImgUrl" Size="40" /> *@
+                <span class="athlete-name">@Notification.CreatedBy</span>
+            </div>
+
+            @* <div class="notification-card-body d-flex flex-column row-gap-2"> *@
+            @*     <div class="d-flex justify-content-between"> *@
+            @*         <span class="badge bg-primary">@ActivityTypeTranslator.Translate(Activity.Details.Type)</span> *@
+            @*         <span class="device-name">@Activity.Details.DeviceName</span> *@
+            @*     </div> *@
+            @*     <span class="notification-name">@Activity.Details.Name</span> *@
+            @*     <span class="notification-description">@Activity.Details.Description</span> *@
+            @*     <div class="d-flex flex-row column-gap-4"> *@
+            @*         <span>@Time</span> *@
+            @*         <span>@Stats</span> *@
+            @*     </div> *@
+            @* </div> *@
+        </div>
+    </div>
+}
