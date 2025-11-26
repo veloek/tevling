@@ -134,11 +134,11 @@ public class DataContext(DbContextOptions<DataContext> options) : DbContext(opti
         _ = await SaveChangesAsync(ct);
     }
 
-    public async Task<ICollection<Notification>> MarkNotificationsAsReadAsync(IReadOnlyCollection<Notification> notifications,
+    public async Task<ICollection<Notification>> MarkNotificationsAsReadAsync(int athleteId,
         CancellationToken ct = default)
     {
         List<Notification> notificationsToUpdate =
-            [.. UnreadNotifications.AsTracking().Where(n => notifications.Contains(n)).Where(n => n.Read == null)];
+            [.. UnreadNotifications.AsTracking().Where(n => n.Recipient == athleteId).Where(n => n.Read == null)];
         foreach (Notification notification in notificationsToUpdate)
         {
             notification.Read = DateTimeOffset.Now;

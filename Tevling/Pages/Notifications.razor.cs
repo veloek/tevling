@@ -21,6 +21,7 @@ public partial class Notifications : ComponentBase, IDisposable
 
     public void Dispose()
     {
+        NotificationStateService.RefreshAsync();
         NotificationStateService.OnChange -= HandleNotificationsChanged;
     }
 }

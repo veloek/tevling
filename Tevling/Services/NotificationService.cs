@@ -9,6 +9,7 @@ public class NotificationService(IDbContextFactory<DataContext> dataContextFacto
     : INotificationService
 {
     private readonly Subject<Notification> _notificationFeed = new();
+    private const int CutoffDays = -5;
 
     public IObservable<Notification> GetNotificationFeed(int athleteId)
     {
@@ -28,19 +29,33 @@ public class NotificationService(IDbContextFactory<DataContext> dataContextFacto
         }
     }
 
-    public async Task<ICollection<Notification>> MarkNotificationsAsRead(IReadOnlyCollection<Notification> notifications,
+    public async Task<ICollection<Notification>> MarkNotificationsAsRead(int athleteId,
         CancellationToken ct = default)
     {
         await using DataContext dataContext = await dataContextFactory.CreateDbContextAsync(ct);
-        return await dataContext.MarkNotificationsAsReadAsync(notifications, ct);
+        return await dataContext.MarkNotificationsAsReadAsync(athleteId, ct);
     }
 
-    public async Task<IReadOnlyCollection<Notification>> GetUnreadNotifications(int athleteId,
+    public async Task RemoveOldNotifications(int athleteId, CancellationToken ct = default)
+    {
+        await using DataContext dataContext = await dataContextFactory.CreateDbContextAsync(ct);
+        DateTimeOffset cutoff = DateTimeOffset.Now.AddDays(CutoffDays);
+
+        dataContext.UnreadNotifications.RemoveRange(
+            dataContext.UnreadNotifications.Where(n =>
+                n.Recipient == athleteId && n.Created < cutoff && n.Read != null));
+
+        _ = await dataContext.SaveChangesAsync(ct);
+    }
+    
+    public async Task<IReadOnlyCollection<Notification>> GetNotifications(int athleteId,
         CancellationToken ct = default)
     {
         await using DataContext dataContext = await dataContextFactory.CreateDbContextAsync(ct);
+        DateTimeOffset cutoff = DateTimeOffset.Now.AddDays(CutoffDays);
         return await dataContext.UnreadNotifications
             .Where(n => n.Recipient == athleteId)
+            .Where(n => n.Read == null ||  n.Created > cutoff )
             .ToListAsync(cancellationToken: ct);
     }
 }

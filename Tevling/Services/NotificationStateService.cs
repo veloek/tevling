@@ -10,7 +10,7 @@ public class NotificationStateService(
     private readonly List<Notification> _notifications = [];
     public event Action? OnChange;
 
-    public IReadOnlyCollection<Notification> Notifications => _notifications;
+    public IReadOnlyList<Notification> Notifications => _notifications;
     public int UnreadCount => _notifications.Count(n => n.Read == null);
     private IDisposable? _notificationSubscription;
 
@@ -21,7 +21,7 @@ public class NotificationStateService(
         _athleteId ??= (await authenticationService.GetCurrentAthleteAsync()).Id;
 
         _notifications.Clear();
-        _notifications.AddRange(await notificationService.GetUnreadNotifications(_athleteId!.Value));
+        _notifications.AddRange(await notificationService.GetNotifications(_athleteId!.Value));
 
         // Subscribe to the NotificationService's notification stream
         _notificationSubscription ??= notificationService.GetNotificationFeed(
@@ -35,12 +35,20 @@ public class NotificationStateService(
             .Subscribe(async void (notification) => { AddNotification(notification); });
     }
 
+    public async Task RefreshAsync()
+    {
+        _notifications.Clear();
+        _notifications.AddRange(await notificationService.GetNotifications(_athleteId!.Value));
+        OnChange?.Invoke();
+    }
+    
 
     public async Task MarkAllAsRead()
     {
-        _ = await notificationService.MarkNotificationsAsRead(_notifications);
+        await notificationService.RemoveOldNotifications(_athleteId!.Value);
         _notifications.Clear();
-        _notifications.AddRange(await notificationService.GetUnreadNotifications(_athleteId!.Value));
+        _notifications.AddRange(await notificationService.GetNotifications(_athleteId!.Value));
+        _ = await notificationService.MarkNotificationsAsRead(_athleteId!.Value);
 
         OnChange?.Invoke();
     }
