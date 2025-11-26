@@ -4,16 +4,9 @@
 
 <div>
     @foreach (Notification notification in _notifications.OrderBy(n => n.Read is not null)
-                  .ThenByDescending(n => n.Created))
+                      .ThenByDescending(n => n.Created))
     {
-        @if (notification.Read is null)
-        {
-            <h3>@notification.Id</h3>
-        }
-        else
-        {
-            <h5>@notification.Id</h5>
-        }
+        <NotificationCard Notification="@notification"/>
     }
 </div>
 
