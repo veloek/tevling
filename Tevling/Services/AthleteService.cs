@@ -1,6 +1,7 @@
 using System.Reactive.Subjects;
 using Microsoft.EntityFrameworkCore;
 using Tevling.Model.Notification;
+using Tevling.Model.Notification.Message;
 
 namespace Tevling.Services;
 
@@ -141,7 +142,7 @@ public class AthleteService(
                         new Notification
                         {
                             Created = DateTimeOffset.Now,
-                            CreatedBy = athlete.Id,
+                            CreatedById = athlete.Id,
                             Recipient = followingId,
                             Type = NotificationType.FollowRequestCreated,
                         },
@@ -200,7 +201,7 @@ public class AthleteService(
                 new Notification
                 {
                     Created = DateTimeOffset.Now,
-                    CreatedBy = athlete.Id,
+                    CreatedById = athlete.Id,
                     Recipient = followerId,
                     Type = NotificationType.FollowRequestAccepted,
                 },

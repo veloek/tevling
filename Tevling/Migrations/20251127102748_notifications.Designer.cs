@@ -11,7 +11,7 @@ using Tevling.Data;
 namespace Tevling.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20251126091735_notifications")]
+    [Migration("20251127102748_notifications")]
     partial class notifications
     {
         /// <inheritdoc />
@@ -266,20 +266,20 @@ namespace Tevling.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT");
 
+                    b.Property<int?>("ChallengeId")
+                        .HasColumnType("INTEGER");
+
                     b.Property<long>("Created")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("CreatedBy")
+                    b.Property<int>("CreatedById")
                         .HasColumnType("INTEGER");
-
-                    b.Property<string>("Message")
-                        .HasColumnType("TEXT");
 
                     b.Property<Guid?>("NotificationReadId")
                         .HasColumnType("TEXT");
 
-                    b.Property<DateTimeOffset?>("Read")
-                        .HasColumnType("TEXT");
+                    b.Property<long?>("Read")
+                        .HasColumnType("INTEGER");
 
                     b.Property<int>("Recipient")
                         .HasColumnType("INTEGER");
@@ -288,6 +288,10 @@ namespace Tevling.Migrations
                         .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("ChallengeId");
+
+                    b.HasIndex("CreatedById");
 
                     b.ToTable("UnreadNotifications");
                 });
@@ -463,6 +467,23 @@ namespace Tevling.Migrations
                         .HasForeignKey("FollowerId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("Tevling.Model.Notification.Notification", b =>
+                {
+                    b.HasOne("Tevling.Model.Challenge", "Challenge")
+                        .WithMany()
+                        .HasForeignKey("ChallengeId");
+
+                    b.HasOne("Tevling.Model.Athlete", "CreatedBy")
+                        .WithMany()
+                        .HasForeignKey("CreatedById")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Challenge");
+
+                    b.Navigation("CreatedBy");
                 });
 
             modelBuilder.Entity("Tevling.Model.Athlete", b =>

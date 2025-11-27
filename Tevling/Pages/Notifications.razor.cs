@@ -40,7 +40,7 @@ public partial class Notifications : ComponentBase, IDisposable
                 .. _notifications.Select(n => new Notification
                 {
                     Created = DateTimeOffset.Now,
-                    CreatedBy = Athlete.Id,
+                    CreatedById = Athlete.Id,
                     Recipient = Athlete.Id,
                     Type = NotificationType.Read,
                     NotificationReadId = n.Id,

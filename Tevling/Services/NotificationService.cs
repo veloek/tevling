@@ -31,6 +31,10 @@ public class NotificationService(IDbContextFactory<DataContext> dataContextFacto
         
         foreach (Notification notification in notifications)
         {
+            Athlete athlete = await dataContext.Athletes
+                    .FirstOrDefaultAsync(a => a.Id == notification.CreatedById, ct) ??
+                throw new Exception($"Unknown athlete ID {notification.CreatedById}");
+            notification.CreatedBy = athlete;
             _notificationFeed.OnNext(notification);
         }
     }
@@ -67,6 +71,7 @@ public class NotificationService(IDbContextFactory<DataContext> dataContextFacto
         await using DataContext dataContext = await dataContextFactory.CreateDbContextAsync(ct);
         DateTimeOffset cutoff = DateTimeOffset.Now.AddDays(CutoffDays);
         return await dataContext.UnreadNotifications
+            .Include(n => n.CreatedBy)
             .Where(n => n.Recipient == athleteId)
             .Where(n => n.Read == null ||  n.Created > cutoff )
             .ToListAsync(cancellationToken: ct);

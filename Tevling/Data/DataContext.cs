@@ -104,6 +104,10 @@ public class DataContext(DbContextOptions<DataContext> options) : DbContext(opti
             .HasConversion(new DateTimeOffsetToBinaryConverter());
         
         modelBuilder.Entity<Notification>()
+            .Property(n => n.Read)
+            .HasConversion(new DateTimeOffsetToBinaryConverter());
+        
+        modelBuilder.Entity<Notification>()
             .HasKey(n => n.Id);
         
 
