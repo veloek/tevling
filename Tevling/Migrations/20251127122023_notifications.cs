@@ -20,7 +20,7 @@ namespace Tevling.Migrations
                     CreatedById = table.Column<int>(type: "INTEGER", nullable: false),
                     Recipient = table.Column<int>(type: "INTEGER", nullable: false),
                     NotificationReadId = table.Column<Guid>(type: "TEXT", nullable: true),
-                    ChallengeId = table.Column<int>(type: "INTEGER", nullable: true),
+                    ChallengeTitle = table.Column<string>(type: "TEXT", nullable: true),
                     Read = table.Column<long>(type: "INTEGER", nullable: true),
                     Type = table.Column<int>(type: "INTEGER", nullable: false)
                 },
@@ -33,17 +33,7 @@ namespace Tevling.Migrations
                         principalTable: "Athletes",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_UnreadNotifications_Challenges_ChallengeId",
-                        column: x => x.ChallengeId,
-                        principalTable: "Challenges",
-                        principalColumn: "Id");
                 });
-
-            migrationBuilder.CreateIndex(
-                name: "IX_UnreadNotifications_ChallengeId",
-                table: "UnreadNotifications",
-                column: "ChallengeId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_UnreadNotifications_CreatedById",

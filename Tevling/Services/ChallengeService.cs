@@ -1,12 +1,14 @@
 using System.Globalization;
 using System.Reactive.Subjects;
 using Microsoft.EntityFrameworkCore;
+using Tevling.Model.Notification;
 
 namespace Tevling.Services;
 
 public class ChallengeService(
     ILogger<ChallengeService> logger,
-    IDbContextFactory<DataContext> dataContextFactory)
+    IDbContextFactory<DataContext> dataContextFactory,
+    INotificationService notificationService)
     : IChallengeService
 {
     private readonly Subject<FeedUpdate<Challenge>> _challengeFeed = new();
@@ -175,6 +177,23 @@ public class ChallengeService(
         await dataContext.Entry(challenge).Collection(c => c.Athletes!).LoadAsync(ct);
 
         _challengeFeed.OnNext(new FeedUpdate<Challenge> { Item = challenge, Action = FeedAction.Create });
+
+        if (challenge.InvitedAthletes != null)
+        {
+            foreach (Athlete challengeInvitedAthlete in challenge.InvitedAthletes)
+            {
+                await notificationService.Publish([
+                    new Notification
+                    {
+                        CreatedById = newChallenge.CreatedBy,
+                        ChallengeTitle = newChallenge.Title,
+                        Recipient = challengeInvitedAthlete.Id,
+                        Created = DateTimeOffset.Now,
+                        Type = NotificationType.ChallengeInvite,
+                    },
+                ], ct);
+            }
+        }
 
         return challenge;
     }

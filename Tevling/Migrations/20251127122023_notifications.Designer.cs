@@ -11,7 +11,7 @@ using Tevling.Data;
 namespace Tevling.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20251127102748_notifications")]
+    [Migration("20251127122023_notifications")]
     partial class notifications
     {
         /// <inheritdoc />
@@ -266,8 +266,8 @@ namespace Tevling.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT");
 
-                    b.Property<int?>("ChallengeId")
-                        .HasColumnType("INTEGER");
+                    b.Property<string>("ChallengeTitle")
+                        .HasColumnType("TEXT");
 
                     b.Property<long>("Created")
                         .HasColumnType("INTEGER");
@@ -288,8 +288,6 @@ namespace Tevling.Migrations
                         .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("ChallengeId");
 
                     b.HasIndex("CreatedById");
 
@@ -471,17 +469,11 @@ namespace Tevling.Migrations
 
             modelBuilder.Entity("Tevling.Model.Notification.Notification", b =>
                 {
-                    b.HasOne("Tevling.Model.Challenge", "Challenge")
-                        .WithMany()
-                        .HasForeignKey("ChallengeId");
-
                     b.HasOne("Tevling.Model.Athlete", "CreatedBy")
                         .WithMany()
                         .HasForeignKey("CreatedById")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Challenge");
 
                     b.Navigation("CreatedBy");
                 });
