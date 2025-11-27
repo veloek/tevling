@@ -1,7 +1,6 @@
 using System.Reactive.Subjects;
 using Microsoft.EntityFrameworkCore;
 using Tevling.Model.Notification;
-using Tevling.Model.Notification.Message;
 
 namespace Tevling.Services;
 

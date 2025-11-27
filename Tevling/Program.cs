@@ -81,7 +81,6 @@ builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
 builder.Services.AddScoped<IBrowserTime, BrowserTime>();
-builder.Services.AddScoped<INotificationStateService, NotificationStateService>();
 
 builder.Services.AddStravaClient();
 

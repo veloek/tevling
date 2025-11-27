@@ -39,20 +39,6 @@ public class NotificationService(IDbContextFactory<DataContext> dataContextFacto
         }
     }
 
-    public async Task<ICollection<Notification>> MarkNotificationsAsRead(IReadOnlyCollection<Notification> notifications,
-        CancellationToken ct = default)
-    {
-        await using DataContext dataContext = await dataContextFactory.CreateDbContextAsync(ct);
-        return await dataContext.MarkNotificationsAsReadAsync(notifications, ct);
-    }
-    
-    public async Task<ICollection<Notification>> MarkNotificationsAsRead(int athleteId,
-        CancellationToken ct = default)
-    {
-        await using DataContext dataContext = await dataContextFactory.CreateDbContextAsync(ct);
-        return await dataContext.MarkNotificationsAsReadAsync(athleteId, ct);
-    }
-
     public async Task RemoveOldNotifications(int athleteId, CancellationToken ct = default)
     {
         await using DataContext dataContext = await dataContextFactory.CreateDbContextAsync(ct);
