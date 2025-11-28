@@ -34,4 +34,7 @@
     <data name="About" xml:space="preserve">
         <value>About</value>
     </data>
+    <data name="Notifications" xml:space="preserve">
+        <value>Notifications</value>
+    </data>
 </root>

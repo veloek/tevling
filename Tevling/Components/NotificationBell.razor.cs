@@ -14,6 +14,8 @@ public partial class NotificationBell : ComponentBase, IDisposable
 
     private List<Notification> _notifications = [];
     [Parameter] public int AthleteId { get; set; }
+    
+    [Parameter] public string? Text { get; set; }
 
     protected override async Task OnInitializedAsync()
     {

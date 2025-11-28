@@ -86,6 +86,7 @@ builder.Services.AddStravaClient();
 
 builder.Services.AddSingleton<IDevService, DevService>();
 builder.Services.AddSingleton<ActivityTypeTranslator>();
+builder.Services.AddSingleton<NotificationTranslator>();
 
 builder.Services.AddHostedService<BatchImportService>();
 
@@ -94,7 +95,7 @@ WebApplication app = builder.Build();
 app.UseStaticFiles();
 app.UseSerilogRequestLogging();
 app.UseRouting();
-app.UseRequestLocalization("en");
+app.UseRequestLocalization("no");
 app.UseCultureByHost();
 
 app.UseAuthentication();
