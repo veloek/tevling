@@ -18,6 +18,7 @@ public partial class Notifications : ComponentBase, IDisposable
     protected override async Task OnInitializedAsync()
     {
         Athlete = await AuthenticationService.GetCurrentAthleteAsync();
+        await NotificationService.RemoveOldNotifications(Athlete.Id);
         _notifications = [.. await NotificationService.GetNotifications(Athlete.Id)];
 
         _notificationSubscription ??= NotificationService.GetNotificationFeed(
