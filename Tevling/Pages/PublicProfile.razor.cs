@@ -57,9 +57,12 @@ public partial class PublicProfile : ComponentBase
             CreatedTime = browserTime.ToString("d");
             ActiveChallenges.Clear();
             AthleteMedals.Reset();
-            await FetchActiveChallenges();
             await CountMedals();
-            await FetchStats();
+            if (Athlete.IsFollowing(AthleteToViewId ) || Athlete.Id == AthleteToViewId)
+            {
+                await FetchActiveChallenges();
+                await FetchStats();
+            }
         }
     }
 
