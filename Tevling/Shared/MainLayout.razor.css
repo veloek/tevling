@@ -2,7 +2,7 @@
   position: relative;
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
+  height: 100vh;
   min-width: 380px;
   background-color: var(--bs-body-bg);
   color: var(--bs-body-color);
@@ -14,7 +14,8 @@
 
 main {
   flex: 1;
-  overflow: hidden;
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .sidebar {

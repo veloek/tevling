@@ -55,6 +55,7 @@ public partial class Statistics : ComponentBase, IAsyncDisposable
     private Athlete _athlete = null!;
     private Activity[] _activities = [];
     private IJSObjectReference? _module;
+    private IJSObjectReference? _resizeHandler;
 
     private TimePeriod TimePeriod { get; set; } = TimePeriod.Months;
     private int NumberOfPeriodsToReview { get; set; } = 3;
@@ -191,11 +192,30 @@ public partial class Statistics : ComponentBase, IAsyncDisposable
         ];
     }
 
+    private Dictionary<string, float[]> AggregateTotals(IReadOnlyList<Stats> stats)
+    {
+        float[] totalStats = new float[NumberOfPeriodsToReview];
+        foreach (Stats stat in stats)
+        {
+            for (int i = 0; i < stat.LastTimePeriodAggregate.Length; i++)
+            {
+                totalStats[i] += stat.LastTimePeriodAggregate[i];
+            }
+        }
+
+        return new Dictionary<string, float[]>
+        {
+            {
+                "Total", totalStats
+            },
+        };
+    }
+
     private async Task DrawChart()
     {
-        _module = await Js.InvokeAsync<IJSObjectReference>("import", "./Pages/Statistics.razor.js");
+        _module ??= await Js.InvokeAsync<IJSObjectReference>("import", "./Pages/Statistics.razor.js");
 
-        string[] months = TimePeriod switch
+        string[] timePeriodArray = TimePeriod switch
         {
             TimePeriod.Months => CreateMonthArray(NumberOfPeriodsToReview),
             TimePeriod.Weeks => CreateWeekArray(NumberOfPeriodsToReview),
@@ -204,13 +224,16 @@ public partial class Statistics : ComponentBase, IAsyncDisposable
 
         await UpdateMeasurementData();
 
+        bool isMobile = await _module.InvokeAsync<bool>("isMobile");
         switch (Measurement)
         {
             case ChallengeMeasurement.Distance:
                 await _module.InvokeVoidAsync(
                     "drawChart",
-                    Distances.ToDictionary(stat => stat.Type, stat => stat.LastTimePeriodAggregate),
-                    months,
+                    isMobile
+                        ? AggregateTotals(Distances)
+                        : Distances.ToDictionary(stat => stat.Type, stat => stat.LastTimePeriodAggregate),
+                    timePeriodArray,
                     "TheChart",
                     Loc["TotalDistance"] + " [km]",
                     "km");
@@ -218,8 +241,10 @@ public partial class Statistics : ComponentBase, IAsyncDisposable
             case ChallengeMeasurement.Elevation:
                 await _module.InvokeVoidAsync(
                     "drawChart",
-                    Elevations.ToDictionary(stat => stat.Type, stat => stat.LastTimePeriodAggregate),
-                    months,
+                    isMobile
+                        ? AggregateTotals(Elevations)
+                        : Elevations.ToDictionary(stat => stat.Type, stat => stat.LastTimePeriodAggregate),
+                    timePeriodArray,
                     "TheChart",
                     Loc["TotalElevation"] + " [m]",
                     "m");
@@ -227,8 +252,10 @@ public partial class Statistics : ComponentBase, IAsyncDisposable
             case ChallengeMeasurement.Time:
                 await _module.InvokeVoidAsync(
                     "drawChart",
-                    Durations.ToDictionary(stat => stat.Type, stat => stat.LastTimePeriodAggregate),
-                    months,
+                    isMobile
+                        ? AggregateTotals(Durations)
+                        : Durations.ToDictionary(stat => stat.Type, stat => stat.LastTimePeriodAggregate),
+                    timePeriodArray,
                     "TheChart",
                     Loc["TotalTime"] + " [h]",
                     "h");
@@ -236,12 +263,21 @@ public partial class Statistics : ComponentBase, IAsyncDisposable
             default:
                 throw new Exception("Unknown challenge measurement");
         }
+
+       _resizeHandler ??= await _module.InvokeAsync<IJSObjectReference>("enableCanvasResize", "TheChart");
     }
 
     public async ValueTask DisposeAsync()
     {
         try
         {
+            if (_resizeHandler != null)
+            {
+                await _resizeHandler.InvokeVoidAsync("dispose");
+                await _resizeHandler.DisposeAsync();
+                _resizeHandler = null;
+            }
+            
             if (_module != null)
             {
                 await _module.DisposeAsync();

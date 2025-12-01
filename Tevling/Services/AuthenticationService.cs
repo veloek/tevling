@@ -28,7 +28,7 @@ public class AuthenticationService(
         AuthenticationProperties authProperties = new()
         {
             AllowRefresh = true,
-            ExpiresUtc = DateTimeOffset.UtcNow.AddDays(1),
+            ExpiresUtc = DateTimeOffset.UtcNow.AddDays(7),
             IsPersistent = true,
             RedirectUri = "/",
         };

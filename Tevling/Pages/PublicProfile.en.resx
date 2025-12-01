@@ -74,21 +74,24 @@
         <value>Most popular activity</value>
     </data>
     <data name="LongestWalk" xml:space="preserve">
-    <value>Longest walk</value>
-</data>
+        <value>Longest walk</value>
+    </data>
     <data name="LongestActivity" xml:space="preserve">
-    <value>Longest activity</value>
-</data>
+        <value>Longest activity</value>
+    </data>
     <data name="BiggestClimb" xml:space="preserve">
-    <value>Biggest climb</value>
-</data>
+        <value>Biggest climb</value>
+    </data>
     <data name="ActivitiesLogged" xml:space="preserve">
-    <value>Activities logged</value>
-</data>
+        <value>Activities logged</value>
+    </data>
     <data name="Stats" xml:space="preserve">
         <value>Statistics</value>
     </data>
     <data name="StatsSmall" xml:space="preserve">
         <value>statistics</value>
+    </data>
+    <data name="ViewOnStrava" xml:space="preserve">
+        <value>View on Strava</value>
     </data>
 </root>

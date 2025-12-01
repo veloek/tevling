@@ -39,6 +39,7 @@ builder.Services.AddControllers();
 builder.Services.AddFeatureManagement();
 builder.Services.AddHealthChecks();
 builder.Services.AddLocalization();
+builder.Services.AddTokenRefresh();
 
 builder.Services.Configure<StravaConfig>(builder.Configuration.GetSection(nameof(StravaConfig)));
 builder.Services.Configure<CultureByHost>(builder.Configuration.GetSection(nameof(CultureByHost)));
@@ -101,6 +102,7 @@ app.UseCultureByHost();
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseAntiforgery();
+app.UseTokenRefresh();
 
 app.MapHealthChecks("healthz");
 app.MapControllers();

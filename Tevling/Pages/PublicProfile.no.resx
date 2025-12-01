@@ -74,24 +74,24 @@
         <value>Mest populære aktivitet</value>
     </data>
     <data name="LongestWalk" xml:space="preserve">
-    <value>Lengste gåtur</value>
-</data>
+        <value>Lengste gåtur</value>
+    </data>
     <data name="LongestActivity" xml:space="preserve">
-    <value>Lengste aktivitet</value>
-</data>
+        <value>Lengste aktivitet</value>
+    </data>
     <data name="BiggestClimb" xml:space="preserve">
-    <value>Største stigning</value>
-</data>
+        <value>Største stigning</value>
+    </data>
     <data name="ActivitiesLogged" xml:space="preserve">
-    <value>Antall loggførte aktiviteter</value>
-</data>
+        <value>Antall loggførte aktiviteter</value>
+    </data>
     <data name="Stats" xml:space="preserve">
         <value>Statistikk</value>
     </data>
     <data name="StatsSmall" xml:space="preserve">
         <value>statistikk</value>
     </data>
-    <data name="SeePublic" xml:space="preserve">
-        <value />
+    <data name="ViewOnStrava" xml:space="preserve">
+        <value>Vis på Strava</value>
     </data>
 </root>
