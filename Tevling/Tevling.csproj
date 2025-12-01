@@ -27,24 +27,4 @@
     <PackageReference Include="System.Linq.Async" Version="6.0.1" />
     <PackageReference Include="System.Reactive.Linq" Version="6.0.1" />
   </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Update="Components\NotificationCard.en.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>NotificationCard.en.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <EmbeddedResource Update="Components\NotificationCard.no.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>NotificationCard.en.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <EmbeddedResource Update="Pages\Notifications.en.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>NotificationCard.en.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <EmbeddedResource Update="Pages\Notifications.no.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>NotificationCard.en.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-  </ItemGroup>
-
 </Project>
