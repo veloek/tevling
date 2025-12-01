@@ -95,7 +95,7 @@ WebApplication app = builder.Build();
 app.UseStaticFiles();
 app.UseSerilogRequestLogging();
 app.UseRouting();
-app.UseRequestLocalization("no");
+app.UseRequestLocalization("en");
 app.UseCultureByHost();
 
 app.UseAuthentication();
