@@ -4,8 +4,6 @@ namespace Tevling.Components;
 
 public partial class NotificationBell : ComponentBase, IDisposable
 {
-    [Inject] private IAuthenticationService AuthenticationService { get; set; } = null!;
-
     [Inject] private INotificationService NotificationService { get; set; } = null!;
 
     [Inject] private ILogger<NotificationBell> Logger { get; set; } = null!;
