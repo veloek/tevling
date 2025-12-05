@@ -58,7 +58,7 @@ public partial class PublicProfile : ComponentBase
             ActiveChallenges.Clear();
             AthleteMedals.Reset();
             await CountMedals();
-            if (Athlete.IsFollowing(AthleteToViewId ) || Athlete.Id == AthleteToViewId)
+            if (IsFollowingOrSelf())
             {
                 await FetchActiveChallenges();
                 await FetchStats();
@@ -180,4 +180,6 @@ public partial class PublicProfile : ComponentBase
 
         await InvokeAsync(StateHasChanged);
     }
+    
+    private bool IsFollowingOrSelf() => Athlete.IsFollowing(AthleteToViewId) || Athlete.Id == AthleteToViewId;
 }
