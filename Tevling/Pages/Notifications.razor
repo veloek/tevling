@@ -1,0 +1,13 @@
+@page "/Notifications"
+@using Tevling.Model.Notification
+@inject IStringLocalizer<Notifications> loc
+<h3 class="title mb-5">@loc["Notifications"]</h3>
+
+<div>
+    @foreach (Notification notification in _notifications.OrderBy(n => n.Read is not null)
+                      .ThenByDescending(n => n.Created))
+    {
+        <NotificationCard Notification="@notification"/>
+    }
+</div>
+
