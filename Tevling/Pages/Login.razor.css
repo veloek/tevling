@@ -4,6 +4,10 @@
   text-align: center;
 }
 
+.tevling-login ::deep .copyright {
+  margin-bottom: 0;
+}
+
 @media (min-width: 641px) {
   .tevling-login {
     padding-top: 50px;
@@ -50,3 +54,9 @@ button.strava-login:active {
   font-size: 10px;
   margin-top: 2rem;
 }
+
+::deep .privacy-policy{
+  font-size: 10px;
+  margin-top: 2rem;
+}
+
