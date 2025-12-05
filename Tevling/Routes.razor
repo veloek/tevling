@@ -1,7 +1,7 @@
 @using System.Reflection
 @using Microsoft.FeatureManagement
 
-<Router AppAssembly="@typeof(App).Assembly" NotFound="NotFound">
+<Router AppAssembly="@typeof(App).Assembly">
     <Found Context="routeData">
         @{
             FeatureGateAttribute? attribute = routeData.PageType.GetCustomAttribute<FeatureGateAttribute>();
@@ -10,10 +10,6 @@
         {
             <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
             <FocusOnNavigate RouteData="@routeData" Selector="h1" />
-        }
-        else
-        {
-            @NotFound
         }
     </Found>
 </Router>
@@ -32,13 +28,4 @@
             ? a.Features.Any((string feature) => fm.IsEnabledAsync(feature).GetAwaiter().GetResult())
             : a.Features.All((string feature) => fm.IsEnabledAsync(feature).GetAwaiter().GetResult());
     }
-
-    private RenderFragment NotFound => __builder =>
-    {
-        <PageTitle>Tevling - Not found</PageTitle>
-        <center>
-            <h1>404</h1>
-            <p role="alert">Sorry, there's nothing at this address.</p>
-        </center>
-    };
 }
