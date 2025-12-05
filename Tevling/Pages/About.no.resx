@@ -29,7 +29,7 @@
         <value>Strava-integrasjon</value>
     </data>
     <data name="Strava_body" xml:space="preserve">
-        <value>Tevling bruker Strava for pålogging, og henting av aktivitetsdata. For mer informasjon, se personvernerklæringen</value>
+        <value>Tevling bruker Strava for pålogging, og henting av aktivitetsdata. For mer informasjon, se personvernerklæringen.</value>
     </data>
     <data name="Disclamer_title" xml:space="preserve">
         <value>Ansvarsfraskrivelse</value>
