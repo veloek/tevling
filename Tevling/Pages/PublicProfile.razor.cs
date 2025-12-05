@@ -57,9 +57,12 @@ public partial class PublicProfile : ComponentBase
             CreatedTime = browserTime.ToString("d");
             ActiveChallenges.Clear();
             AthleteMedals.Reset();
-            await FetchActiveChallenges();
             await CountMedals();
-            await FetchStats();
+            if (IsFollowingOrSelf())
+            {
+                await FetchActiveChallenges();
+                await FetchStats();
+            }
         }
     }
 
@@ -177,4 +180,6 @@ public partial class PublicProfile : ComponentBase
 
         await InvokeAsync(StateHasChanged);
     }
+    
+    private bool IsFollowingOrSelf() => Athlete.IsFollowing(AthleteToViewId) || Athlete.Id == AthleteToViewId;
 }
