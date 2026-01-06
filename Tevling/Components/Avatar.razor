@@ -1,8 +1,8 @@
 <div class="avatar">
-    <img src="@Url" width="@Size" height="@Size" alt="avatar" />
+    <img src="@($"/profile/{AthleteId}")" width="@Size" height="@Size" alt="avatar" />
 </div>
 
 @code {
-    [Parameter] public string? Url { get; set; }
+    [Parameter] public int AthleteId { get; set; }
     [Parameter] public int Size { get; set; }
 }
