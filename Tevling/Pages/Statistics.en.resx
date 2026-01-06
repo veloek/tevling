@@ -55,6 +55,9 @@
     <data name="Elevation" xml:space="preserve">
         <value>Elevation</value>
     </data>
+    <data name="Calories" xml:space="preserve">
+        <value>Calories</value>
+    </data>
     <data name="Total" xml:space="preserve">
         <value>A total of</value>
     </data>

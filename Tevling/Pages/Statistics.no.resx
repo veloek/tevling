@@ -55,6 +55,9 @@
     <data name="Elevation" xml:space="preserve">
         <value>Stigning</value>
     </data>
+    <data name="Calories" xml:space="preserve">
+        <value>Kalorier</value>
+    </data>
     <data name="Total" xml:space="preserve">
         <value>Totalt</value>
     </data>
