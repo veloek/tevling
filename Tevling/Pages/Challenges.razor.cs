@@ -27,6 +27,7 @@ public partial class Challenges : ComponentBase, IDisposable
     private bool _showTimeChallenges = true;
     private bool _showElevationChallenges = true;
     private bool _showDistanceChallenges = true;
+    private bool _showCalorieChallenges = true;
     private ICollection<ActivityType> _activityTypes= [];
     private DropdownSearch<ActivityType>? _dropdownSearchRefActivityTypes;
     private static IEnumerable<ActivityType> ActivityTypes => Enum.GetValues<ActivityType>();
@@ -65,6 +66,7 @@ public partial class Challenges : ComponentBase, IDisposable
             OnFilterChange();
         }
     }
+
     private bool ShowTimeChallenges
     {
         get => _showTimeChallenges;
@@ -74,6 +76,7 @@ public partial class Challenges : ComponentBase, IDisposable
             OnFilterChange();
         }
     }
+
     private bool ShowElevationChallenges
     {
         get => _showElevationChallenges;
@@ -83,12 +86,23 @@ public partial class Challenges : ComponentBase, IDisposable
             OnFilterChange();
         }
     }
+
     private bool ShowDistanceChallenges
     {
         get => _showDistanceChallenges;
         set
         {
             _showDistanceChallenges = value;
+            OnFilterChange();
+        }
+    }
+
+    private bool ShowCalorieChallenges
+    {
+        get => _showCalorieChallenges;
+        set
+        {
+            _showCalorieChallenges = value;
             OnFilterChange();
         }
     }
@@ -166,6 +180,7 @@ public partial class Challenges : ComponentBase, IDisposable
             _showTimeChallenges,
             _showElevationChallenges,
             _showDistanceChallenges,
+            _showCalorieChallenges,
             [.. _activityTypes]);
         Challenge[] challenges =
             await ChallengeService.GetChallengesAsync(AthleteId, filter, new Paging(_pageSize, _page), ct);
@@ -238,7 +253,8 @@ public partial class Challenges : ComponentBase, IDisposable
                     c =>
                         (_showTimeChallenges && c.Measurement == ChallengeMeasurement.Time) ||
                         (_showElevationChallenges && c.Measurement == ChallengeMeasurement.Elevation) ||
-                        (_showDistanceChallenges && c.Measurement == ChallengeMeasurement.Distance))
+                        (_showDistanceChallenges && c.Measurement == ChallengeMeasurement.Distance) ||
+                        (_showCalorieChallenges && c.Measurement == ChallengeMeasurement.Calories))
                 .Where(
                     c => _activityTypes.Count <= 0 || _activityTypes.Intersect(c.ActivityTypes).Any())
                 .Where(

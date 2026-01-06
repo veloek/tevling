@@ -13,8 +13,8 @@ public class DetailedActivityFaker : Faker<DetailedActivity>
         RuleFor(da => da.Distance, f => f.Random.Float(1000, 10000));
         RuleFor(da => da.MovingTime, f => f.Random.Int(1000, 10000));
         RuleFor(da => da.ElapsedTime, f => f.Random.Int(1000, 10000));
-        RuleFor(da => da.TotalElevationGain, f => f.Random.Float(1000, 10000));
-        RuleFor(da => da.Calories, f => f.Random.Float(1000, 10000));
+        RuleFor(da => da.TotalElevationGain, f => f.Random.Float(100, 1000));
+        RuleFor(da => da.Calories, f => f.Random.Float(100, 1000));
         RuleFor(da => da.Type, f => f.PickRandom<ActivityType>());
         RuleFor(da => da.StartDate, f => f.Date.Past(yearsToGoBack: 1));
         RuleFor(da => da.Manual, f => f.Random.Bool());

@@ -34,6 +34,9 @@
     <data name="Spent" xml:space="preserve">
         <value>Brukt</value>
     </data>
+    <data name="Burned" xml:space="preserve">
+        <value>Brent</value>
+    </data>
     <data name="Averaging" xml:space="preserve">
         <value>I snitt</value>
     </data>
@@ -63,6 +66,9 @@
     </data>
     <data name="TotalTime" xml:space="preserve">
         <value>Total tid</value>
+    </data>
+    <data name="TotalCalories" xml:space="preserve">
+        <value>Total kalorier</value>
     </data>
     <data name="Increase" xml:space="preserve">
         <value>Økning</value>
