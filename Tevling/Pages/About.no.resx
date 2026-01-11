@@ -29,10 +29,7 @@
         <value>Strava-integrasjon</value>
     </data>
     <data name="Strava_body" xml:space="preserve">
-        <value>Tevling bruker Strava for pålogging. Autentiserte brukere blir lagret med grunnleggende informasjon i Tevlings database. Alle &lt;em&gt;offentlige*&lt;/em&gt; aktiviteter registrert på Strava av autentiserte brukere blir automatisk synkronisert mot Tevling hvor deler av aktivitetsdetaljene blir lagret i Tevlings database. Det lagres kun data nødvendig for å kalkulere en poengsum for en gitt konkurranse, samt vise en liste av aktiviteter.</value>
-    </data>
-    <data name="PublicActivities" xml:space="preserve">
-        <value>* Offentlige aktiviteter inkluderer aktiviteter med synlighet satt til &lt;em&gt;Everyone&lt;/em&gt; eller &lt;em&gt;Followers&lt;/em&gt;.</value>
+        <value>Tevling bruker Strava for pålogging, og henting av aktivitetsdata. For mer informasjon, se personvernerklæringen.</value>
     </data>
     <data name="Disclamer_title" xml:space="preserve">
         <value>Ansvarsfraskrivelse</value>
@@ -51,5 +48,11 @@
     </data>
     <data name="Copyright" xml:space="preserve">
         <value>Opphavsrett</value>
+    </data>
+    <data name="Privacy_policy_title" xml:space="preserve">
+        <value>Personvernerklæring</value>
+    </data>
+    <data name="Privacy_policy_body" xml:space="preserve">
+        <value>Gå til personvernerklæring</value>
     </data>
 </root>
