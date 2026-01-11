@@ -274,7 +274,7 @@ public partial class Statistics : ComponentBase, IAsyncDisposable
                     timePeriodArray,
                     "TheChart",
                     Loc["TotalCalories"] + " [kcal]",
-                    "h");
+                    "kcal");
                 break;
             default:
                 throw new Exception("Unknown challenge measurement");
