@@ -7,7 +7,7 @@
 {
     <h1 class="title mb-5">@Loc["PublicProfile"]</h1>
     <div class="profile d-flex flex-row column-gap-2 mb-5">
-        <Avatar Url="@AthleteToView.ImgUrl" Size="50"/>
+        <Avatar AthleteId="@AthleteToView.Id" Size="50"/>
         <div class="d-flex flex-column">
             <span class="public-profile-name">@AthleteToView.Name</span>
             <span class="public-profile-details">@string.Format(Loc["MemberSince"], @CreatedTime)</span>
