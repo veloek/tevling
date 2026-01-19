@@ -30,7 +30,7 @@ public class DevService : IDevService
                 MovingTime = 631,
                 ElapsedTime = 963,
                 TotalElevationGain = 124.0f,
-                Calories = 0.0f,
+                Calories = 123.0f,
                 Type = ActivityType.Run,
                 StartDate = DateTimeOffset.UtcNow,
                 Manual = true,

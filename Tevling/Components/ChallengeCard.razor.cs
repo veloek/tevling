@@ -25,6 +25,7 @@ public partial class ChallengeCard : ComponentBase
                 ChallengeMeasurement.Distance => "bi-arrow-right",
                 ChallengeMeasurement.Time => "bi-stopwatch-fill",
                 ChallengeMeasurement.Elevation => "bi-arrow-up",
+                ChallengeMeasurement.Calories => "bi-fire",
                 _ => "bi-question-circle",
             };
         }
@@ -65,7 +66,7 @@ public partial class ChallengeCard : ComponentBase
     {
         List<string> users = [.. ScoreBoard!.Scores.Select(score => score.Name)];
         List<float> data = [.. ScoreBoard!.Scores.Select(score => score.ScoreValue)];
-        
+
         await JSRuntime.InvokeVoidAsync(
             "DrawChallengeStats",
             "distribution-" + Challenge!.Id,

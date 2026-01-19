@@ -43,6 +43,9 @@
     <data name="Elevation" xml:space="preserve">
         <value>Stigning</value>
     </data>
+    <data name="Calories" xml:space="preserve">
+        <value>Kalorier</value>
+    </data>
     <data name="Participant" xml:space="preserve">
         <value>utøver</value>
     </data>

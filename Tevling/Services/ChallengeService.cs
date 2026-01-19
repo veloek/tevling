@@ -61,7 +61,8 @@ public class ChallengeService(
             .Where(c =>
                 (filter.IncludeTimeChallenges && c.Measurement == ChallengeMeasurement.Time) ||
                 (filter.IncludeElevationChallenges && c.Measurement == ChallengeMeasurement.Elevation) ||
-                (filter.IncludeDistanceChallenges && c.Measurement == ChallengeMeasurement.Distance))
+                (filter.IncludeDistanceChallenges && c.Measurement == ChallengeMeasurement.Distance) ||
+                (filter.IncludeCalorieChallenges && c.Measurement == ChallengeMeasurement.Calories))
             .Where(c => filter.ActivityTypes == null || filter.ActivityTypes.Count <= 0 ||
                 filter.ActivityTypes.Intersect(c.ActivityTypes).Any())
             .OrderByDescending(challenge => challenge.Start)
@@ -347,6 +348,7 @@ public class ChallengeService(
                         ChallengeMeasurement.Distance => a.Activities.Select(x => x.Details.DistanceInMeters).Sum(),
                         ChallengeMeasurement.Time => a.Activities.Select(x => x.Details.MovingTimeInSeconds).Sum(),
                         ChallengeMeasurement.Elevation => a.Activities.Select(x => x.Details.TotalElevationGain).Sum(),
+                        ChallengeMeasurement.Calories => a.Activities.Select(x => x.Details.Calories).Sum(),
                         _ => 0,
                     },
                 })
@@ -359,6 +361,7 @@ public class ChallengeService(
                         ChallengeMeasurement.Distance => $"{s.Sum / 1000:0.##} km",
                         ChallengeMeasurement.Time => TimeSpan.FromSeconds(s.Sum).ToString("g"),
                         ChallengeMeasurement.Elevation => $"{s.Sum:0.##} m",
+                        ChallengeMeasurement.Calories => $"{s.Sum:0} kcal",
                         _ => s.Sum.ToString(CultureInfo.InvariantCulture),
                     };
 
@@ -367,6 +370,7 @@ public class ChallengeService(
                         ChallengeMeasurement.Distance => s.Sum / 1000,
                         ChallengeMeasurement.Time => (float)TimeSpan.FromSeconds(s.Sum).TotalHours,
                         ChallengeMeasurement.Elevation => s.Sum,
+                        ChallengeMeasurement.Calories => s.Sum,
                         _ => s.Sum,
                     };
 
@@ -412,6 +416,9 @@ public class ChallengeService(
                         break;
                     case ChallengeMeasurement.Time:
                         athleteTickets += activity.Details.MovingTimeInSeconds / 1800; // 30 min = 1 ticket
+                        break;
+                    case ChallengeMeasurement.Calories:
+                        athleteTickets += (int)activity.Details.Calories / 100; // 100 kcal = 1 ticket
                         break;
                     default:
                         athleteTickets += 0;

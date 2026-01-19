@@ -85,8 +85,7 @@ span {
   font-weight: 300;
 }
 
-.challenge-title,
-.score {
+.challenge-title {
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;

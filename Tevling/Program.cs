@@ -40,6 +40,7 @@ builder.Services.AddFeatureManagement();
 builder.Services.AddHealthChecks();
 builder.Services.AddLocalization();
 builder.Services.AddTokenRefresh();
+builder.Services.AddOutputCache();
 
 builder.Services.Configure<StravaConfig>(builder.Configuration.GetSection(nameof(StravaConfig)));
 builder.Services.Configure<CultureByHost>(builder.Configuration.GetSection(nameof(CultureByHost)));
@@ -96,6 +97,7 @@ app.UseSerilogRequestLogging();
 app.UseRouting();
 app.UseRequestLocalization("en");
 app.UseCultureByHost();
+app.UseOutputCache();
 
 app.UseAuthentication();
 app.UseAuthorization();

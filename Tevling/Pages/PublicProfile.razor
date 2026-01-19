@@ -7,7 +7,7 @@
 {
     <h1 class="title mb-5">@Loc["PublicProfile"]</h1>
     <div class="profile d-flex flex-row column-gap-2 mb-5">
-        <Avatar Url="@AthleteToView.ImgUrl" Size="50"/>
+        <Avatar AthleteId="@AthleteToView.Id" Size="50"/>
         <div class="d-flex flex-column">
             <span class="public-profile-name">@AthleteToView.Name</span>
             <span class="public-profile-details">@string.Format(Loc["MemberSince"], @CreatedTime)</span>
@@ -28,7 +28,7 @@
     {
         <div class="athlete-stats">
             <h3 class="mb-4">@Loc["Stats"]</h3>
-            @if (Athlete.IsFollowing(AthleteToViewId) || Athlete.Id == AthleteToViewId)
+            @if (IsFollowingOrSelf())
             {
                 @if (AthleteStats.MostPopularActivity is not null)
                 {
@@ -84,7 +84,7 @@
         <div class="public-profile-info d-flex flex-column row-gap-5">
             <div class="active-challenges mb-3">
                 <h3 class="mb-4">@Loc["ActiveChallenges"]</h3>
-                @if (Athlete.IsFollowing(AthleteToViewId) || Athlete.Id == AthleteToViewId)
+                @if (IsFollowingOrSelf())
                 {
                     @if (!ActiveChallenges.Any())
                     {
@@ -108,7 +108,7 @@
             </div>
             <div class="followers mb-3">
                 <h2 class="mb-3">@Loc["Followers"]</h2>
-                @if (Athlete.IsFollowing(AthleteToViewId) || Athlete.Id == AthleteToViewId)
+                @if (IsFollowingOrSelf())
                 {
                     @if (AthleteToView.Followers?.Count == 0 || AthleteToView.Followers is null)
                     {
@@ -140,7 +140,7 @@
             <div class="following mb-3">
                 <h2 class="mb-3">@Loc["Following"]</h2>
 
-                @if (Athlete.IsFollowing(AthleteToViewId) || Athlete.Id == AthleteToViewId)
+                @if (IsFollowingOrSelf())
                 {
                     @if (AthleteToView.Following?.Count == 0 || AthleteToView.Following is null)
                     {

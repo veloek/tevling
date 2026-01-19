@@ -46,6 +46,9 @@
     <data name="Distance" xml:space="preserve">
         <value>Distance</value>
     </data>
+    <data name="Calories" xml:space="preserve">
+        <value>Calories</value>
+    </data>
     <data name="ActivityTypes" xml:space="preserve">
         <value>Activity types</value>
     </data>

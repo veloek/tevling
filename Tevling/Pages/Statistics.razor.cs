@@ -63,6 +63,7 @@ public partial class Statistics : ComponentBase, IAsyncDisposable
     private IReadOnlyList<Stats> Distances { get; set; } = [];
     private IReadOnlyList<Stats> Elevations { get; set; } = [];
     private IReadOnlyList<Stats> Durations { get; set; } = [];
+    private IReadOnlyList<Stats> Calories { get; set; } = [];
 
     protected override async Task OnInitializedAsync()
     {
@@ -190,6 +191,10 @@ public partial class Statistics : ComponentBase, IAsyncDisposable
                 a => (float)a.Details.MovingTimeInSeconds / 3600,
                 NumberOfPeriodsToReview),
         ];
+        Calories =
+        [
+            .. GetAggregatedMeasurementData(a => a.Details.Calories, NumberOfPeriodsToReview),
+        ];
     }
 
     private Dictionary<string, float[]> AggregateTotals(IReadOnlyList<Stats> stats)
@@ -260,6 +265,17 @@ public partial class Statistics : ComponentBase, IAsyncDisposable
                     Loc["TotalTime"] + " [h]",
                     "h");
                 break;
+            case ChallengeMeasurement.Calories:
+                await _module.InvokeVoidAsync(
+                    "drawChart",
+                    isMobile
+                        ? AggregateTotals(Calories)
+                        : Calories.ToDictionary(stat => stat.Type, stat => stat.LastTimePeriodAggregate),
+                    timePeriodArray,
+                    "TheChart",
+                    Loc["TotalCalories"] + " [kcal]",
+                    "kcal");
+                break;
             default:
                 throw new Exception("Unknown challenge measurement");
         }
@@ -277,7 +293,7 @@ public partial class Statistics : ComponentBase, IAsyncDisposable
                 await _resizeHandler.DisposeAsync();
                 _resizeHandler = null;
             }
-            
+
             if (_module != null)
             {
                 await _module.DisposeAsync();

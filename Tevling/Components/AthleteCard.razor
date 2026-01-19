@@ -6,7 +6,7 @@
         <div class="d-flex align-items-center flex-row column-gap-2 athlete-name me-auto">
             @if (Athlete.ImgUrl is not null)
             {
-                <Avatar Url="@Athlete.ImgUrl" Size="30" />
+                <Avatar AthleteId="@Athlete.Id" Size="30" />
             }
             <NavLink href="@($"/athletes/{Athlete.Id}")"><span>@Athlete.Name</span></NavLink>
         </div>
@@ -44,7 +44,7 @@
                         @Loc["Follow"]
                     </span>
                 </div>
-            } 
+            }
         }
 
         @if (IsFollower)
