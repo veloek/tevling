@@ -10,5 +10,6 @@ public record ChallengeFilter(
     bool IncludeTimeChallenges = true,
     bool IncludeElevationChallenges = true,
     bool IncludeDistanceChallenges = true,
+    bool IncludeCalorieChallenges = true,
     IReadOnlyCollection<ActivityType>? ActivityTypes = null
     );

@@ -151,7 +151,7 @@
                             <a @onclick="() => DeselectAthlete(athlete)" type="button">
                                 <i class="bi bi-x-circle ms-1"></i>
                             </a>
-                            <Avatar Url="@athlete.ImgUrl" Size="30" />
+                            <Avatar AthleteId="@athlete.Id" Size="30" />
                             @AthletesDisplayFunc(athlete)
                         </div>
                     }

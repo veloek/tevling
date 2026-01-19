@@ -68,6 +68,9 @@
                     case ChallengeMeasurement.Time:
                         <span>@Loc["Spent"]</span>
                         break;
+                    case ChallengeMeasurement.Calories:
+                        <span>@Loc["Burned"]</span>
+                        break;
                     default:
                         throw new ArgumentOutOfRangeException();
                 }
@@ -152,6 +155,27 @@
                 }
 
                 break;
+            case ChallengeMeasurement.Calories:
+                @foreach (Stats stats in Calories)
+                {
+                    <tr>
+                        <td data-label="@Loc["Activity"]">
+                            @stats.Type
+                        </td>
+                        <td data-label="@Loc["Burned"]">
+                            @stats.LastTimePeriodTotal kcal
+                        </td>
+                        <td data-label="@Loc["Averaging"]">
+                            @stats.LastTimePeriodAverage kcal
+                        </td>
+                        <td data-label="@Loc["CurrentMonth"]">
+                            @Math.Round(stats.ThisTimePeriod, 1) kcal
+                            <b>(@Math.Round(stats.CurrentMonthComparedToAverage(), 1)%</b> @((MarkupString)stats.IncreaseVsDecrease(@Loc["Increase"], @Loc["Decrease"])))
+                        </td>
+                    </tr>
+                }
+
+                break;
             default:
                 throw new ArgumentOutOfRangeException();
         }
@@ -169,6 +193,9 @@
                             break;
                         case ChallengeMeasurement.Time:
                             <span>@Math.Round(Durations.Sum(stats => stats.LastTimePeriodTotal), 1) @Loc["h"]</span>
+                            break;
+                        case ChallengeMeasurement.Calories:
+                            <span>@Math.Round(Calories.Sum(stats => stats.LastTimePeriodTotal), 1) kcal</span>
                             break;
                         default:
                                 throw new ArgumentOutOfRangeException();

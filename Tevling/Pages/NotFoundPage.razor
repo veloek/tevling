@@ -1,0 +1,10 @@
+@page "/{*route:nonfile}"
+<PageTitle>Tevling - Not found</PageTitle>
+<div style="text-align: center;" >
+    <h1>404</h1>
+    <p role="alert">Sorry, there's nothing at this address.</p>
+</div>
+
+@code {
+    [Parameter] public string? Route { get; set; }
+}

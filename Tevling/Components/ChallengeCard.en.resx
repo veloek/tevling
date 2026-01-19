@@ -43,6 +43,9 @@
     <data name="Elevation" xml:space="preserve">
         <value>Elevation</value>
     </data>
+    <data name="Calories" xml:space="preserve">
+        <value>Calories</value>
+    </data>
     <data name="Participant" xml:space="preserve">
         <value>participant</value>
     </data>
