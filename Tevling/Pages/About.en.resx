@@ -29,10 +29,7 @@
         <value>Strava integration</value>
     </data>
     <data name="Strava_body" xml:space="preserve">
-        <value>Tevling uses Strava as identity provider. Authenticated users are stored with basic information in Tevling's database. All &lt;em&gt;public*&lt;/em&gt; activities uploaded to Strava by authenticated users are automatically synced to Tevling where parts of the activity details are stored in Tevling's database. We only store enough data to be able to calculate a score for a given challenge in addition to displaying a list of activities.</value>
-    </data>
-    <data name="PublicActivities" xml:space="preserve">
-        <value>* Public activities includes activities with visibility set to &lt;em&gt;Everyone&lt;/em&gt; or &lt;em&gt;Followers&lt;/em&gt;.</value>
+        <value>Tevling uses Strava as identity provider and to fetch activity data. See the privacy policy for more detailed information.</value>
     </data>
     <data name="Disclamer_title" xml:space="preserve">
         <value>Disclamer</value>
@@ -51,5 +48,11 @@
     </data>
     <data name="Copyright" xml:space="preserve">
         <value>Copyright</value>
+    </data>
+    <data name="Privacy_policy_title" xml:space="preserve">
+        <value>Privacy Policy</value>
+    </data>
+    <data name="Privacy_policy_body" xml:space="preserve">
+        <value>Go to privacy policy</value>
     </data>
 </root>
