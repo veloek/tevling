@@ -29,7 +29,7 @@
         <value>Strava integration</value>
     </data>
     <data name="Strava_body" xml:space="preserve">
-        <value>Tevling uses Strava as identity provider, and to fetch activity data. See the privacy policy for more detailed information.</value>
+        <value>Tevling uses Strava as identity provider and to fetch activity data. See the privacy policy for more detailed information.</value>
     </data>
     <data name="Disclamer_title" xml:space="preserve">
         <value>Disclamer</value>
