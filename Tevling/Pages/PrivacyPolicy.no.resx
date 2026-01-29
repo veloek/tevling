@@ -13,11 +13,14 @@
         <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
     </resheader>
     <!--Data-->
-    <data name="PrivacyPolicyText" xml:space="preserve">
-        <value>Tevling bruker Strava for pålogging. Autentiserte brukere blir lagret med grunnleggende informasjon i Tevlings database. Alle &lt;em&gt;offentlige*&lt;/em&gt; aktiviteter registrert på Strava av autentiserte brukere blir automatisk synkronisert mot Tevling hvor deler av aktivitetsdetaljene blir lagret i Tevlings database. Det lagres kun data nødvendig for å kalkulere en poengsum for en gitt konkurranse, samt vise en liste av aktiviteter.</value>
-    </data>
     <data name="PrivacyPolicy" xml:space="preserve">
         <value>Personvernerklæring</value>
+    </data>
+    <data name="PrivacyPolicyCookies" xml:space="preserve">
+        <value>Cookies i Tevling er kun brukt for innlogging og ingenting annet. Det er ingen sporing av brukeraktivitet og det blir ikke sendt noe data til tredjepartstjenester.</value>
+    </data>
+    <data name="PrivacyPolicyStrava" xml:space="preserve">
+        <value>Tevling bruker Strava for pålogging. Autentiserte brukere blir lagret med grunnleggende informasjon i Tevlings database. Alle &lt;em&gt;offentlige*&lt;/em&gt; aktiviteter registrert på Strava av autentiserte brukere blir automatisk synkronisert mot Tevling hvor deler av aktivitetsdetaljene blir lagret i Tevlings database. Det lagres kun data nødvendig for å kalkulere en poengsum for en gitt konkurranse, samt vise en liste av aktiviteter.</value>
     </data>
     <data name="PublicActivities" xml:space="preserve">
         <value>* Offentlige aktiviteter inkluderer aktiviteter med synlighet satt til &lt;em&gt;Everyone&lt;/em&gt; eller &lt;em&gt;Followers&lt;/em&gt;.</value>

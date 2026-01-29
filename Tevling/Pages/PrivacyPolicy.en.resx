@@ -13,11 +13,14 @@
         <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
     </resheader>
     <!--Data-->
-    <data name="PrivacyPolicyText" xml:space="preserve">
-        <value>Tevling uses Strava as identity provider. Authenticated users are stored with basic information in Tevling's database. All &lt;em&gt;public*&lt;/em&gt; activities uploaded to Strava by authenticated users are automatically synced to Tevling where parts of the activity details are stored in Tevling's database. We only store enough data to be able to calculate a score for a given challenge in addition to displaying a list of activities.</value>
-    </data>
     <data name="PrivacyPolicy" xml:space="preserve">
         <value>Privacy Policy</value>
+    </data>
+    <data name="PrivacyPolicyCookies" xml:space="preserve">
+        <value>Cookies in Tevling are only used for authentication and nothing else. There's no tracking of user activity and no data is sent to any 3rd party service.</value>
+    </data>
+    <data name="PrivacyPolicyStrava" xml:space="preserve">
+        <value>Tevling uses Strava as identity provider. Authenticated users are stored with basic information in Tevling's database. All &lt;em&gt;public*&lt;/em&gt; activities uploaded to Strava by authenticated users are automatically synced to Tevling where parts of the activity details are stored in Tevling's database. We only store enough data to be able to calculate a score for a given challenge in addition to displaying a list of activities.</value>
     </data>
     <data name="PublicActivities" xml:space="preserve">
         <value>* Public activities includes activities with visibility set to &lt;em&gt;Everyone&lt;/em&gt; or &lt;em&gt;Followers&lt;/em&gt;.</value>

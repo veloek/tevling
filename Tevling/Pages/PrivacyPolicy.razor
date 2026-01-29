@@ -1,13 +1,16 @@
 @page "/privacy"
-@attribute [AllowAnonymous]
 @layout LoginLayout
+@attribute [AllowAnonymous]
 @inject IStringLocalizer<PrivacyPolicy> Loc
 
-
 <PageTitle>Tevling - Privacy Policy</PageTitle>
+
 <h1 class="p-5">@Loc["PrivacyPolicy"]</h1>
 <div class="pe-5 ps-5">
-    <p>@(new MarkupString(Loc["PrivacyPolicyText"]))</p>
+    <h3>Cookies</h3>
+    <p>@(new MarkupString(Loc["PrivacyPolicyCookies"]))</p>
+    <h3>Strava</h3>
+    <p>@(new MarkupString(Loc["PrivacyPolicyStrava"]))</p>
     <p style="font-size: 0.85rem">
         @(new MarkupString(Loc["PublicActivities"]))
     </p>
