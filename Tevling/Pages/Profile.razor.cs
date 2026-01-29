@@ -9,6 +9,7 @@ public partial class Profile : ComponentBase
     [Inject] private IAthleteService AthleteService { get; set; } = null!;
     [Inject] private IBrowserTime BrowserTime { get; set; } = null!;
     [Inject] private IStringLocalizer<Profile> Loc { get; set; } = null!;
+    [Inject] private NavigationManager NavigationManager { get; set; } = null!;
 
     private string? CreatedTime;
     private bool Importing { get; set; }
@@ -76,5 +77,15 @@ public partial class Profile : ComponentBase
     {
         Athlete = await AthleteService.DeclineFollowerAsync(Athlete, followerId);
         await InvokeAsync(StateHasChanged);
+    }
+
+    private void SignOut()
+    {
+        NavigationManager.NavigateTo("/auth/logout", forceLoad: true);
+    }
+
+    private void Deauthorize()
+    {
+        NavigationManager.NavigateTo("/auth/logout?deauthorize=true", forceLoad: true);
     }
 }
