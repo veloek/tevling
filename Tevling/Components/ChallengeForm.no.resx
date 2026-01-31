@@ -43,6 +43,21 @@
     <data name="ChallengeVisibility" xml:space="preserve">
         <value>Synlighet</value>
     </data>
+    <data name="IndividualGoal" xml:space="preserve">
+        <value>Individuelt mål</value>
+    </data>
+    <data name="GoalUnitDistance" xml:space="preserve">
+        <value>km</value>
+    </data>
+    <data name="GoalUnitTime" xml:space="preserve">
+        <value>timer</value>
+    </data>
+    <data name="GoalUnitElevation" xml:space="preserve">
+        <value>m</value>
+    </data>
+    <data name="GoalUnitCalories" xml:space="preserve">
+        <value>kcal</value>
+    </data>
     <data name="PublicChallenge" xml:space="preserve">
         <value>Offentlig konkurranse</value>
     </data>

@@ -32,6 +32,23 @@ public partial class ChallengeForm : ComponentBase
     private Athlete Athlete { get; set; } = default!;
     private static IEnumerable<ActivityType> ActivityTypes => Enum.GetValues(typeof(ActivityType)).Cast<ActivityType>();
     private static Func<Athlete, string> AthletesDisplayFunc => athlete => athlete.Name;
+    private string GoalUnitLabel => Challenge.Measurement switch
+    {
+        ChallengeMeasurement.Distance => Loc["GoalUnitDistance"],
+        ChallengeMeasurement.Time => Loc["GoalUnitTime"],
+        ChallengeMeasurement.Elevation => Loc["GoalUnitElevation"],
+        ChallengeMeasurement.Calories => Loc["GoalUnitCalories"],
+        _ => string.Empty,
+    };
+
+    private string GoalStep => Challenge.Measurement switch
+    {
+        ChallengeMeasurement.Distance => "10",
+        ChallengeMeasurement.Time => "10",
+        ChallengeMeasurement.Elevation => "100",
+        ChallengeMeasurement.Calories => "100",
+        _ => "1",
+    };
     protected override async Task OnInitializedAsync()
     {
         Athlete = await AuthenticationService.GetCurrentAthleteAsync();
@@ -83,6 +100,7 @@ public partial class ChallengeForm : ComponentBase
             Title = template.Title,
             Description = template.Description,
             Measurement = template.Measurement,
+            IndividualGoal = template.IndividualGoal,
             ActivityTypes = template.ActivityTypes,
             IsPrivate = template.IsPrivate,
             InvitedAthletes = [],
@@ -96,6 +114,7 @@ public partial class ChallengeForm : ComponentBase
             Title = Challenge.Title,
             Description = Challenge.Description,
             Measurement = Challenge.Measurement,
+            IndividualGoal = Challenge.IndividualGoal,
             ActivityTypes = [.. Challenge.ActivityTypes],
             IsPrivate = Challenge.IsPrivate,
             Created = DateTimeOffset.Now,
@@ -177,6 +196,7 @@ public partial class ChallengeForm : ComponentBase
             Challenge.Start = EditChallenge.Start;
             Challenge.End = EditChallenge.End;
             Challenge.Measurement = EditChallenge.Measurement;
+            Challenge.IndividualGoal = EditChallenge.IndividualGoal;
             Challenge.ActivityTypes = EditChallenge.ActivityTypes.ToList();
             Challenge.IsPrivate = EditChallenge.IsPrivate;
             Challenge.CreatedBy = EditChallenge.CreatedById;
@@ -190,6 +210,7 @@ public partial class ChallengeForm : ComponentBase
                 Start = DateTimeOffset.Now,
                 End = DateTimeOffset.Now.AddMonths(1),
                 CreatedBy = Athlete.Id,
+                IndividualGoal = null,
             };
         }
     }

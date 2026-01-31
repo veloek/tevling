@@ -12,6 +12,7 @@ public sealed class ChallengeFormModelFaker : Faker<ChallengeFormModel>
         RuleFor(cfm => cfm.Start, f => DateTimeOffset.Now);
         RuleFor(cfm => cfm.End, f => DateTimeOffset.Now.AddMonths(1));
         RuleFor(cfm => cfm.Measurement, f => f.PickRandom<ChallengeMeasurement>());
+        RuleFor(cfm => cfm.IndividualGoal, f => f.Random.Int(5, 100));
         RuleFor(
             cfm => cfm.ActivityTypes,
             f =>

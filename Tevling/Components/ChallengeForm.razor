@@ -42,6 +42,15 @@
                     </InputRadioGroup>
                 </div>
                 <div>
+                    <h5 class="mb-3">@Loc["IndividualGoal"]</h5>
+                    <div class="input-group">
+                        <InputNumber @bind-Value="@Challenge.IndividualGoal" class="form-control" step="@GoalStep" min="0" />
+                        <span class="input-group-text">@GoalUnitLabel</span>
+                    </div>
+                </div>
+            </div>
+            <div class="form-row mb-5 d-flex column-gap-5">
+                <div>
                     <h5 class="mb-3">@Loc["ChallengeVisibility"]</h5>
                     <InputRadioGroup @bind-Value="@Challenge.IsPrivate">
                         <div>

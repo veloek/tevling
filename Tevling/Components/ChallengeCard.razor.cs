@@ -35,6 +35,46 @@ public partial class ChallengeCard : ComponentBase
     private bool? HasJoined => Challenge?.Athletes?.Any(a => a.Id == AthleteId);
     private bool ShowScoreBoard { get; set; }
     private Athlete? Winner { get; set; }
+    private string? GoalDisplay => Challenge?.IndividualGoal is null
+        ? null
+        : Challenge.Measurement switch
+        {
+            ChallengeMeasurement.Distance => $"{Challenge.IndividualGoal:0.##} km",
+            ChallengeMeasurement.Time => TimeSpan.FromHours(Challenge.IndividualGoal.Value).ToString("g"),
+            ChallengeMeasurement.Elevation => $"{Challenge.IndividualGoal:0.##} m",
+            ChallengeMeasurement.Calories => $"{Challenge.IndividualGoal:0.##} kcal",
+            _ => Challenge.IndividualGoal.Value.ToString("0.##"),
+        };
+    private bool HasGoal => Challenge?.IndividualGoal is > 0;
+
+    private bool HasReachedGoal(float scoreValue)
+    {
+        return HasGoal && scoreValue >= Challenge!.IndividualGoal!.Value;
+    }
+
+    private string RemainingDisplay(float scoreValue)
+    {
+        if (!HasGoal) return string.Empty;
+
+        float remaining = Math.Max(Challenge!.IndividualGoal!.Value - scoreValue, 0);
+
+        return Challenge.Measurement switch
+        {
+            ChallengeMeasurement.Distance => $"{remaining:0.##} km",
+            ChallengeMeasurement.Time => TimeSpan.FromHours(remaining).ToString("g"),
+            ChallengeMeasurement.Elevation => $"{remaining:0.##} m",
+            ChallengeMeasurement.Calories => $"{remaining:0.##} kcal",
+            _ => remaining.ToString("0.##"),
+        };
+    }
+
+    private string ProgressPercent(float scoreValue)
+    {
+        if (!HasGoal) return "0%";
+
+        float percent = Math.Clamp(scoreValue / Challenge!.IndividualGoal!.Value * 100f, 0f, 100f);
+        return $"{percent:0.#}%";
+    }
 
     protected override async Task OnParametersSetAsync()
     {

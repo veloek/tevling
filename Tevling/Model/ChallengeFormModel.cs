@@ -11,6 +11,7 @@ public class ChallengeFormModel
     public DateTimeOffset Start { get; set; }
     public DateTimeOffset End { get; set; }
     public ChallengeMeasurement Measurement { get; set; }
+    [Range(0, double.MaxValue)] public float? IndividualGoal { get; set; }
     public ICollection<ActivityType> ActivityTypes { get; set; } = [];
     public bool IsPrivate { get; set; }
     public ICollection<Athlete> InvitedAthletes { get; set; } = [];

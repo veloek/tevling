@@ -33,12 +33,27 @@
 
         @if (ShowScoreBoard && ScoreBoard != null)
         {
-            <ul class="list-group list-group-flush list-group-numbered overflow-auto" style="max-height: 14rem">
+            <ul class="list-group list-group-flush list-group-numbered overflow-auto scoreboard-list" style="max-height: 14rem">
                 @foreach (AthleteScore score in ScoreBoard.Scores)
                 {
-                    <li class="list-group-item d-flex justify-content-between">
-                        <span>@score.Name</span>
-                        <span class="score">@score.Score</span>
+                    <li class="list-group-item">
+                        <div class="scoreboard-item">
+                            <div class="d-flex justify-content-between align-items-baseline">
+                                <span class="athlete">@score.Name</span>
+                                <span class="score">@score.Score</span>
+                            </div>
+                            @if (HasGoal)
+                            {
+                                <div class="goal-row">
+                                    <div class="progress goal-progress">
+                                        <div class="progress-bar @(HasReachedGoal(score.ScoreValue) ? "goal-reached" : "")" style="width: @ProgressPercent(score.ScoreValue)"></div>
+                                    </div>
+                                    <span class="goal-left">
+                                        @RemainingDisplay(score.ScoreValue) @Loc["GoalLeft"]
+                                    </span>
+                                </div>
+                            }
+                        </div>
                     </li>
                 }
                 @if (ScoreBoard.Scores.Count == 0)
@@ -99,6 +114,13 @@
                         <i class="bi @MeasurementIcon me-1" aria-hidden="true"></i>
                         @Loc[Challenge.Measurement.ToString()]
                     </span>
+                    @if (GoalDisplay != null)
+                    {
+                        <span>
+                            <i class="bi bi-flag me-1" aria-hidden="true"></i>
+                            @Loc["IndividualGoal"]: @GoalDisplay
+                        </span>
+                    }
                     <span>
                         <i class="bi bi-people-fill me-1" aria-hidden="true"></i>
                         @Challenge.Athletes?.Count @(Challenge.Athletes?.Count == 1 ? Loc["Participant"] : Loc["Participants"])
