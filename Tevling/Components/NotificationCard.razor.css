@@ -1,0 +1,76 @@
+.notification-card {
+  display: flex;
+  flex-direction: row;
+  border-radius: .5rem;
+  width: 34rem;
+  max-width: 100%;
+  box-shadow: 2px 2px 5px 0 rgba(0, 0, 0, 0.15);
+  transition: box-shadow 0.2s, max-height 1s ease-in-out;
+  column-gap: 1em;
+  margin-bottom: 1rem;
+}
+
+@media (min-width: 501px) {
+  .notification-card-body {
+    margin-left: 3rem;
+  }
+}
+
+@media (max-width: 500px) {
+  .notification-card {
+    min-width: 21rem;
+  }
+
+  .notification-time,
+  .strava-link,
+  .athlete-name {
+    text-wrap: none;
+  }
+
+  .athlete-name-container {
+    margin-bottom: 1rem;
+  }
+}
+
+.notification-card-content {
+  width: 100%;
+}
+
+.notification-time,
+.strava-link {
+  font-size: smaller;
+  font-weight: 300;
+}
+
+.notification-time {
+  color: #737373;
+}
+
+.notification-name {
+  font-weight: 600;
+}
+
+.notification-description {
+  font-size: 0.9rem;
+}
+
+.device-name {
+  text-transform: uppercase;
+  font-size: 0.7rem;
+}
+
+.notification-unread {
+  border: 2px solid red;
+}
+
+.notification-read {
+  border: 2px solid transparent;
+}
+
+.page[data-bs-theme="dark"] .notification-card{
+  background-color: #121417;
+}
+
+.page[data-bs-theme="light"] .notification-card {
+  background-color: white;
+}

@@ -1,18 +1,21 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reactive;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
+using NSubstitute.Core;
 using Shouldly;
 using Tevling.Clients;
 using Tevling.Data;
 using Tevling.Model;
 using Tevling.Strava;
 using Xunit;
+using Notification = Tevling.Model.Notification.Notification;
 
 namespace Tevling.Services;
 
@@ -230,6 +233,51 @@ public class AthleteServiceTests
     }
 
     [Fact]
+    public async Task Accepting_FollowRequest_should_publish_notification()
+    {
+        const int followerId = 1;
+        const int followeeId = 2;
+
+        IDbContextFactory<DataContext> dataContextFactory = new InMemoryDataContextFactory();
+        await SeedData(
+            dataContextFactory,
+            [
+                new Athlete { Id = followerId },
+                new Athlete { Id = followeeId },
+            ],
+            followings: [],
+            TestContext.Current.CancellationToken);
+
+        INotificationService? notificationServiceMock = Substitute.For<INotificationService>();
+        AthleteService sut = new(
+            logger: Substitute.For<ILogger<AthleteService>>(),
+            dataContextFactory: dataContextFactory,
+            stravaClient: Substitute.For<IStravaClient>(),
+            notificationService: notificationServiceMock);
+
+        Athlete? follower = await sut.GetAthleteByIdAsync(followerId, TestContext.Current.CancellationToken);
+        follower.ShouldNotBeNull();
+        follower.Following.ShouldBeEmpty();
+
+        Athlete? followee = await sut.GetAthleteByIdAsync(followeeId, TestContext.Current.CancellationToken);
+        followee.ShouldNotBeNull();
+        followee.Followers.ShouldBeEmpty();
+
+        follower = await sut.ToggleFollowingAsync(follower, followeeId, TestContext.Current.CancellationToken);
+        followee = await sut.AcceptFollowerAsync(followee, followerId, TestContext.Current.CancellationToken);
+
+        await notificationServiceMock.Received(2)
+            .Publish(
+                Arg.Is<IReadOnlyCollection<Notification>>(notifications => notifications.Any()),
+                Arg.Any<CancellationToken>());
+        ICall secondCall = notificationServiceMock.ReceivedCalls().Last();
+        IReadOnlyCollection<Notification> notification =
+            (IReadOnlyCollection<Notification>)secondCall.GetArguments()[0]!;
+        notification.Single().Type.ShouldBe(NotificationType.FollowRequestAccepted);
+        notification.Single().CreatedById.ShouldBe(followeeId);
+    }
+
+    [Fact]
     public async Task ToggleFollowingAsync_should_remove_following_if_existing()
     {
         const int followerId = 1;
@@ -258,6 +306,84 @@ public class AthleteServiceTests
     }
 
     [Fact]
+    public async Task ToggleFollowingAsync_should_not_publish_notification_when_already_following()
+    {
+        const int followerId = 1;
+        const int followeeId = 2;
+
+        IDbContextFactory<DataContext> dataContextFactory = new InMemoryDataContextFactory();
+        await SeedData(
+            dataContextFactory,
+            [
+                new Athlete { Id = followerId },
+                new Athlete { Id = followeeId },
+            ],
+            followings:
+            [
+                new Following { FollowerId = followerId, FolloweeId = followeeId },
+            ],
+            TestContext.Current.CancellationToken);
+
+        INotificationService? notificationServiceMock = Substitute.For<INotificationService>();
+        AthleteService sut = new(
+            logger: Substitute.For<ILogger<AthleteService>>(),
+            dataContextFactory: dataContextFactory,
+            stravaClient: Substitute.For<IStravaClient>(),
+            notificationService: notificationServiceMock);
+        
+        Athlete? follower = await sut.GetAthleteByIdAsync(followerId, TestContext.Current.CancellationToken);
+        follower.ShouldNotBeNull();
+        follower.Following.ShouldNotBeEmpty();
+
+        follower = await sut.ToggleFollowingAsync(follower, followeeId, TestContext.Current.CancellationToken);
+        follower.Following.ShouldBeEmpty();
+        await notificationServiceMock.DidNotReceiveWithAnyArgs()
+            .Publish(Arg.Any<IReadOnlyCollection<Notification>>(), Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task ToggleFollowingAsync_should_publish_notification_when_a_following_is_requested()
+    {
+        const int followerId = 1;
+        const int followeeId = 2;
+
+        IDbContextFactory<DataContext> dataContextFactory = new InMemoryDataContextFactory();
+        await SeedData(
+            dataContextFactory,
+            [
+                new Athlete { Id = followerId },
+                new Athlete { Id = followeeId },
+            ],
+            followings: [],
+            TestContext.Current.CancellationToken);
+
+        INotificationService? notificationServiceMock = Substitute.For<INotificationService>();
+        AthleteService sut = new(
+            logger: Substitute.For<ILogger<AthleteService>>(),
+            dataContextFactory: dataContextFactory,
+            stravaClient: Substitute.For<IStravaClient>(),
+            notificationService: notificationServiceMock);
+
+        Athlete? follower = await sut.GetAthleteByIdAsync(followerId, TestContext.Current.CancellationToken);
+        follower.ShouldNotBeNull();
+        follower.Following.ShouldBeEmpty();
+
+        Athlete? followee = await sut.GetAthleteByIdAsync(followeeId, TestContext.Current.CancellationToken);
+        followee.ShouldNotBeNull();
+        followee.Followers.ShouldBeEmpty();
+
+        follower = await sut.ToggleFollowingAsync(follower, followeeId, TestContext.Current.CancellationToken);
+
+        await notificationServiceMock.Received(1)
+            .Publish(
+                Arg.Is<IReadOnlyCollection<Notification>>(notifications =>
+                    notifications.Count == 1 &&
+                    notifications.Single().Type == NotificationType.FollowRequestCreated &&
+                    notifications.Single().CreatedById == followerId),
+                Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
     public async Task GetAccessTokenAsync_should_refresh_token_if_expired()
     {
         const string updatedAccessToken = "updated";
@@ -270,8 +396,10 @@ public class AthleteServiceTests
         IStravaClient stravaClientMock = Substitute.For<IStravaClient>();
         stravaClientMock.GetAccessTokenByRefreshTokenAsync(Arg.Any<string>(), Arg.Any<CancellationToken>())
             .Returns(new TokenResponse { AccessToken = updatedAccessToken });
+        
+        INotificationService notificationServiceMock = Substitute.For<INotificationService>();
 
-        AthleteService sut = new(Substitute.For<ILogger<AthleteService>>(), dataContextFactory, stravaClientMock);
+        AthleteService sut = new(Substitute.For<ILogger<AthleteService>>(), dataContextFactory, stravaClientMock, notificationServiceMock);;
         string accessToken = await sut.GetAccessTokenAsync(athleteEntry.Entity.Id, TestContext.Current.CancellationToken);
 
         accessToken.ShouldBe(updatedAccessToken);
@@ -377,5 +505,6 @@ public class AthleteServiceTests
         => new(
             logger: Substitute.For<ILogger<AthleteService>>(),
             dataContextFactory: dataContextFactory,
-            stravaClient: Substitute.For<IStravaClient>());
+            stravaClient: Substitute.For<IStravaClient>(),
+            notificationService: Substitute.For<INotificationService>());
 }

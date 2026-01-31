@@ -34,4 +34,7 @@
     <data name="About" xml:space="preserve">
         <value>Om</value>
     </data>
+    <data name="Notifications" xml:space="preserve">
+        <value>Notifikasjoner</value>
+    </data>
 </root>
