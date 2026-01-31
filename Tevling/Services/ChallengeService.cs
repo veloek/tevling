@@ -165,6 +165,7 @@ public class ChallengeService(
                 Start = newChallenge.Start,
                 End = newChallenge.End,
                 Measurement = newChallenge.Measurement,
+                IndividualGoal = newChallenge.IndividualGoal,
                 ActivityTypes = newChallenge.ActivityTypes.ToList(),
                 IsPrivate = newChallenge.IsPrivate,
                 Created = DateTimeOffset.Now,
@@ -231,6 +232,7 @@ public class ChallengeService(
         challenge.Start = editChallenge.Start;
         challenge.End = editChallenge.End;
         challenge.Measurement = editChallenge.Measurement;
+        challenge.IndividualGoal = editChallenge.IndividualGoal;
         challenge.ActivityTypes = editChallenge.ActivityTypes.ToList();
         challenge.IsPrivate = editChallenge.IsPrivate;
 
