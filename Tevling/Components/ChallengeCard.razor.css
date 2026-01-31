@@ -95,3 +95,45 @@ span {
   background-color: transparent;
   font-size: smaller;
 }
+
+.scoreboard-list > .list-group-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  padding: 0.3rem 0;
+}
+
+.scoreboard-list > .list-group-item::before {
+  position: static;
+  margin-right: 0.25rem;
+}
+
+.scoreboard-item {
+  flex: 1 1 auto;
+}
+
+.goal-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.25rem;
+}
+
+.goal-progress {
+  flex: 1 1 auto;
+  height: 0.35rem;
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.goal-left {
+  font-size: smaller;
+  white-space: nowrap;
+}
+
+.goal-reached {
+  background-color: #18a957;
+}
+
+.page[data-bs-theme="light"] .goal-progress {
+  background-color: rgba(0, 0, 0, 0.08);
+}

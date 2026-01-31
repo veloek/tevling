@@ -55,6 +55,12 @@
     <data name="AllActivities" xml:space="preserve">
         <value>All activities</value>
     </data>
+    <data name="IndividualGoal" xml:space="preserve">
+        <value>Individual goal</value>
+    </data>
+    <data name="GoalLeft" xml:space="preserve">
+        <value>left</value>
+    </data>
     <data name="Join" xml:space="preserve">
         <value>Join</value>
     </data>
