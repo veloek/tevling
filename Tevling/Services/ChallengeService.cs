@@ -427,6 +427,18 @@ public class ChallengeService(
                         break;
                 }
 
+            float goalProgress = challenge.Measurement switch
+            {
+                ChallengeMeasurement.Distance => challengeActivities.Select(a => a.Details.DistanceInMeters).Sum() / 1000f,
+                ChallengeMeasurement.Time => (float)TimeSpan.FromSeconds(challengeActivities.Select(a => a.Details.MovingTimeInSeconds).Sum()).TotalHours,
+                ChallengeMeasurement.Elevation => challengeActivities.Select(a => a.Details.TotalElevationGain).Sum(),
+                ChallengeMeasurement.Calories => challengeActivities.Select(a => a.Details.Calories).Sum(),
+                _ => 0,
+            };
+            
+            if (challenge.IndividualGoal is > 0 && goalProgress >= challenge.IndividualGoal.Value)
+                athleteTickets += 10;
+
             if (athleteTickets > 0) tickets.Add((athlete, athleteTickets));
         }
 
