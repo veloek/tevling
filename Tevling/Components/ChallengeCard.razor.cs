@@ -125,4 +125,19 @@ public partial class ChallengeCard : ComponentBase
             DrawingWinner = false;
         }
     }
+
+    private async Task RedrawWinner()
+    {
+        if (Challenge is null) return;
+
+        DrawingWinner = true;
+        await ChallengeService.ClearChallengeWinnerAsync(Challenge.Id);
+        await this.DrawWinner();
+    }
+
+    private Task OpenDrawWinnerModal()
+    {
+        Winner = Challenge?.Winner;
+        return Task.CompletedTask;
+    }
 }

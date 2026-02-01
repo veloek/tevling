@@ -28,6 +28,9 @@
     <data name="DrawWinner" xml:space="preserve">
         <value>Draw winner</value>
     </data>
+    <data name="RedrawWinner" xml:space="preserve">
+        <value>Redraw winner</value>
+    </data>
     <data name="AskDraw" xml:space="preserve">
         <value>Ask {0} to do the draw!</value>
     </data>
