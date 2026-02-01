@@ -89,7 +89,25 @@
         <value>Draw winner for {0}?</value>
     </data>
     <data name="DrawWinner_body" xml:space="preserve">
-        <value>The winner will be drawn based on their contribution. Each unit of contribution equals a 'lottery ticket', ensuring all participants have a chance to win, regardless of their total contribution.</value>
+        <value>The winner will be drawn based on their contribution. Each unit of contribution equals a 'lottery ticket', ensuring all participants have a chance to win, regardless of their total contribution. If an individual goal is set for the competition, the athlete earns bonus tickets when the goal is reached.</value>
+    </data>
+    <data name="TicketsHeading" xml:space="preserve">
+        <value>Tickets</value>
+    </data>
+    <data name="TicketsAthlete" xml:space="preserve">
+        <value>Athlete</value>
+    </data>
+    <data name="TicketsBase" xml:space="preserve">
+        <value>Base</value>
+    </data>
+    <data name="TicketsBonus" xml:space="preserve">
+        <value>Bonus</value>
+    </data>
+    <data name="TicketsTotal" xml:space="preserve">
+        <value>Total</value>
+    </data>
+    <data name="TicketsNone" xml:space="preserve">
+        <value>No tickets yet.</value>
     </data>
     <data name="TheWinner_title" xml:space="preserve">
         <value>The winner for {0} is...</value>

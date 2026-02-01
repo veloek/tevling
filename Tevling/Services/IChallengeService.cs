@@ -39,6 +39,8 @@ public interface IChallengeService
 
     Task<ScoreBoard> GetScoreBoardAsync(int challengeId, CancellationToken ct = default);
 
+    Task<IReadOnlyList<AthleteTickets>> GetChallengeTicketsAsync(int challengeId, CancellationToken ct = default);
+
     Task<Athlete?> DrawChallengeWinnerAsync(int challengeId, CancellationToken ct = default);
 
     Task ClearChallengeWinnerAsync(int challengeId, CancellationToken ct = default);

@@ -89,7 +89,25 @@
         <value>Trekk vinner for {0}?</value>
     </data>
     <data name="DrawWinner_body" xml:space="preserve">
-        <value>Vinneren vil bli trukket basert på deltakelse. Hver enhet av deltakelse gir et 'lodd' i lotteriet, noe som sørger for at alle utøvere har sjans til å vinne, uavhenigig av deres totale bidrag.</value>
+        <value>Vinneren vil bli trukket basert på deltakelse. Hver enhet av deltakelse gir et 'lodd' i lotteriet, noe som sørger for at alle utøvere har sjans til å vinne, uavhenigig av deres totale bidrag. Hvis det er satt et individuelt mål for konkurransen, får utøveren bonuslodd når målet nås.</value>
+    </data>
+    <data name="TicketsHeading" xml:space="preserve">
+        <value>Lodd</value>
+    </data>
+    <data name="TicketsAthlete" xml:space="preserve">
+        <value>Utøver</value>
+    </data>
+    <data name="TicketsBase" xml:space="preserve">
+        <value>Base</value>
+    </data>
+    <data name="TicketsBonus" xml:space="preserve">
+        <value>Bonus</value>
+    </data>
+    <data name="TicketsTotal" xml:space="preserve">
+        <value>Totalt</value>
+    </data>
+    <data name="TicketsNone" xml:space="preserve">
+        <value>Ingen lodd ennå.</value>
     </data>
     <data name="TheWinner_title" xml:space="preserve">
         <value>Vinneren av {0} er...</value>
