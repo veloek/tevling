@@ -165,6 +165,7 @@ public class ChallengeService(
                 Start = newChallenge.Start,
                 End = newChallenge.End,
                 Measurement = newChallenge.Measurement,
+                IndividualGoal = newChallenge.IndividualGoal,
                 ActivityTypes = newChallenge.ActivityTypes.ToList(),
                 IsPrivate = newChallenge.IsPrivate,
                 Created = DateTimeOffset.Now,
@@ -231,6 +232,7 @@ public class ChallengeService(
         challenge.Start = editChallenge.Start;
         challenge.End = editChallenge.End;
         challenge.Measurement = editChallenge.Measurement;
+        challenge.IndividualGoal = editChallenge.IndividualGoal;
         challenge.ActivityTypes = editChallenge.ActivityTypes.ToList();
         challenge.IsPrivate = editChallenge.IsPrivate;
 
@@ -424,6 +426,18 @@ public class ChallengeService(
                         athleteTickets += 0;
                         break;
                 }
+
+            float goalProgress = challenge.Measurement switch
+            {
+                ChallengeMeasurement.Distance => challengeActivities.Select(a => a.Details.DistanceInMeters).Sum() / 1000f,
+                ChallengeMeasurement.Time => (float)TimeSpan.FromSeconds(challengeActivities.Select(a => a.Details.MovingTimeInSeconds).Sum()).TotalHours,
+                ChallengeMeasurement.Elevation => challengeActivities.Select(a => a.Details.TotalElevationGain).Sum(),
+                ChallengeMeasurement.Calories => challengeActivities.Select(a => a.Details.Calories).Sum(),
+                _ => 0,
+            };
+            
+            if (challenge.IndividualGoal is > 0 && goalProgress >= challenge.IndividualGoal.Value)
+                athleteTickets += 10;
 
             if (athleteTickets > 0) tickets.Add((athlete, athleteTickets));
         }

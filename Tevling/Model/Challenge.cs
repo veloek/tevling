@@ -10,6 +10,7 @@ public class Challenge
     public DateTimeOffset Start { get; set; }
     public DateTimeOffset End { get; set; }
     public ChallengeMeasurement Measurement { get; set; }
+    public float? IndividualGoal { get; set; }
     public IList<ActivityType> ActivityTypes { get; set; } = [];
     public DateTimeOffset Created { get; set; }
     public bool IsPrivate { get; set; }
