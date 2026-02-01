@@ -12,6 +12,7 @@ public partial class ChallengeCard : ComponentBase
     [Parameter] public int AthleteId { get; set; }
     [Parameter] public Challenge? Challenge { get; set; }
 
+
     private DateTimeOffset? CurrentBrowserTime { get; set; }
     private ScoreBoard? ScoreBoard { get; set; }
     private bool IsAdmin => Configuration.GetSection("AdminIds").Get<int[]>()?.Contains(AthleteId) ?? false;
@@ -35,6 +36,9 @@ public partial class ChallengeCard : ComponentBase
     private bool? HasJoined => Challenge?.Athletes?.Any(a => a.Id == AthleteId);
     private bool ShowScoreBoard { get; set; }
     private Athlete? Winner { get; set; }
+    private IReadOnlyList<AthleteTickets> TicketBreakdown { get; set; } = [];
+    private bool TicketsLoading { get; set; }
+    private int TotalTickets => TicketBreakdown.Sum(t => t.TotalTickets);
     private string? GoalDisplay => Challenge?.IndividualGoal is null
         ? null
         : Challenge.Measurement switch
@@ -124,5 +128,14 @@ public partial class ChallengeCard : ComponentBase
             Winner = await ChallengeService.DrawChallengeWinnerAsync(Challenge.Id);
             DrawingWinner = false;
         }
+    }
+
+    private async Task LoadTicketBreakdown()
+    {
+        if (Challenge is null) return;
+
+        TicketsLoading = true;
+        TicketBreakdown = await ChallengeService.GetChallengeTicketsAsync(Challenge.Id);
+        TicketsLoading = false;
     }
 }
