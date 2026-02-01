@@ -28,6 +28,9 @@
     <data name="DrawWinner" xml:space="preserve">
         <value>Trekk vinner</value>
     </data>
+    <data name="RedrawWinner" xml:space="preserve">
+        <value>Trekk på nytt</value>
+    </data>
     <data name="AskDraw" xml:space="preserve">
         <value>Spør {0} om å utføre trekking!</value>
     </data>

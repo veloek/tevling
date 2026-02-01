@@ -69,7 +69,8 @@
                         <button class="btn btn-primary mt-auto"
                                 data-bs-toggle="modal"
                                 data-bs-target="#drawWinner-@(Challenge.Id)"
-                                @onclick:stopPropagation="true">
+                                @onclick:stopPropagation="true"
+                                @onclick="OpenDrawWinnerModal">
                             <i class="bi bi-stars me-2" aria-hidden="true"></i>
                             <span>@Loc["DrawWinner"]</span>
                         </button>
@@ -84,6 +85,17 @@
                 else
                 {
                     <span class="my-auto text-center">@string.Format(Loc["ChallengeWinner"], @Challenge.Winner.Name)</span>
+                    @if (Challenge.CreatedById == AthleteId || IsAdmin)
+                    {
+                        <button class="btn btn-secondary mt-auto"
+                                data-bs-toggle="modal"
+                                data-bs-target="#drawWinner-@(Challenge.Id)"
+                                @onclick:stopPropagation="true"
+                                @onclick="OpenDrawWinnerModal">
+                            <i class="bi bi-arrow-repeat me-2" aria-hidden="true"></i>
+                            <span>@Loc["RedrawWinner"]</span>
+                        </button>
+                    }
                 }
             }
             else
@@ -204,7 +216,10 @@
                 }
                 else
                 {
-                    <button class="btn btn-secondary mt-1 modal-button" data-bs-dismiss="modal">@Loc["Close"]</button>
+                    <div class="d-flex flex-row column-gap-4">
+                        <button class="btn btn-primary mt-1 modal-button" @onclick="RedrawWinner">@Loc["RedrawWinner"]</button>
+                        <button class="btn btn-secondary mt-1 modal-button" data-bs-dismiss="modal">@Loc["Close"]</button>
+                    </div>
                 }
             }
 
