@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Tevling.Data;
 
@@ -10,12 +11,14 @@ using Tevling.Data;
 namespace Tevling.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20251127122023_notifications")]
+    partial class notifications
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder.HasAnnotation("ProductVersion", "10.0.0");
+            modelBuilder.HasAnnotation("ProductVersion", "9.0.2");
 
             modelBuilder.Entity("AthleteChallenge", b =>
                 {
@@ -142,9 +145,6 @@ namespace Tevling.Migrations
                     b.Property<long>("End")
                         .HasColumnType("INTEGER");
 
-                    b.Property<float?>("IndividualGoal")
-                        .HasColumnType("REAL");
-
                     b.Property<bool>("IsPrivate")
                         .HasColumnType("INTEGER");
 
@@ -212,9 +212,6 @@ namespace Tevling.Migrations
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("TEXT");
-
-                    b.Property<float?>("IndividualGoal")
-                        .HasColumnType("REAL");
 
                     b.Property<bool>("IsPrivate")
                         .HasColumnType("INTEGER");
