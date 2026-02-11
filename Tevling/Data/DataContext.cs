@@ -11,9 +11,11 @@ public class DataContext(DbContextOptions<DataContext> options) : DbContext(opti
     public DbSet<Challenge> Challenges { get; set; }
     public DbSet<Following> Following { get; set; }
     public DbSet<FollowRequest> FollowRequests { get; set; }
-    
+
     public DbSet<ChallengeGroup> ChallengeGroups { get; set; }
     public DbSet<ChallengeTemplate> ChallengeTemplates { get; set; }
+
+    public DbSet<Notification> Notifications { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
@@ -34,11 +36,11 @@ public class DataContext(DbContextOptions<DataContext> options) : DbContext(opti
         modelBuilder.Entity<Athlete>()
             .HasMany(a => a.Challenges)
             .WithMany(c => c.Athletes);
-        
+
         modelBuilder.Entity<Athlete>()
             .HasMany(a => a.ChallengeTemplates)
             .WithOne(c => c.CreatedBy);
-        
+
         modelBuilder.Entity<Athlete>()
             .HasMany(a => a.Following)
             .WithMany(a => a.Followers)
@@ -81,13 +83,13 @@ public class DataContext(DbContextOptions<DataContext> options) : DbContext(opti
         modelBuilder.Entity<ChallengeTemplate>()
             .Property(ct => ct.Created)
             .HasConversion(new DateTimeOffsetToBinaryConverter());
-        
+
         modelBuilder.Entity<ChallengeGroup>()
             .HasOne<Athlete>()
             .WithMany()
             .HasForeignKey(g => g.CreatedById)
             .IsRequired();
-        
+
         modelBuilder.Entity<ChallengeGroup>()
             .Property(ct => ct.Created)
             .HasConversion(new DateTimeOffsetToBinaryConverter());
@@ -95,6 +97,23 @@ public class DataContext(DbContextOptions<DataContext> options) : DbContext(opti
         modelBuilder.Entity<ChallengeGroup>()
             .HasMany(g => g.Members)
             .WithMany();
+
+        modelBuilder.Entity<Notification>()
+            .Property(n => n.Created)
+            .HasConversion(new DateTimeOffsetToBinaryConverter());
+
+        modelBuilder.Entity<Notification>()
+            .Property(n => n.Read)
+            .HasConversion(new DateTimeOffsetToBinaryConverter());
+
+        modelBuilder.Entity<Notification>()
+            .HasKey(n => n.Id);
+
+        modelBuilder.Entity<Notification>()
+            .HasDiscriminator<string>("NotificationType")
+            .HasValue<NewFollowRequest>(nameof(NewFollowRequest))
+            .HasValue<AcceptedFollowRequest>(nameof(AcceptedFollowRequest))
+            .HasValue<ChallengeInvite>(nameof(ChallengeInvite));
     }
 
     public Task InitAsync()
@@ -102,6 +121,40 @@ public class DataContext(DbContextOptions<DataContext> options) : DbContext(opti
         //Database.EnsureCreatedAsync();
         return Database.MigrateAsync();
     }
+
+    public async Task<TNotification> AddNotificationAsync<TNotification>(TNotification notification,
+        CancellationToken ct = default) where TNotification : Notification
+    {
+        EntityEntry<Notification> entry = await Notifications.AddAsync(notification, ct);
+        _ = await SaveChangesAsync(ct);
+        entry.State = EntityState.Detached;
+        return (TNotification)entry.Entity;
+    }
+
+    public async Task<TNotification> UpdateNotificationAsync<TNotification>(TNotification notification,
+        CancellationToken ct = default) where TNotification : Notification
+    {
+        EntityEntry<Notification> entry = Notifications.Update(notification);
+        _ = await SaveChangesAsync(ct);
+        entry.State = EntityState.Detached;
+        return (TNotification)entry.Entity;
+    }
+
+    // public async Task<ICollection<Notification>> MarkNotificationsAsReadAsync(int athleteId,
+    //     CancellationToken ct = default)
+    // {
+    //     List<Notification> notificationsToUpdate =
+    //         [.. Notifications.AsTracking()
+    //             .Where(n => n.RecipientId == athleteId && n.Read == null)];
+
+    //     foreach (Notification notification in notificationsToUpdate)
+    //     {
+    //         notification.Read = DateTimeOffset.Now;
+    //     }
+    //     _ = await SaveChangesAsync(ct);
+
+    //     return notificationsToUpdate;
+    // }
 
     public async Task<Athlete> AddAthleteAsync(Athlete athlete, CancellationToken ct = default)
     {
@@ -200,7 +253,9 @@ public class DataContext(DbContextOptions<DataContext> options) : DbContext(opti
         entry.State = EntityState.Detached;
         return entry.Entity;
     }
-    public async Task<FollowRequest> AddFollowerRequestAsync(FollowRequest followRequest, CancellationToken ct = default)
+
+    public async Task<FollowRequest> AddFollowerRequestAsync(FollowRequest followRequest,
+        CancellationToken ct = default)
     {
         EntityEntry<FollowRequest> entry = await FollowRequests.AddAsync(followRequest, ct);
         _ = await SaveChangesAsync(ct);
@@ -216,21 +271,24 @@ public class DataContext(DbContextOptions<DataContext> options) : DbContext(opti
         return entry.Entity;
     }
 
-    public async Task<FollowRequest> RemoveFollowRequestAsync(FollowRequest followRequest, CancellationToken ct = default)
+    public async Task<FollowRequest> RemoveFollowRequestAsync(FollowRequest followRequest,
+        CancellationToken ct = default)
     {
         EntityEntry<FollowRequest> entry = FollowRequests.Remove(followRequest);
         _ = await SaveChangesAsync(ct);
         entry.State = EntityState.Detached;
         return entry.Entity;
     }
-    
-    public async Task<ChallengeGroup> AddChallengeGroupAsync(ChallengeGroup challengeGroup, CancellationToken ct = default)
+
+    public async Task<ChallengeGroup> AddChallengeGroupAsync(ChallengeGroup challengeGroup,
+        CancellationToken ct = default)
     {
         EntityEntry<ChallengeGroup> entry = await ChallengeGroups.AddAsync(challengeGroup, ct);
         _ = await SaveChangesAsync(ct);
         entry.State = EntityState.Detached;
         return entry.Entity;
     }
+
     public async Task<ChallengeGroup> RemoveChallengeGroupAsync(ChallengeGroup challengeGroup,
         CancellationToken ct = default)
     {
