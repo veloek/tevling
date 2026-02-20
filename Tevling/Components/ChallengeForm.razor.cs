@@ -44,7 +44,7 @@ public partial class ChallengeForm : ComponentBase
     private string GoalStep => Challenge.Measurement switch
     {
         ChallengeMeasurement.Distance => "10",
-        ChallengeMeasurement.Time => "10",
+        ChallengeMeasurement.Time => "1",
         ChallengeMeasurement.Elevation => "100",
         ChallengeMeasurement.Calories => "100",
         _ => "1",
