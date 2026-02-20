@@ -84,7 +84,8 @@
                         <button class="btn btn-primary mt-auto"
                                 data-bs-toggle="modal"
                                 data-bs-target="#drawWinner-@(Challenge.Id)"
-                                @onclick:stopPropagation="true">
+                                @onclick:stopPropagation="true"
+                                @onclick="LoadTicketBreakdown">
                             <i class="bi bi-stars me-2" aria-hidden="true"></i>
                             <span>@Loc["DrawWinner"]</span>
                         </button>
@@ -202,6 +203,49 @@
                 {
                     <h5 class="mb-3">@string.Format(Loc["DrawWinner_title"], @Challenge.Title)</h5>
                     <span class="text-center">@Loc["DrawWinner_body"]</span>
+                    <div class="mt-3 w-100">
+                        <h6 class="mb-2">@Loc["TicketsHeading"]</h6>
+                        @if (TicketsLoading)
+                        {
+                            <span class="text-center">@Loc["Loading"]...</span>
+                        }
+                        else if (TicketBreakdown.Count == 0)
+                        {
+                            <span class="text-center">@Loc["TicketsNone"]</span>
+                        }
+                        else
+                        {
+                            <table class="table table-sm mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>@Loc["TicketsAthlete"]</th>
+                                        <th class="text-end">@Loc["TicketsBase"]</th>
+                                        <th class="text-end">@Loc["TicketsBonus"]</th>
+                                        <th class="text-end">@Loc["TicketsTotal"]</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (AthleteTickets ticket in TicketBreakdown)
+                                    {
+                                        <tr>
+                                            <td>@ticket.Name</td>
+                                            <td class="text-end">@ticket.BaseTickets</td>
+                                            <td class="text-end">@ticket.BonusTickets</td>
+                                            <td class="text-end">@ticket.TotalTickets</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <th>@Loc["TicketsTotal"]</th>
+                                        <th class="text-end">@TicketBreakdown.Sum(t => t.BaseTickets)</th>
+                                        <th class="text-end">@TicketBreakdown.Sum(t => t.BonusTickets)</th>
+                                        <th class="text-end">@TotalTickets</th>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        }
+                    </div>
                 }
                 else
                 {
