@@ -1,3 +1,4 @@
+using System.Globalization;
 using Microsoft.JSInterop;
 
 namespace Tevling.Components;
@@ -73,7 +74,7 @@ public partial class ChallengeCard : ComponentBase
         if (!HasGoal) return "0%";
 
         float percent = Math.Clamp(scoreValue / Challenge!.IndividualGoal!.Value * 100f, 0f, 100f);
-        return $"{percent:0.#}%";
+        return string.Create(CultureInfo.InvariantCulture, $"{percent:0.#}%");
     }
 
     protected override async Task OnParametersSetAsync()
