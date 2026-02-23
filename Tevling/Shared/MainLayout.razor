@@ -8,7 +8,7 @@
         <div class="sidebar d-flex flex-column">
             <NavMenu OnThemeChange="OnThemeChange" />
         </div>
-        <main>
+        <main @ref=MainElement>
             <article class="content">
                 @Body
             </article>
