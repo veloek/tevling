@@ -2,6 +2,28 @@
   border: none;
 }
 
+.modal {
+  z-index: 2000;
+}
+
+.modal-backdrop-local {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  opacity: 0;
+  transition: opacity 0.15s linear;
+  z-index: 0;
+}
+
+.modal.show .modal-backdrop-local {
+  opacity: 0.5;
+}
+
+.modal-dialog {
+  position: relative;
+  z-index: 1;
+}
+
 .modal-header {
   border: none;
 }
