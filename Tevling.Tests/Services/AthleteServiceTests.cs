@@ -264,7 +264,7 @@ public class AthleteServiceTests
 
         IDbContextFactory<DataContext> dataContextFactory = new InMemoryDataContextFactory();
         await using DataContext dataContext = await dataContextFactory.CreateDbContextAsync(TestContext.Current.CancellationToken);
-        EntityEntry<Athlete> athleteEntry = await dataContext.Athletes.AddAsync(new Athlete(), TestContext.Current.CancellationToken);
+        Athlete athlete = await dataContext.AddAthleteAsync(new Athlete(), TestContext.Current.CancellationToken);
         await dataContext.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         IStravaClient stravaClientMock = Substitute.For<IStravaClient>();
@@ -272,7 +272,7 @@ public class AthleteServiceTests
             .Returns(new TokenResponse { AccessToken = updatedAccessToken });
 
         AthleteService sut = new(Substitute.For<ILogger<AthleteService>>(), dataContextFactory, stravaClientMock);
-        string accessToken = await sut.GetAccessTokenAsync(athleteEntry.Entity.Id, TestContext.Current.CancellationToken);
+        string accessToken = await sut.GetAccessTokenAsync(athlete.Id, TestContext.Current.CancellationToken);
 
         accessToken.ShouldBe(updatedAccessToken);
     }
@@ -368,9 +368,16 @@ public class AthleteServiceTests
         CancellationToken cancellationToken)
     {
         await using DataContext dataContext = await dbContextFactory.CreateDbContextAsync(cancellationToken);
-        await dataContext.Athletes.AddRangeAsync(athletes, cancellationToken);
-        await dataContext.Following.AddRangeAsync(followings, cancellationToken);
-        await dataContext.SaveChangesAsync(cancellationToken);
+
+        foreach (Athlete athlete in athletes)
+        {
+            await dataContext.AddAthleteAsync(athlete, cancellationToken);
+        }
+
+        foreach (Following following in followings)
+        {
+            await dataContext.AddFollowingAsync(following, cancellationToken);
+        }
     }
 
     private static AthleteService CreateSut(IDbContextFactory<DataContext> dataContextFactory)
