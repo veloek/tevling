@@ -60,12 +60,16 @@ string dataDir = Path.Join(Environment.CurrentDirectory, "storage");
 DirectoryInfo dataDirInfo = Directory.CreateDirectory(dataDir);
 
 builder.Services.AddDbContextFactory<DataContext>(
-    optionsBuilder =>
+    (serviceProvider, optionsBuilder) =>
     {
         string dbPath = Path.Join(dataDir, "tevling.db");
         optionsBuilder.UseSqlite($"Data Source={dbPath}");
-        optionsBuilder.ConfigureWarnings(w => w.Throw(RelationalEventId.MultipleCollectionIncludeWarning));
-        // optionsBuilder.LogTo(Console.WriteLine);
+
+        if (serviceProvider.GetRequiredService<IWebHostEnvironment>().IsDevelopment())
+        {
+            optionsBuilder.ConfigureWarnings(w => w.Throw(RelationalEventId.MultipleCollectionIncludeWarning));
+            optionsBuilder.LogTo(Console.WriteLine);
+        }
     });
 
 builder.Services
