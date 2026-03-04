@@ -17,6 +17,7 @@ public class ChallengeService(
 
         Challenge? challenge = await dataContext.Challenges
             .Include(c => c.Athletes)
+            .Include(c => c.Winner)
             .Include(c => c.InvitedAthletes)
             .Include(c => c.CreatedBy)
             .AsSplitQuery()
@@ -204,8 +205,9 @@ public class ChallengeService(
 
         Challenge challenge = await dataContext.Challenges
                 .Include(c => c.Athletes)
-                .Include(c => c.CreatedBy)
+                .Include(c => c.Winner)
                 .Include(c => c.InvitedAthletes)
+                .Include(c => c.CreatedBy)
                 .AsSplitQuery()
                 .AsTracking()
                 .FirstOrDefaultAsync(c => c.Id == challengeId, ct) ??
@@ -249,7 +251,10 @@ public class ChallengeService(
 
         Challenge challenge = await dataContext.Challenges
                 .Include(c => c.Athletes)
+                .Include(c => c.Winner)
+                .Include(c => c.InvitedAthletes)
                 .Include(c => c.CreatedBy)
+                .AsSplitQuery()
                 .AsTracking()
                 .FirstOrDefaultAsync(c => c.Id == challengeId, ct) ??
             throw new Exception($"Challenge ID {challengeId} not found");
@@ -274,7 +279,10 @@ public class ChallengeService(
 
         Challenge challenge = await dataContext.Challenges
                 .Include(c => c.Athletes)
+                .Include(c => c.Winner)
+                .Include(c => c.InvitedAthletes)
                 .Include(c => c.CreatedBy)
+                .AsSplitQuery()
                 .AsTracking()
                 .FirstOrDefaultAsync(c => c.Id == challengeId, ct) ??
             throw new Exception($"Challenge ID {challengeId} not found");
@@ -389,6 +397,10 @@ public class ChallengeService(
         Challenge? challenge = await dataContext.Challenges
             .Include(c => c.Athletes)!
             .ThenInclude(a => a.Activities)
+            .Include(c => c.Winner)
+            .Include(c => c.InvitedAthletes)
+            .Include(c => c.CreatedBy)
+            .AsSplitQuery()
             .AsTracking()
             .AsSplitQuery()
             .FirstOrDefaultAsync(c => c.Id == challengeId, ct);
