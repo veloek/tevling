@@ -13,6 +13,7 @@ public class DataContext(DbContextOptions<DataContext> options) : DbContext(opti
     public IQueryable<FollowRequest> FollowRequests => Set<FollowRequest>().AsQueryable();
     public IQueryable<ChallengeGroup> ChallengeGroups => Set<ChallengeGroup>().AsQueryable();
     public IQueryable<ChallengeTemplate> ChallengeTemplates => Set<ChallengeTemplate>().AsQueryable();
+    public IQueryable<Notification> Notifications => Set<Notification>().AsQueryable();
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
@@ -28,6 +29,7 @@ public class DataContext(DbContextOptions<DataContext> options) : DbContext(opti
         modelBuilder.Entity<FollowRequest>().ToTable("FollowRequests");
         modelBuilder.Entity<ChallengeGroup>().ToTable("ChallengeGroups");
         modelBuilder.Entity<ChallengeTemplate>().ToTable("ChallengeTemplates");
+        modelBuilder.Entity<Notification>().ToTable("Notifications");
 
         modelBuilder.Entity<Activity>()
             .HasOne(a => a.Athlete)
@@ -102,12 +104,63 @@ public class DataContext(DbContextOptions<DataContext> options) : DbContext(opti
         modelBuilder.Entity<ChallengeGroup>()
             .HasMany(g => g.Members)
             .WithMany();
+
+        modelBuilder.Entity<Notification>()
+            .Property(n => n.Created)
+            .HasConversion(new DateTimeOffsetToBinaryConverter());
+
+        modelBuilder.Entity<Notification>()
+            .Property(n => n.Read)
+            .HasConversion(new DateTimeOffsetToBinaryConverter());
+
+        modelBuilder.Entity<Notification>()
+            .HasOne(n => n.CreatedBy)
+            .WithMany();
+
+        modelBuilder.Entity<Notification>()
+            .HasOne(n => n.Recipient)
+            .WithMany();
+
+        modelBuilder.Entity<Notification>()
+            .HasDiscriminator<string>("NotificationType")
+            .HasValue<NewFollowRequest>(nameof(NewFollowRequest))
+            .HasValue<AcceptedFollowRequest>(nameof(AcceptedFollowRequest))
+            .HasValue<ChallengeInvite>(nameof(ChallengeInvite));
+
+        modelBuilder.Entity<ChallengeInvite>()
+            .Navigation(e => e.Challenge)
+            .AutoInclude();
     }
 
     public Task InitAsync()
     {
         //Database.EnsureCreatedAsync();
         return Database.MigrateAsync();
+    }
+
+    public async Task<TNotification> AddNotificationAsync<TNotification>(TNotification notification,
+        CancellationToken ct = default) where TNotification : Notification
+    {
+        EntityEntry<Notification> entry = await Set<Notification>().AddAsync(notification, ct);
+        _ = await SaveChangesAsync(ct);
+        entry.State = EntityState.Detached;
+        return (TNotification)entry.Entity;
+    }
+
+    public async Task<TNotification> UpdateNotificationAsync<TNotification>(TNotification notification,
+        CancellationToken ct = default) where TNotification : Notification
+    {
+        EntityEntry<Notification> entry = Set<Notification>().Update(notification);
+        _ = await SaveChangesAsync(ct);
+        entry.State = EntityState.Detached;
+        return (TNotification)entry.Entity;
+    }
+
+    public async Task RemoveNotificationsAsync(IEnumerable<Notification> notifications,
+        CancellationToken ct = default)
+    {
+        Set<Notification>().RemoveRange(notifications);
+        _ = await SaveChangesAsync(ct);
     }
 
     public async Task<Athlete> AddAthleteAsync(Athlete athlete, CancellationToken ct = default)
@@ -207,7 +260,9 @@ public class DataContext(DbContextOptions<DataContext> options) : DbContext(opti
         entry.State = EntityState.Detached;
         return entry.Entity;
     }
-    public async Task<FollowRequest> AddFollowerRequestAsync(FollowRequest followRequest, CancellationToken ct = default)
+
+    public async Task<FollowRequest> AddFollowerRequestAsync(FollowRequest followRequest,
+        CancellationToken ct = default)
     {
         EntityEntry<FollowRequest> entry = await Set<FollowRequest>().AddAsync(followRequest, ct);
         _ = await SaveChangesAsync(ct);
@@ -223,7 +278,8 @@ public class DataContext(DbContextOptions<DataContext> options) : DbContext(opti
         return entry.Entity;
     }
 
-    public async Task<FollowRequest> RemoveFollowRequestAsync(FollowRequest followRequest, CancellationToken ct = default)
+    public async Task<FollowRequest> RemoveFollowRequestAsync(FollowRequest followRequest,
+        CancellationToken ct = default)
     {
         EntityEntry<FollowRequest> entry = Set<FollowRequest>().Remove(followRequest);
         _ = await SaveChangesAsync(ct);
@@ -231,13 +287,15 @@ public class DataContext(DbContextOptions<DataContext> options) : DbContext(opti
         return entry.Entity;
     }
 
-    public async Task<ChallengeGroup> AddChallengeGroupAsync(ChallengeGroup challengeGroup, CancellationToken ct = default)
+    public async Task<ChallengeGroup> AddChallengeGroupAsync(ChallengeGroup challengeGroup,
+        CancellationToken ct = default)
     {
         EntityEntry<ChallengeGroup> entry = await Set<ChallengeGroup>().AddAsync(challengeGroup, ct);
         _ = await SaveChangesAsync(ct);
         entry.State = EntityState.Detached;
         return entry.Entity;
     }
+
     public async Task<ChallengeGroup> RemoveChallengeGroupAsync(ChallengeGroup challengeGroup,
         CancellationToken ct = default)
     {

@@ -6,7 +6,8 @@ namespace Tevling.Services;
 public class AthleteService(
     ILogger<AthleteService> logger,
     IDbContextFactory<DataContext> dataContextFactory,
-    IStravaClient stravaClient)
+    IStravaClient stravaClient,
+    INotificationService notificationService)
     : IAthleteService
 {
     private readonly Subject<FeedUpdate<Athlete>> _athleteFeed = new();
@@ -45,17 +46,15 @@ public class AthleteService(
         await using DataContext dataContext = await dataContextFactory.CreateDbContextAsync(ct);
 
         Athlete[] athletes = await dataContext.Athletes
-            .Where(
-                athlete => filter == null ||
-                    !filter.FollowedBy.HasValue ||
-                    athlete.Followers!.Any(f => f.Id == filter.FollowedBy.Value))
-            .Where(
-                athlete => filter == null ||
-                    string.IsNullOrWhiteSpace(filter.SearchText)
-                    // TODO: Use EF.Functions.ILike when switching to PostgreSQL
-                    //       to keep the search text case-insensitive
-                    ||
-                    EF.Functions.Like(athlete.Name, $"%{filter.SearchText}%"))
+            .Where(athlete => filter == null ||
+                !filter.FollowedBy.HasValue ||
+                athlete.Followers!.Any(f => f.Id == filter.FollowedBy.Value))
+            .Where(athlete => filter == null ||
+                string.IsNullOrWhiteSpace(filter.SearchText)
+                // TODO: Use EF.Functions.ILike when switching to PostgreSQL
+                //       to keep the search text case-insensitive
+                ||
+                EF.Functions.Like(athlete.Name, $"%{filter.SearchText}%"))
             .Where(athlete => filter == null || filter.In == null || filter.In.Contains(athlete.Id))
             .Where(athlete => filter == null || filter.NotIn == null || !filter.NotIn.Contains(athlete.Id))
             .OrderBy(athlete => athlete.Name)
@@ -135,10 +134,22 @@ public class AthleteService(
                         FolloweeId = followingId,
                     },
                     ct);
+
+                await notificationService.Publish(
+                    new NewFollowRequest
+                    {
+                        Created = DateTimeOffset.Now,
+                        CreatedById = athlete.Id,
+                        RecipientId = followingId,
+                    },
+                    ct);
+
+                logger.LogInformation("Follower request created from {Follower} to {Followee}", athlete.Id, followingId);
             }
             else
             {
                 await dataContext.RemoveFollowRequestAsync(pending, ct);
+                logger.LogInformation("Follower request retracted from {Follower} to {Followee}", athlete.Id, followingId);
             }
         }
         else
@@ -182,6 +193,17 @@ public class AthleteService(
         if (pending is not null)
         {
             await dataContext.RemoveFollowRequestAsync(pending, ct);
+
+            await notificationService.Publish(
+                new AcceptedFollowRequest
+                {
+                    Created = DateTimeOffset.Now,
+                    CreatedById = athlete.Id,
+                    RecipientId = followerId,
+                },
+                ct);
+
+            logger.LogInformation("Follower request from {Follower} accepted by {Followee}", followerId, athlete.Id);
         }
 
         await dataContext.AddFollowingAsync(
@@ -208,6 +230,7 @@ public class AthleteService(
         if (pending is not null)
         {
             await dataContext.RemoveFollowRequestAsync(pending, ct);
+            logger.LogInformation("Follower request from {Follower} declined by {Followee}", followerId, athlete.Id);
         }
 
         athlete = await GetAthleteByIdAsync(athlete.Id, ct) ?? throw new Exception("Athlete is gone");
