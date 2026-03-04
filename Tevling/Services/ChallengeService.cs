@@ -461,15 +461,4 @@ public class ChallengeService(
 
         return null;
     }
-
-    public async Task ClearChallengeWinnerAsync(int challengeId, CancellationToken ct = default)
-    {
-        await using DataContext dataContext = await dataContextFactory.CreateDbContextAsync(ct);
-
-        Challenge? challenge = await dataContext.Challenges.FirstOrDefaultAsync(c => c.Id == challengeId, ct);
-        if (challenge == null) return;
-
-        challenge.WinnerId = null;
-        await dataContext.UpdateChallengeAsync(challenge, CancellationToken.None);
-    }
 }

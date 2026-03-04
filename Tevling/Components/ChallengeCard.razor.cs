@@ -127,15 +127,6 @@ public partial class ChallengeCard : ComponentBase
         }
     }
 
-    private async Task RedrawWinner()
-    {
-        if (Challenge is null) return;
-
-        DrawingWinner = true;
-        await ChallengeService.ClearChallengeWinnerAsync(Challenge.Id);
-        await this.DrawWinner();
-    }
-
     private void OpenDrawWinnerModal()
     {
         Winner = Challenge?.Winner;

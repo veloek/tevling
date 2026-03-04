@@ -146,14 +146,6 @@ public partial class DevTools : ComponentBase
             Athlete.Id);
     }
 
-    private async Task ClearChallengeWinner()
-    {
-        if (ClearChallengeWinnerId > 0)
-        {
-            await ChallengeService.ClearChallengeWinnerAsync(ClearChallengeWinnerId);
-        }
-    }
-
     private async Task AcceptAllFollowerRequests()
     {
         if (Athlete is null)
