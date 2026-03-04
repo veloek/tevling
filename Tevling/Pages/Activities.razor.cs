@@ -5,15 +5,13 @@ public partial class Activities : ComponentBase, IDisposable
     [Inject] private IActivityService ActivityService { get; set; } = null!;
     [Inject] private IAuthenticationService AuthenticationService { get; set; } = null!;
     [Inject] private ILogger<Activities> Logger { get; set; } = null!;
-    [Inject] private NavigationManager NavigationManager { get; set; } = null!;
 
     private const int PageSize = 50;
     private List<Activity> _activities = [];
     private IDisposable? _activityFeedSubscription;
     private int _page;
     private bool _showOnlyMine;
-    private Activity[] ActivityList = [];
-    private bool Importing { get; set; }
+    private Activity[] ActivityList { get; set; } = [];
     private bool HasMore { get; set; } = true;
     private bool Reloading { get; set; }
 
