@@ -244,22 +244,33 @@ public partial class Challenges : ComponentBase, IDisposable
         ChallengeList =
         [
             .. _challenges
-                .Where(
-                    c => _showAllChallenges ||
-                        c.Athletes?.Any(athlete => athlete.Id == AthleteId) == true ||
-                        c.CreatedById == AthleteId)
-                .Where(c => _showOutdatedChallenges || c.End.UtcDateTime.Date >= DateTimeOffset.UtcNow.Date)
-                .Where(
-                    c =>
-                        (_showTimeChallenges && c.Measurement == ChallengeMeasurement.Time) ||
-                        (_showElevationChallenges && c.Measurement == ChallengeMeasurement.Elevation) ||
-                        (_showDistanceChallenges && c.Measurement == ChallengeMeasurement.Distance) ||
-                        (_showCalorieChallenges && c.Measurement == ChallengeMeasurement.Calories))
-                .Where(
-                    c => _activityTypes.Count <= 0 || _activityTypes.Intersect(c.ActivityTypes).Any())
-                .Where(
-                    c => string.IsNullOrWhiteSpace(_filterText) ||
-                        c.Title.Contains(_filterText, StringComparison.OrdinalIgnoreCase))
+                .AsEnumerable()
+
+                .If(!_showAllChallenges, x => x.Where(c =>
+                    c.Athletes?.Any(athlete => athlete.Id == AthleteId) == true ||
+                    c.CreatedById == AthleteId))
+
+                .If(!_showOutdatedChallenges, x => x.Where(c =>
+                    c.End.UtcDateTime.Date >= DateTimeOffset.UtcNow.Date))
+
+                .If(!_showTimeChallenges, x => x.Where(c =>
+                    c.Measurement != ChallengeMeasurement.Time))
+
+                .If(!_showElevationChallenges, x => x.Where(c =>
+                    c.Measurement != ChallengeMeasurement.Elevation))
+
+                .If(!_showDistanceChallenges, x => x.Where(c =>
+                    c.Measurement != ChallengeMeasurement.Distance))
+
+                .If(!_showCalorieChallenges, x => x.Where(c =>
+                    c.Measurement != ChallengeMeasurement.Calories))
+
+                .If(_activityTypes.Count > 0, x => x.Where(c =>
+                    _activityTypes.Intersect(c.ActivityTypes).Any()))
+
+                .If(!string.IsNullOrWhiteSpace(_filterText), x => x.Where(c =>
+                    c.Title.Contains(_filterText, StringComparison.OrdinalIgnoreCase)))
+
                 .OrderByDescending(c => c.Start)
                 .ThenBy(c => c.Title),
         ];
