@@ -1,11 +1,11 @@
 <div class="d-flex flex-column align-items-start rg-3">
-    <div class="d-flex flex-row cg-3">
+    <div class="btn-group" role="group">
         <InputRadioGroup @bind-Value="IsRandomEnabled" @bind-Value:after="OnRandomizationChanged">
             <InputRadio class="btn-check" id="disable-random" Value="false"/>
-            <label class="btn btn-outline-success" for="disable-random">Disable randomization</label>
+            <label class="btn btn-outline-success" for="disable-random">Randomization disabled</label>
 
             <InputRadio class="btn-check" id="enable-random" Value="true"/>
-            <label class="btn btn-outline-danger" for="enable-random">Enable randomization</label>
+            <label class="btn btn-outline-danger" for="enable-random">Randomization enabled</label>
         </InputRadioGroup>
     </div>
     <button class="btn btn-primary" @onclick="AddActivity">Add activity</button>
