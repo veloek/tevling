@@ -125,7 +125,8 @@ public class DataContext(DbContextOptions<DataContext> options) : DbContext(opti
             .HasDiscriminator<string>("NotificationType")
             .HasValue<NewFollowRequest>(nameof(NewFollowRequest))
             .HasValue<AcceptedFollowRequest>(nameof(AcceptedFollowRequest))
-            .HasValue<ChallengeInvite>(nameof(ChallengeInvite));
+            .HasValue<ChallengeInvite>(nameof(ChallengeInvite))
+            .HasValue<WelcomeMessage>(nameof(WelcomeMessage));
 
         modelBuilder.Entity<ChallengeInvite>()
             .Navigation(e => e.Challenge)

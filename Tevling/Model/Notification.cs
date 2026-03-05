@@ -23,3 +23,5 @@ public class ChallengeInvite : Notification
     public int ChallengeId { get; set; }
     public Challenge? Challenge { get; set; }
 }
+
+public class WelcomeMessage : Notification, ISystemNotification;

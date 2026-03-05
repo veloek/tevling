@@ -99,6 +99,14 @@ public class AthleteService(
 
             athlete = await dataContext.AddAthleteAsync(athlete, ct);
             _athleteFeed.OnNext(new FeedUpdate<Athlete> { Item = athlete, Action = FeedAction.Create });
+
+            await notificationService.Publish(
+                new WelcomeMessage
+                {
+                    Created = DateTimeOffset.Now,
+                    RecipientId = athlete.Id,
+                },
+                ct);
         }
         else
         {

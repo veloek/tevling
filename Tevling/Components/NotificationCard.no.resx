@@ -24,4 +24,7 @@
     <data name="ChallengeInvite" xml:space="preserve">
         <value>Har invitert deg til "{0}"-utfordringen</value>
     </data>
+    <data name="WelcomeMessage" xml:space="preserve">
+        <value>Velkommen til Tevling!</value>
+    </data>
 </root>
