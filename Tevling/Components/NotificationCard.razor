@@ -7,19 +7,17 @@
                 <span class="notification-time">@NotificationTime</span>
             </div>
 
-            @if (Notification.CreatedBy != null)
+            @if (Notification is ISystemNotification)
             {
             <div class="d-flex align-items-center flex-row column-gap-2 athlete-name-container me-1">
-                <Avatar AthleteId="@Notification.CreatedBy.Id" Size="40" />
-                <span class="notification-name">@Notification.CreatedBy.Name</span>
-                <span class="athlete-name"> - @(NotificationTranslator.Translate(Notification))</span>
+                <span class="athlete-name">@(NotificationTranslator.Translate(Notification))</span>
             </div>
             }
             else
             {
             <div class="d-flex align-items-center flex-row column-gap-2 athlete-name-container me-1">
-                <Avatar AthleteId="0" Size="40" />
-                <span class="notification-name">SYSTEM</span>
+                <Avatar AthleteId="@Notification.CreatedBy?.Id" Size="40" />
+                <span class="notification-name">@Notification.CreatedBy?.Name</span>
                 <span class="athlete-name"> - @(NotificationTranslator.Translate(Notification))</span>
             </div>
             }

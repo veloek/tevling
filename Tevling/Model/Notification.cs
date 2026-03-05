@@ -12,6 +12,8 @@ public abstract class Notification
     public Athlete? Recipient { get; set; }
 }
 
+public interface ISystemNotification;
+
 public class NewFollowRequest : Notification;
 
 public class AcceptedFollowRequest : Notification;
