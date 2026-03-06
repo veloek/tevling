@@ -13,6 +13,7 @@ data:
           "Default": {{ .Values.logLevel | quote }},
         }
       },
-      "FeatureManagement":
-      {{- .Values.featureManagement | mustToPrettyJson | indent 6 }}
+      "FeatureManagement": {{ .Values.featureManagement | mustToPrettyJson | indent 6 }},
+      "AdminIds": [ {{ join ", " .Values.adminIds }} ],
+      "CultureByHost": {{ .Values.cultureByHost | mustToPrettyJson | indent 6 }}
     }

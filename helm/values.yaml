@@ -59,5 +59,11 @@ appSettingsPath: /etc/tevling/appsettings.json
 featureManagement:
   devTools: false
   devToolsMenuItem: false
+  challengesApi: false
+
+adminIds: []
+
+cultureByHost: {}
+  #tevling.no: "no"
 
 logLevel: Information
