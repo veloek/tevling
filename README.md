@@ -24,7 +24,7 @@ The app is published as a Docker container and can be run standalone or in a kub
 ### Docker
 
 ```
-docker run --volume /tmp/tevling:/app/storage -p 8080:8080 veloek/tevling \
+docker run --volume /tmp/tevling:/app/storage -p 8080:8080 ghcr.io/veloek/tevling \
   --env STRAVACONFIG__CLIENTID=${STRAVA_CLIENTID} \
   --env STRAVACONFIG__CLIENTSECRET=${STRAVA_CLIENTSECRET} \
   --env STRAVACONFIG__REDIRECTURI=${STRAVA_REDIRECTURI} \
@@ -54,7 +54,7 @@ The app is based on ASP.NET using the Blazor framework. Simplicity is highly val
 maintainable as it's not anybody's dayjob.
 
 Debugging should work out of the box in Visual Studio or VS Code (with C# extensions), but to simply
-build (and run) the app only the .NET 8 SDK is required. Use `dotnet watch` to detect changes.
+build (and run) the app only the .NET 10 SDK is required. Use `dotnet watch` to detect changes.
 
 ```
 dotnet run --project Tevling/Tevling.csproj
@@ -62,10 +62,28 @@ dotnet run --project Tevling/Tevling.csproj
 
 Bug reports and PRs are very welcome!
 
+## Cut a release
+
+Releases are automatically deployed once a new version tag is detected. Tevling strives to follow
+[semantic versioning](https://semver.org/) and version numbers should be bumped accordingly.
+
+All tags should be annotated and use the tag name as title. The body should consist of a list of
+changes; fixes, additions, removals, etc. See older version tags for inspiration.
+
+```
+$ git tag -a v1.2.3
+
+v1.2.3
+
+- Added this awesome new feature
+- Fixed issue where challenges never end
+- Removed exessive filtering options
+```
+
 ## License
 
 GNU GPLv3 or later.
 
 ## Copyright
 
-Copyright © 2025 - Tevling Contributors
+Copyright © 2026 - Tevling Contributors
