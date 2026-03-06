@@ -1,8 +1,15 @@
 <div class="avatar">
-    <img src="@($"/profile/{AthleteId}")" width="@Size" height="@Size" alt="avatar" />
+    @if(AthleteId.HasValue)
+    {
+        <img src="@($"/profile/{AthleteId}")" width="@Size" height="@Size" alt="avatar" />
+    }
+    else
+    {
+        <img src="@($"/avatar/athlete/large.png")" width="@Size" height="@Size" alt="avatar" />
+    }
 </div>
 
 @code {
-    [Parameter] public int AthleteId { get; set; }
+    [Parameter] public int? AthleteId { get; set; }
     [Parameter] public int Size { get; set; }
 }

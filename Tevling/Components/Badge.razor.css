@@ -1,0 +1,19 @@
+.badge {
+  background-color: red;
+  width:10px;
+  height:10px;
+  border-radius: 35%;
+  
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  position: absolute; /* changed */
+  top: -3px; /* changed */
+  left: 12px; /* changed */
+}
+
+.number {
+  color: white;
+  font-size: 12px;
+}

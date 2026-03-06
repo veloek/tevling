@@ -1,0 +1,11 @@
+@page "/Notifications"
+@inject IStringLocalizer<Notifications> loc
+
+<h3 class="title mb-5">@loc["Notifications"]</h3>
+
+<div>
+    @foreach (Notification notification in NotificationList)
+    {
+        <NotificationCard Notification="@notification"/>
+    }
+</div>

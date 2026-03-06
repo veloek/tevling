@@ -6,7 +6,8 @@ namespace Tevling.Services;
 
 public class ChallengeService(
     ILogger<ChallengeService> logger,
-    IDbContextFactory<DataContext> dataContextFactory)
+    IDbContextFactory<DataContext> dataContextFactory,
+    INotificationService notificationService)
     : IChallengeService
 {
     private readonly Subject<FeedUpdate<Challenge>> _challengeFeed = new();
@@ -178,6 +179,22 @@ public class ChallengeService(
         await dataContext.Entry(challenge).Collection(c => c.Athletes!).LoadAsync(ct);
 
         _challengeFeed.OnNext(new FeedUpdate<Challenge> { Item = challenge, Action = FeedAction.Create });
+
+        if (challenge.InvitedAthletes != null)
+        {
+            foreach (Athlete invitedAthlete in challenge.InvitedAthletes)
+            {
+                await notificationService.Publish(
+                    new ChallengeInvite
+                    {
+                        CreatedById = challenge.CreatedById,
+                        ChallengeId = challenge.Id,
+                        RecipientId = invitedAthlete.Id,
+                        Created = DateTimeOffset.Now,
+                    },
+                    ct);
+            }
+        }
 
         return challenge;
     }
@@ -447,7 +464,7 @@ public class ChallengeService(
                 ChallengeMeasurement.Calories => challengeActivities.Select(a => a.Details.Calories).Sum(),
                 _ => 0,
             };
-            
+
             if (challenge.IndividualGoal is > 0 && goalProgress >= challenge.IndividualGoal.Value)
                 athleteTickets += 10;
 

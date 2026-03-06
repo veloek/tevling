@@ -81,6 +81,7 @@ builder.Services.AddBlazoredLocalStorage();
 builder.Services.AddSingleton<IActivityService, ActivityService>();
 builder.Services.AddSingleton<IAthleteService, AthleteService>();
 builder.Services.AddSingleton<IChallengeService, ChallengeService>();
+builder.Services.AddSingleton<INotificationService, NotificationService>();
 
 builder.Services.AddHttpContextAccessor();
 
@@ -91,6 +92,7 @@ builder.Services.AddStravaClient();
 
 builder.Services.AddSingleton<IDevService, DevService>();
 builder.Services.AddSingleton<ActivityTypeTranslator>();
+builder.Services.AddSingleton<NotificationTranslator>();
 
 builder.Services.AddHostedService<BatchImportService>();
 

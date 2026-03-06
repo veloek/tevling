@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Tevling.Data;
 
@@ -10,9 +11,11 @@ using Tevling.Data;
 namespace Tevling.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20260303214422_Notifications")]
+    partial class Notifications
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "10.0.0");
@@ -323,13 +326,6 @@ namespace Tevling.Migrations
                     b.HasBaseType("Tevling.Model.Notification");
 
                     b.HasDiscriminator().HasValue("NewFollowRequest");
-                });
-
-            modelBuilder.Entity("Tevling.Model.WelcomeMessage", b =>
-                {
-                    b.HasBaseType("Tevling.Model.Notification");
-
-                    b.HasDiscriminator().HasValue("WelcomeMessage");
                 });
 
             modelBuilder.Entity("AthleteChallenge", b =>
