@@ -61,6 +61,9 @@
     <data name="IndividualGoal" xml:space="preserve">
         <value>Individuelt mål</value>
     </data>
+    <data name="TimeGoal" xml:space="preserve">
+        <value>{0} timer</value>
+    </data>
     <data name="GoalLeft" xml:space="preserve">
         <value>igjen</value>
     </data>

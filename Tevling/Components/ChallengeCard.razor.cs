@@ -41,7 +41,7 @@ public partial class ChallengeCard : ComponentBase
         : Challenge.Measurement switch
         {
             ChallengeMeasurement.Distance => $"{Challenge.IndividualGoal:0.##} km",
-            ChallengeMeasurement.Time => TimeSpan.FromHours(Challenge.IndividualGoal.Value).ToString("g"),
+            ChallengeMeasurement.Time => FormatTimeGoal(TimeSpan.FromHours(Challenge.IndividualGoal.Value)),
             ChallengeMeasurement.Elevation => $"{Challenge.IndividualGoal:0.##} m",
             ChallengeMeasurement.Calories => $"{Challenge.IndividualGoal:0.##} kcal",
             _ => Challenge.IndividualGoal.Value.ToString("0.##"),
@@ -62,12 +62,15 @@ public partial class ChallengeCard : ComponentBase
         return Challenge.Measurement switch
         {
             ChallengeMeasurement.Distance => $"{remaining:0.##} km",
-            ChallengeMeasurement.Time => TimeSpan.FromHours(remaining).ToString("g"),
+            ChallengeMeasurement.Time => FormatTimeGoal(TimeSpan.FromHours(remaining)),
             ChallengeMeasurement.Elevation => $"{remaining:0.##} m",
             ChallengeMeasurement.Calories => $"{remaining:0.##} kcal",
             _ => remaining.ToString("0.##"),
         };
     }
+
+    private string FormatTimeGoal(TimeSpan goal)
+        => string.Format(Loc["TimeGoal"], Math.Ceiling(goal.TotalHours));
 
     private string ProgressPercent(float scoreValue)
     {
