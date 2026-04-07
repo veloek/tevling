@@ -135,6 +135,3 @@ finally
 {
     Log.CloseAndFlush();
 }
-
-// Workaround to make Program public for tests
-public partial class Program { }
