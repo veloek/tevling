@@ -15,11 +15,11 @@ public class AuthenticationService(
 {
     public async Task LoginAsync(Athlete athlete, CancellationToken ct = default)
     {
-        List<Claim> claims = new()
-        {
+        Claim[] claims =
+        [
             new Claim(ClaimTypes.Name, athlete.Name),
             new Claim(ClaimTypes.NameIdentifier, athlete.Id.ToString()),
-        };
+        ];
 
         ClaimsIdentity claimsIdentity = new(
             claims,
