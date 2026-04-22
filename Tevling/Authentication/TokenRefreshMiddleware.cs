@@ -1,5 +1,3 @@
-using System.Security.Claims;
-
 namespace Tevling.Authentication;
 
 public class TokenRefreshMiddleware(
@@ -12,7 +10,7 @@ public class TokenRefreshMiddleware(
         // Filter on request path to run only once for each page visit
         if (context.Request.Path != "/_blazor") goto next;
 
-        string? athleteIdStr = context.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        string? athleteIdStr = context.User.AthleteId;
         if (!int.TryParse(athleteIdStr, out int athleteId)) goto next;
 
         // Calling GetAccessToken will automatically refresh the token if it's

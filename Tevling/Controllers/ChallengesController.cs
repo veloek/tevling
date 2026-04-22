@@ -1,4 +1,3 @@
-﻿using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.FeatureManagement.Mvc;
@@ -17,8 +16,7 @@ public class ChallengesController(IChallengeService challengeService) : Controll
     [Route("scoreboard")]
     public async Task<IActionResult> GetChallenges(CancellationToken ct = default)
     {
-
-        if (!int.TryParse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value, out int userId))
+        if (!int.TryParse(User.AthleteId, out int userId))
         {
             return StatusCode(500);
         }
