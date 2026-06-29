@@ -7,6 +7,7 @@ using Microsoft.FeatureManagement;
 using Serilog;
 using Serilog.Events;
 using Tevling.Authentication;
+using Tevling.RateLimiting;
 
 Log.Logger = new LoggerConfiguration()
     .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
@@ -40,6 +41,7 @@ builder.Services.AddFeatureManagement();
 builder.Services.AddHealthChecks();
 builder.Services.AddLocalization();
 builder.Services.AddTokenRefresh();
+builder.Services.AddNotFoundRateLimit(builder.Configuration);
 builder.Services.AddOutputCache();
 
 builder.Services.Configure<StravaConfig>(builder.Configuration.GetSection(nameof(StravaConfig)));
@@ -98,6 +100,7 @@ builder.Services.AddHostedService<BatchImportService>();
 
 WebApplication app = builder.Build();
 
+app.UseNotFoundRateLimit();
 app.UseStaticFiles();
 app.UseSerilogRequestLogging();
 app.UseRouting();
