@@ -52,6 +52,7 @@ builder.Services
         {
             options.LoginPath = "/login";
             options.ReturnUrlParameter = "returnUrl";
+            options.AccessDeniedPath = "/";
         })
     .AddStravaAuthentication();
 

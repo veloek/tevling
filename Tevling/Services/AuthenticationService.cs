@@ -9,17 +9,25 @@ public class AuthenticationService(
     ILogger<AuthenticationService> logger,
     AuthenticationStateProvider authenticationStateProvider,
     IAthleteService athleteService,
+    IConfiguration configuration,
     IHttpContextAccessor httpContextAccessor,
     IStravaClient stravaClient)
     : IAuthenticationService
 {
     public async Task LoginAsync(Athlete athlete, CancellationToken ct = default)
     {
-        Claim[] claims =
+        List<Claim> claims =
         [
             new Claim(ClaimTypes.Name, athlete.Name),
             new Claim(ClaimTypes.NameIdentifier, athlete.Id.ToString()),
         ];
+
+        int[] adminIds = configuration.GetSection("AdminIds").Get<int[]>() ?? [];
+
+        if (adminIds.Contains(athlete.Id))
+        {
+            claims.Add(new Claim(ClaimTypes.Role, Role.Admin));
+        }
 
         ClaimsIdentity claimsIdentity = new(
             claims,

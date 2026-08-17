@@ -1,5 +1,6 @@
 @page "/dev"
 @attribute [FeatureGate(FeatureFlag.DevTools)]
+@attribute [Authorize(Roles = Role.Admin)]
 
 <PageTitle>Tevling - Dev</PageTitle>
 
