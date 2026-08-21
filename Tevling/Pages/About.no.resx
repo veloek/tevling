@@ -41,7 +41,7 @@
         <value>Lisens</value>
     </data>
     <data name="License_body" xml:space="preserve">
-        <value>GNU GPLv3 eller senere. Kildekode er tilgjengelig på</value>
+        <value>GNU AGPLv3 eller senere. Kildekode er tilgjengelig på</value>
     </data>
     <data name="Version" xml:space="preserve">
         <value>Versjon</value>

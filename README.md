@@ -82,7 +82,7 @@ v1.2.3
 
 ## License
 
-GNU GPLv3 or later.
+GNU AGPLv3 or later.
 
 ## Copyright
 

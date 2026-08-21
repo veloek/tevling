@@ -41,7 +41,7 @@
         <value>License</value>
     </data>
     <data name="License_body" xml:space="preserve">
-        <value>GNU GPLv3 or later. Source code is available on</value>
+        <value>GNU AGPLv3 or later. Source code is available on</value>
     </data>
     <data name="Version" xml:space="preserve">
         <value>Version</value>
